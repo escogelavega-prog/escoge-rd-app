@@ -57,7 +57,7 @@ class _InscripcionScreenState extends State<InscripcionScreen> {
         tipoFormulario: 'general',
         retiroId: widget.retiroId,
         retiroNombre: widget.retiroNombre,
-        diocesis: widget.diocesis,
+        diocesis: widget.diocesis,r
         datos: {
           'nombre': nombreController.text.trim(),
           'apellidos': apellidosController.text.trim(),
