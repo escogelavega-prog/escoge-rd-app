@@ -374,7 +374,7 @@ class _InscripcionSection extends StatelessWidget {
               retiroId: retiroId,
               retiroNombre: retiro.titulo,
             )
-          : retiro_fds.InscripcionFDSScreen(
+          : retiro_fds.InscripcionFdsScreen(
               diocesis: retiro.diocesis,
               retiroId: retiroId,
               retiroNombre: retiro.titulo,

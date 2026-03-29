@@ -1,5 +1,5 @@
 import 'package:escoge/core/theme/app_colors.dart';
-import 'package:escoge/features/data/services/services/inscripcion_service.dart';
+import 'package:escoge/features/retiros/services/inscripcion_fds_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -22,7 +22,8 @@ class InscripcionScreen extends StatefulWidget {
 class _InscripcionScreenState extends State<InscripcionScreen> {
   final _pageController = PageController();
   final _formKey = GlobalKey<FormState>();
-  final InscripcionService _service = InscripcionService();
+
+  final InscripcionFDSService _service = InscripcionFDSService();
 
   int _currentStep = 0;
   bool _isSaving = false;

@@ -3,16 +3,25 @@ import 'package:escoge/features/retiros/services/diocesis_service.dart';
 import 'package:escoge/features/retiros/services/inscripcion_fds_service.dart';
 import 'package:flutter/material.dart';
 
-class InscripcionFdsScreen extends StatefulWidget {
-  const InscripcionFdsScreen({super.key});
+class InscripcionFDSScreen extends StatefulWidget {
+  final String diocesis;
+  final String retiroId;
+  final String retiroNombre;
+
+  const InscripcionFDSScreen({
+    super.key,
+    required this.diocesis,
+    required this.retiroId,
+    required this.retiroNombre,
+  });
 
   @override
-  State<InscripcionFdsScreen> createState() => _InscripcionFdsScreenState();
+  State<InscripcionFDSScreen> createState() => _InscripcionFDSScreenState();
 }
 
-class _InscripcionFdsScreenState extends State<InscripcionFdsScreen> {
+class _InscripcionFDSScreenState extends State<InscripcionFDSScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _service = InscripcionFdsService();
+  final _service = InscripcionFDSService();
   final _diocesisService = DiocesisService();
 
   bool _guardando = false;
@@ -470,5 +479,4 @@ class _InscripcionFdsScreenState extends State<InscripcionFdsScreen> {
   }
 }
 
-class InscripcionFDSScreen {
-}
+class InscripcionFDSScreen {}
