@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "825946489840",
+    "project_id": "escoge-f36dc",
+    "storage_bucket": "escoge-f36dc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:825946489840:android:ac49a33bce3f8aa4e11335",
+        "android_client_info": {
+          "package_name": "com.example.escoge"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMYW_ELW6MxtHe_Li5AumbPbowVjadogU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
