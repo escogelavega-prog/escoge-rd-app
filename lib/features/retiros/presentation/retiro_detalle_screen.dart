@@ -4,7 +4,7 @@ import 'package:escoge/features/retiros/presentation/inscripcion_screen.dart'
     as retiro_local;
 import 'package:escoge/features/retiros/presentation/inscripcion_fds_screen.dart'
     as retiro_fds;
-import 'package:escoge/widgets/premium_menu_card.dart';
+import 'package:escoge/core/widgets/premium_menu_card.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -374,7 +374,7 @@ class _InscripcionSection extends StatelessWidget {
               retiroId: retiroId,
               retiroNombre: retiro.titulo,
             )
-          : retiro_fds.InscripcionFdsScreen(
+          : retiro_fds.InscripcionFDSScreen(
               diocesis: retiro.diocesis,
               retiroId: retiroId,
               retiroNombre: retiro.titulo,

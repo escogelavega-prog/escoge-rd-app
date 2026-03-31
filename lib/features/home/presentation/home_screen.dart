@@ -1,5 +1,5 @@
-import 'package:escoge/widgets/premium_menu_card.dart';
-import 'package:escoge/widgets/section_title.dart';
+import 'package:escoge/core/widgets/premium_menu_card.dart';
+import 'package:escoge/core/widgets/section_title.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 

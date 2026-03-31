@@ -1,9 +1,9 @@
 import 'package:escoge/features/contenido/presentation/contenido_screen.dart';
-import 'package:escoge/features/home/presentatios/home_screen.dart';
+import 'package:escoge/features/home/presentation/home_screen.dart';
 import 'package:escoge/features/oracion/presentation/evangelio_screen.dart';
 import 'package:escoge/features/oracion/presentation/lecturas_screen.dart';
 import 'package:escoge/features/oracion/presentation/oracion_screen.dart';
-import 'package:escoge/features/perfil/presentacion/perfil_screen.dart';
+import 'package:escoge/features/perfil/presentation/perfil_screen.dart';
 import 'package:escoge/features/retiros/presentation/retiros_screen.dart';
 import 'package:flutter/material.dart';
 

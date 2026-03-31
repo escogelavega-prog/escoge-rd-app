@@ -1,6 +1,6 @@
 import 'package:escoge/features/retiros/domain/inscripcion_fds_model.dart';
-import 'package:escoge/features/retiros/services/diocesis_service.dart';
-import 'package:escoge/features/retiros/services/inscripcion_fds_service.dart';
+import 'package:escoge/features/retiros/data/services/diocesis_service.dart';
+import 'package:escoge/features/retiros/data/services/inscripcion_fds_service.dart';
 import 'package:flutter/material.dart';
 
 class InscripcionFDSScreen extends StatefulWidget {
@@ -85,7 +85,10 @@ class _InscripcionFDSScreenState extends State<InscripcionFDSScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error cargando diócesis: $e')),
+        const SnackBar(
+          content: Text(
+              'No se pudieron cargar las diócesis. Intenta de nuevo en unos minutos.'),
+        ),
       );
     }
   }
@@ -478,5 +481,3 @@ class _InscripcionFDSScreenState extends State<InscripcionFDSScreen> {
     );
   }
 }
-
-class InscripcionFDSScreen {}

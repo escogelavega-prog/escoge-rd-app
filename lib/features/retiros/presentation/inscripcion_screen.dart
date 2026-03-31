@@ -1,5 +1,7 @@
 import 'package:escoge/core/theme/app_colors.dart';
-import 'package:escoge/features/retiros/services/inscripcion_fds_service.dart';
+import 'package:escoge/features/retiros/data/repositories/inscripciones_repository.dart';
+import 'package:escoge/features/retiros/data/services/inscripcion_fds_service.dart';
+import 'package:escoge/features/retiros/domain/inscripcion_model.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -22,8 +24,8 @@ class InscripcionScreen extends StatefulWidget {
 class _InscripcionScreenState extends State<InscripcionScreen> {
   final _pageController = PageController();
   final _formKey = GlobalKey<FormState>();
-
-  final InscripcionFDSService _service = InscripcionFDSService();
+  final InscripcionesRepository repository =
+      InscripcionesRepository(InscripcionFDSService());
 
   int _currentStep = 0;
   bool _isSaving = false;
@@ -53,20 +55,20 @@ class _InscripcionScreenState extends State<InscripcionScreen> {
     setState(() => _isSaving = true);
 
     try {
-      await _service.guardarInscripcion(
-        tipoFormulario: 'general',
+      final model = InscripcionModel(
+        diocesis: widget.diocesis,
         retiroId: widget.retiroId,
         retiroNombre: widget.retiroNombre,
-        diocesis: widget.diocesis,r
-        datos: {
-          'nombre': nombreController.text.trim(),
-          'apellidos': apellidosController.text.trim(),
-          'cedula': cedulaController.text.trim(),
-          'telefono': telefonoController.text.trim(),
-          'email': emailController.text.trim(),
-          'direccion': direccionController.text.trim(),
-        },
+        tipoFormulario: 'general',
+        nombre: nombreController.text.trim(),
+        apellidos: apellidosController.text.trim(),
+        cedula: cedulaController.text.trim(),
+        telefono: telefonoController.text.trim(),
+        email: emailController.text.trim(),
+        direccion: direccionController.text.trim(),
       );
+
+      await repository.guardarSimple(model);
 
       if (!mounted) return;
       await _showSuccessAndReturn();
