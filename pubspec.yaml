@@ -26,4 +26,8 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/images/rosario/Gozosos/
+    - assets/images/rosario/Dolorosos/
+    - assets/images/rosario/Gloriosos/
+    - assets/images/rosario/Luminosos/
     - assets/backgrounds/

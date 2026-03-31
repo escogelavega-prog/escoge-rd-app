@@ -8,12 +8,13 @@ import '../widgets/evangelio_feature_image.dart';
 class EvangelioScreen extends StatelessWidget {
   const EvangelioScreen({super.key});
 
-  static const Color primaryBlue = Color(0xFF0B1E66);
   static const Color deepBlue = Color(0xFF081B4B);
   static const Color gold = Color(0xFFD4AF37);
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       backgroundColor: deepBlue,
       body: Container(
@@ -35,29 +36,30 @@ class EvangelioScreen extends StatelessWidget {
                 onBackTap: () => Navigator.pop(context),
               ),
 
-              /// CONTENIDO
+              /// CONTENIDO PRINCIPAL
               Expanded(
                 child: Container(
                   width: double.infinity,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFF4F6FB),
-                    borderRadius: BorderRadius.vertical(
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainerHighest,
+                    borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(32),
                     ),
                   ),
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(18, 20, 18, 120),
+                    physics: const BouncingScrollPhysics(),
+                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 120),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        /// IMAGEN (más protagonista)
+                        /// IMAGEN HERO
                         const EvangelioFeatureImage(
                           imagePath: 'assets/images/evangelio_biblia.png',
                         ),
 
-                        const SizedBox(height: 26),
+                        const SizedBox(height: 28),
 
-                        /// CONTENIDO PRINCIPAL
+                        /// CONTENIDO DEL EVANGELIO
                         const EvangelioContentCard(
                           fecha: 'Jueves 25 de Abril, 2026',
                           cita: 'Juan 15, 9-17',
@@ -72,7 +74,7 @@ class EvangelioScreen extends StatelessWidget {
                               'Permanezcan en mi amor.”',
                         ),
 
-                        const SizedBox(height: 28),
+                        const SizedBox(height: 30),
 
                         /// ACCIONES
                         EvangelioActionRow(
@@ -84,58 +86,59 @@ class EvangelioScreen extends StatelessWidget {
 
                         const SizedBox(height: 36),
 
-                        /// REFLEXIÓN (más elegante)
+                        /// BLOQUE REFLEXIÓN (MEJORADO)
                         Row(
                           children: [
                             Container(
                               width: 4,
-                              height: 28,
+                              height: 30,
                               decoration: BoxDecoration(
                                 color: gold,
                                 borderRadius: BorderRadius.circular(999),
                               ),
                             ),
-                            const SizedBox(width: 10),
+                            const SizedBox(width: 12),
                             Text(
                               'Reflexión',
                               style: GoogleFonts.lora(
                                 fontSize: 24,
                                 fontWeight: FontWeight.w700,
-                                color: primaryBlue,
+                                color: theme.colorScheme.primary,
                               ),
                             ),
                           ],
                         ),
 
-                        const SizedBox(height: 14),
+                        const SizedBox(height: 16),
 
                         Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.all(20),
+                          padding: const EdgeInsets.all(22),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(26),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withValues(alpha: .04),
-                                blurRadius: 20,
-                                offset: const Offset(0, 10),
+                                color: Colors.black.withValues(alpha: .05),
+                                blurRadius: 22,
+                                offset: const Offset(0, 12),
                               ),
                             ],
                           ),
                           child: Text(
                             'Esta lectura nos invita a permanecer en el amor de Cristo, '
                             'no como una idea abstracta, sino como una forma concreta de vivir. '
-                            'Amar, obedecer y permanecer unidos a Dios transforma el corazón.',
-                            style: GoogleFonts.poppins(
-                              fontSize: 15,
-                              height: 1.8,
+                            'Amar, obedecer y permanecer unidos a Dios transforma el corazón.\n\n'
+                            'Hoy, más que entender, estamos llamados a vivir este amor.',
+                            style: GoogleFonts.lora(
+                              fontSize: 16,
+                              height: 1.9,
                               color: const Color(0xFF49516B),
                             ),
                           ),
                         ),
 
-                        const SizedBox(height: 40),
+                        const SizedBox(height: 50),
                       ],
                     ),
                   ),

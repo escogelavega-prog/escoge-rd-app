@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-
+import 'evangelio_screen.dart';
 import 'lecturas_screen.dart';
 import 'rosario_screen.dart';
 
@@ -85,6 +85,26 @@ class OracionScreen extends StatelessWidget {
 
                       const SizedBox(height: 26),
 
+                      /// ACCESO DIRECTO AL EVANGELIO
+                      _ModuloCard(
+                        titulo: 'Evangelio del Día',
+                        subtitulo:
+                            'Lee y medita la Palabra de Dios con una experiencia guiada.',
+                        icon: Icons.menu_book_rounded,
+                        iconBg: const Color(0xFFEAF0FF),
+                        iconColor: primaryBlue,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const EvangelioScreen(),
+                            ),
+                          );
+                        },
+                      ),
+
+                      const SizedBox(height: 18),
+
                       /// SECCIÓN
                       Text(
                         'Tu camino de oración',
@@ -155,9 +175,9 @@ class OracionScreen extends StatelessWidget {
 }
 
 class _HeroOracionCard extends StatelessWidget {
-  final VoidCallback onTap;
-
   const _HeroOracionCard({required this.onTap});
+
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -188,7 +208,10 @@ class _HeroOracionCard extends StatelessWidget {
               color: Colors.white.withValues(alpha: .14),
               borderRadius: BorderRadius.circular(14),
             ),
-            child: const Icon(Icons.menu_book_rounded, color: Colors.white),
+            child: const Icon(
+              Icons.menu_book_rounded,
+              color: Colors.white,
+            ),
           ),
           const SizedBox(height: 20),
           Text(
@@ -212,7 +235,10 @@ class _HeroOracionCard extends StatelessWidget {
           GestureDetector(
             onTap: onTap,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 13),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 18,
+                vertical: 13,
+              ),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   colors: [Color(0xFFD4AF37), Color(0xFFF1C76B)],
@@ -236,13 +262,6 @@ class _HeroOracionCard extends StatelessWidget {
 }
 
 class _ModuloCard extends StatelessWidget {
-  final String titulo;
-  final String subtitulo;
-  final IconData icon;
-  final Color iconBg;
-  final Color iconColor;
-  final VoidCallback onTap;
-
   const _ModuloCard({
     required this.titulo,
     required this.subtitulo,
@@ -251,6 +270,13 @@ class _ModuloCard extends StatelessWidget {
     required this.iconColor,
     required this.onTap,
   });
+
+  final String titulo;
+  final String subtitulo;
+  final IconData icon;
+  final Color iconBg;
+  final Color iconColor;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -323,15 +349,15 @@ class _ModuloCard extends StatelessWidget {
 }
 
 class _ComingSoonCard extends StatelessWidget {
-  final String titulo;
-  final String subtitulo;
-  final IconData icon;
-
   const _ComingSoonCard({
     required this.titulo,
     required this.subtitulo,
     required this.icon,
   });
+
+  final String titulo;
+  final String subtitulo;
+  final IconData icon;
 
   @override
   Widget build(BuildContext context) {
@@ -351,7 +377,10 @@ class _ComingSoonCard extends StatelessWidget {
               color: const Color(0xFFEFF3FB),
               borderRadius: BorderRadius.circular(16),
             ),
-            child: Icon(icon, color: const Color(0xFF7B86A7)),
+            child: Icon(
+              icon,
+              color: const Color(0xFF7B86A7),
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -379,7 +408,10 @@ class _ComingSoonCard extends StatelessWidget {
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 10,
+              vertical: 6,
+            ),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(999),

@@ -24,7 +24,7 @@ class CustomBottomNav extends StatelessWidget {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.12),
+            color: Colors.black.withValues(alpha: 0.14),
             blurRadius: 28,
             offset: const Offset(0, -8),
           ),
@@ -33,10 +33,22 @@ class CustomBottomNav extends StatelessWidget {
       child: SafeArea(
         top: false,
         child: Container(
-          height: bottomInset > 0 ? 78 : 72,
-          padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
+          height: bottomInset > 0 ? 86 : 78,
+          padding: EdgeInsets.fromLTRB(
+            10,
+            8,
+            10,
+            bottomInset > 0 ? 10 : 8,
+          ),
           decoration: BoxDecoration(
-            color: primaryBlue.withValues(alpha: 0.96),
+            gradient: const LinearGradient(
+              colors: [primaryBlue, secondaryBlue],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(24),
+            ),
             border: Border(
               top: BorderSide(
                 color: Colors.white.withValues(alpha: 0.08),
@@ -47,31 +59,36 @@ class CustomBottomNav extends StatelessWidget {
           child: Row(
             children: [
               _NavItem(
-                icon: Icons.home_rounded,
+                icon: Icons.home_outlined,
+                activeIcon: Icons.home_rounded,
                 label: 'Inicio',
                 selected: currentIndex == 0,
                 onTap: () => onTap(0),
               ),
               _NavItem(
-                icon: Icons.auto_awesome_rounded,
+                icon: Icons.auto_awesome_outlined,
+                activeIcon: Icons.auto_awesome,
                 label: 'Oración',
                 selected: currentIndex == 1,
                 onTap: () => onTap(1),
               ),
               _NavItem(
-                icon: Icons.event_available_rounded,
+                icon: Icons.event_outlined,
+                activeIcon: Icons.event_available_rounded,
                 label: 'Retiros',
                 selected: currentIndex == 2,
                 onTap: () => onTap(2),
               ),
               _NavItem(
-                icon: Icons.menu_book_rounded,
+                icon: Icons.menu_book_outlined,
+                activeIcon: Icons.menu_book_rounded,
                 label: 'Contenido',
                 selected: currentIndex == 3,
                 onTap: () => onTap(3),
               ),
               _NavItem(
-                icon: Icons.person_rounded,
+                icon: Icons.person_outline,
+                activeIcon: Icons.person_rounded,
                 label: 'Perfil',
                 selected: currentIndex == 4,
                 onTap: () => onTap(4),
@@ -87,12 +104,14 @@ class CustomBottomNav extends StatelessWidget {
 class _NavItem extends StatelessWidget {
   const _NavItem({
     required this.icon,
+    required this.activeIcon,
     required this.label,
     required this.selected,
     required this.onTap,
   });
 
   final IconData icon;
+  final IconData activeIcon;
   final String label;
   final bool selected;
   final VoidCallback onTap;
@@ -102,51 +121,78 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color iconColor =
-        selected ? gold : Colors.white.withValues(alpha: 0.82);
+    final Color iconColor = selected
+        ? const Color(0xFF0B1E66)
+        : Colors.white.withValues(alpha: 0.84);
     final Color textColor = selected ? Colors.white : textMuted;
 
     return Expanded(
-      child: InkWell(
-        borderRadius: BorderRadius.circular(18),
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 220),
-          curve: Curves.easeOut,
-          margin: const EdgeInsets.symmetric(horizontal: 4),
-          padding: const EdgeInsets.symmetric(vertical: 6),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
-            color:
-                selected
-                    ? Colors.white.withValues(alpha: 0.08)
-                    : Colors.transparent,
-            border:
-                selected
-                    ? Border.all(
-                      color: Colors.white.withValues(alpha: 0.08),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(18),
+          onTap: onTap,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeOut,
+            margin: const EdgeInsets.symmetric(horizontal: 4),
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(18),
+              color: selected
+                  ? Colors.white.withValues(alpha: 0.10)
+                  : Colors.transparent,
+              border: selected
+                  ? Border.all(
+                      color: Colors.white.withValues(alpha: 0.10),
                       width: 1,
                     )
-                    : null,
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 22, color: iconColor),
-              const SizedBox(height: 4),
-              Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.poppins(
-                  fontSize: 11,
-                  height: 1,
-                  fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
-                  color: textColor,
-                  letterSpacing: 0.1,
+                  : null,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 220),
+                  curve: Curves.easeOut,
+                  width: 34,
+                  height: 34,
+                  decoration: BoxDecoration(
+                    color: selected ? gold : Colors.transparent,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    selected ? activeIcon : icon,
+                    size: 20,
+                    color: iconColor,
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 5),
+                Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.poppins(
+                    fontSize: 11,
+                    height: 1,
+                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                    color: textColor,
+                    letterSpacing: 0.1,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 220),
+                  curve: Curves.easeOut,
+                  width: selected ? 16 : 0,
+                  height: 3,
+                  decoration: BoxDecoration(
+                    color: gold,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

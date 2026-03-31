@@ -25,31 +25,31 @@ class RosarioDataService {
             tituloCorto: 'Primer Misterio Gozoso',
             titulo: 'La Anunciación',
             subtitulo: 'El ángel Gabriel visita a la Virgen María',
-            imagePath: 'assets/rosario/backgrounds/rosario_gozoso_1.png',
+            imagePath: 'assets/images/rosario/Gozosos/gozoso01.png',
           ),
           RosarioMisterioModel(
             tituloCorto: 'Segundo Misterio Gozoso',
             titulo: 'La Visitación',
             subtitulo: 'María visita a su prima Isabel',
-            imagePath: 'assets/rosario/backgrounds/rosario_gozoso_2.png',
+            imagePath: 'assets/images/rosario/Gozosos/gozoso02.png',
           ),
           RosarioMisterioModel(
             tituloCorto: 'Tercer Misterio Gozoso',
             titulo: 'El Nacimiento de Jesús',
             subtitulo: 'El Hijo de Dios nace en Belén',
-            imagePath: 'assets/rosario/backgrounds/rosario_gozoso_3.png',
+            imagePath: 'assets/images/rosario/Gozosos/gozoso03.png',
           ),
           RosarioMisterioModel(
             tituloCorto: 'Cuarto Misterio Gozoso',
             titulo: 'La Presentación',
             subtitulo: 'Jesús es presentado en el templo',
-            imagePath: 'assets/rosario/backgrounds/rosario_gozoso_4.png',
+            imagePath: 'assets/images/rosario/Gozosos/gozoso04.png',
           ),
           RosarioMisterioModel(
             tituloCorto: 'Quinto Misterio Gozoso',
             titulo: 'El Niño Jesús Perdido y Hallado',
             subtitulo: 'Jesús es hallado en el templo',
-            imagePath: 'assets/rosario/backgrounds/rosario_gozoso_5.png',
+            imagePath: 'assets/images/rosario/Gozosos/gozoso05.png',
           ),
         ];
 
@@ -145,13 +145,13 @@ class RosarioDataService {
             tituloCorto: 'Cuarto Misterio Luminoso',
             titulo: 'La Transfiguración',
             subtitulo: 'Jesús se manifiesta glorioso',
-            imagePath: 'assets/images/Luminosos/luminoso04.png',
+            imagePath: 'assets/images/rosario/Luminosos/luminoso04.png',
           ),
           RosarioMisterioModel(
             tituloCorto: 'Quinto Misterio Luminoso',
             titulo: 'La Institución de la Eucaristía',
             subtitulo: 'Jesús se entrega en el pan y el vino',
-            imagePath: 'assets/rosario/images/Luminosos/luminoso05.png',
+            imagePath: 'assets/images/rosario/Luminosos/luminoso05.png',
           ),
         ];
 
@@ -161,7 +161,7 @@ class RosarioDataService {
             tituloCorto: 'Primer Misterio Gozoso',
             titulo: 'La Anunciación',
             subtitulo: 'El ángel Gabriel visita a la Virgen María',
-            imagePath: 'assets/rosario/images/Gozosos/gozoso01.png',
+            imagePath: 'assets/images/rosario/Gozosos/gozoso01.png',
           ),
         ];
     }

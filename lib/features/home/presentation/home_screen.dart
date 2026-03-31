@@ -1,5 +1,8 @@
 import 'package:escoge/core/widgets/premium_menu_card.dart';
 import 'package:escoge/core/widgets/section_title.dart';
+import 'package:escoge/features/oracion/presentation/evangelio_screen.dart';
+import 'package:escoge/features/oracion/presentation/lecturas_screen.dart';
+import 'package:escoge/features/oracion/presentation/oracion_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -55,7 +58,7 @@ class HomeScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _TopBar(onOpenPerfil: onOpenPerfil),
+                      TopBar(onOpenPerfil: onOpenPerfil),
                       const SizedBox(height: 22),
                       Text(
                         'Bienvenido a Escoge RD',
@@ -96,7 +99,7 @@ class HomeScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _HeroCard(
+                  HeroCard(
                     onOpenContenido: onOpenContenido,
                     onOpenRetiros: onOpenRetiros,
                   ),
@@ -112,7 +115,18 @@ class HomeScreen extends StatelessWidget {
                     title: 'Oración',
                     subtitle:
                         'Accede al rosario, evangelio y espacios de encuentro espiritual.',
-                    onTap: onOpenOracion,
+                    onTap: () {
+                      if (onOpenEvangelio != null) {
+                        onOpenEvangelio!();
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const OracionScreen(),
+                          ),
+                        );
+                      }
+                    },
                   ),
                   const SizedBox(height: 16),
                   PremiumMenuCard(
@@ -120,7 +134,18 @@ class HomeScreen extends StatelessWidget {
                     title: 'Evangelio del Día',
                     subtitle:
                         'Reflexiona con la Palabra de Dios y su mensaje para hoy.',
-                    onTap: onOpenEvangelio ?? onOpenOracion,
+                    onTap: () {
+                      if (onOpenEvangelio != null) {
+                        onOpenEvangelio!();
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const EvangelioScreen(),
+                          ),
+                        );
+                      }
+                    },
                   ),
                   const SizedBox(height: 16),
                   PremiumMenuCard(
@@ -128,7 +153,18 @@ class HomeScreen extends StatelessWidget {
                     title: 'Lecturas del Día',
                     subtitle:
                         'Consulta las lecturas litúrgicas diarias y profundiza en ellas.',
-                    onTap: onOpenLecturas ?? onOpenOracion,
+                    onTap: () {
+                      if (onOpenLecturas != null) {
+                        onOpenLecturas!();
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const LecturasScreen(),
+                          ),
+                        );
+                      }
+                    },
                   ),
                   const SizedBox(height: 16),
                   PremiumMenuCard(
@@ -139,7 +175,7 @@ class HomeScreen extends StatelessWidget {
                     onTap: onOpenHistoria ?? onOpenContenido,
                   ),
                   const SizedBox(height: 28),
-                  const _SectionTitle(
+                  const SectionTitle(
                     title: 'Próximos retiros',
                     subtitle:
                         'Descubre experiencias disponibles y completa tu inscripción.',
@@ -162,8 +198,8 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class _TopBar extends StatelessWidget {
-  const _TopBar({this.onOpenPerfil});
+class TopBar extends StatelessWidget {
+  const TopBar({super.key, this.onOpenPerfil});
 
   final VoidCallback? onOpenPerfil;
 
@@ -177,7 +213,9 @@ class _TopBar extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: .14),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.10),
+            ),
           ),
           child: const Icon(
             Icons.church_rounded,
@@ -213,11 +251,16 @@ class _TopBar extends StatelessWidget {
         GestureDetector(
           onTap: onOpenPerfil,
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 8,
+            ),
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: .10),
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.10),
+              ),
             ),
             child: Text(
               'Perfil',
@@ -234,8 +277,12 @@ class _TopBar extends StatelessWidget {
   }
 }
 
-class _HeroCard extends StatelessWidget {
-  const _HeroCard({this.onOpenContenido, this.onOpenRetiros});
+class HeroCard extends StatelessWidget {
+  const HeroCard({
+    super.key,
+    this.onOpenContenido,
+    this.onOpenRetiros,
+  });
 
   final VoidCallback? onOpenContenido;
   final VoidCallback? onOpenRetiros;
@@ -355,7 +402,11 @@ class _HeroCard extends StatelessWidget {
 }
 
 class _HeroButton extends StatelessWidget {
-  const _HeroButton({required this.label, required this.filled, this.onTap});
+  const _HeroButton({
+    required this.label,
+    required this.filled,
+    this.onTap,
+  });
 
   final String label;
   final bool filled;
@@ -379,7 +430,9 @@ class _HeroButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(18),
               border: filled
                   ? null
-                  : Border.all(color: Colors.white.withValues(alpha: 0.28)),
+                  : Border.all(
+                      color: Colors.white.withValues(alpha: 0.28),
+                    ),
             ),
             child: Text(
               label,
@@ -392,39 +445,6 @@ class _HeroButton extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _SectionTitle extends StatelessWidget {
-  const _SectionTitle({required this.title, required this.subtitle});
-
-  final String title;
-  final String subtitle;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: GoogleFonts.poppins(
-            fontSize: 22,
-            fontWeight: FontWeight.w800,
-            color: const Color(0xFF203A78),
-          ),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          subtitle,
-          style: GoogleFonts.poppins(
-            fontSize: 14.5,
-            color: const Color(0xFF6D7693),
-            height: 1.45,
-          ),
-        ),
-      ],
     );
   }
 }

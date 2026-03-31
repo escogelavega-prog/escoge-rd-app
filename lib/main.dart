@@ -1,5 +1,6 @@
 import 'package:escoge/core/theme/app_theme.dart';
-import 'package:escoge/features/auth/presentation/login_screen.dart';
+//import 'package:escoge/features/auth/presentation/login_screen.dart';
+import 'package:escoge/features/home/presentation/home_screen.dart';
 import 'package:escoge/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,7 @@ class EscogeApp extends StatelessWidget {
       title: 'Escoge RD',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: const LoginScreen(),
+      home: const HomeScreen(),
     );
   }
 }

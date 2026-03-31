@@ -25,11 +25,12 @@ class _LecturasScreenState extends State<LecturasScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Theme.of(context);
+
     const backgroundTop = Color(0xFF081B4B);
     const backgroundBottom = Color(0xFF0C2A66);
     const gold = Color(0xFFD4AF37);
     const softGold = Color(0xFFF4E7B2);
-    const cardColor = Color(0xFFF9FAFD);
     const textPrimary = Color(0xFF10224F);
     const textBody = Color(0xFF2D3653);
 
@@ -98,6 +99,9 @@ class _LecturasScreenState extends State<LecturasScreen> {
                       title: 'Lecturas del Día',
                       subtitle:
                           'La liturgia diaria para acompañar tu encuentro con Dios',
+                      onBackTap: Navigator.canPop(context)
+                          ? () => Navigator.pop(context)
+                          : null,
                     ),
                   ),
                   const SliverToBoxAdapter(
@@ -131,7 +135,6 @@ class _LecturasScreenState extends State<LecturasScreen> {
                           label: 'Primera lectura',
                           cita: primeraLecturaCita,
                           contenido: primeraLecturaContenido,
-                          cardColor: cardColor,
                           gold: gold,
                           textPrimary: textPrimary,
                           textBody: textBody,
@@ -146,7 +149,6 @@ class _LecturasScreenState extends State<LecturasScreen> {
                           label: 'Salmo',
                           cita: salmoCita,
                           contenido: salmoContenido,
-                          cardColor: cardColor,
                           gold: gold,
                           textPrimary: textPrimary,
                           textBody: textBody,
@@ -162,7 +164,6 @@ class _LecturasScreenState extends State<LecturasScreen> {
                           label: 'Segunda lectura',
                           cita: segundaLecturaCita,
                           contenido: segundaLecturaContenido,
-                          cardColor: cardColor,
                           gold: gold,
                           textPrimary: textPrimary,
                           textBody: textBody,
@@ -193,17 +194,6 @@ class _LecturasScreenState extends State<LecturasScreen> {
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: gold,
-                                foregroundColor: const Color(0xFF081B4B),
-                                elevation: 0,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 17,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                              ),
                               onPressed: () {
                                 Navigator.push(
                                   context,
@@ -212,13 +202,7 @@ class _LecturasScreenState extends State<LecturasScreen> {
                                   ),
                                 );
                               },
-                              child: Text(
-                                'Meditar Evangelio',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
+                              child: const Text('Meditar Evangelio'),
                             ),
                           ),
                           if (Navigator.canPop(context)) ...[
@@ -375,7 +359,6 @@ class _ReadingCard extends StatelessWidget {
     required this.label,
     required this.cita,
     required this.contenido,
-    required this.cardColor,
     required this.gold,
     required this.textPrimary,
     required this.textBody,
@@ -385,7 +368,6 @@ class _ReadingCard extends StatelessWidget {
   final String label;
   final String cita;
   final String contenido;
-  final Color cardColor;
   final Color gold;
   final Color textPrimary;
   final Color textBody;
@@ -397,13 +379,13 @@ class _ReadingCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        color: cardColor,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(28),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: Color(0x14000000),
-            blurRadius: 16,
-            offset: Offset(0, 8),
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 18,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
@@ -433,8 +415,8 @@ class _ReadingCard extends StatelessWidget {
                       height: 1.9,
                       color: textBody,
                     )
-                  : GoogleFonts.poppins(
-                      fontSize: 15,
+                  : GoogleFonts.lora(
+                      fontSize: 16,
                       height: 1.9,
                       color: textBody,
                     ),
@@ -471,7 +453,7 @@ class _EvangelioSpotlightCard extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF102A63), Color(0xFF0A1D4F)],
+          colors: [Color(0xFF0F2A66), Color(0xFF091D4F)],
         ),
         border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
         boxShadow: const [

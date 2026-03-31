@@ -1,3 +1,4 @@
+import 'package:escoge/core/widgets/custom_bottom_nav.dart';
 import 'package:escoge/features/contenido/presentation/contenido_screen.dart';
 import 'package:escoge/features/home/presentation/home_screen.dart';
 import 'package:escoge/features/oracion/presentation/evangelio_screen.dart';
@@ -18,23 +19,27 @@ class _MainShellState extends State<MainShell> {
   int _currentIndex = 0;
 
   void _goToTab(int index) {
+    if (!mounted) return;
     if (_currentIndex == index) return;
+
     setState(() {
       _currentIndex = index;
     });
   }
 
   void _openEvangelio() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const EvangelioScreen()),
+    Navigator.of(context, rootNavigator: true).push(
+      MaterialPageRoute(
+        builder: (_) => const EvangelioScreen(),
+      ),
     );
   }
 
   void _openLecturas() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const LecturasScreen()),
+    Navigator.of(context, rootNavigator: true).push(
+      MaterialPageRoute(
+        builder: (_) => const LecturasScreen(),
+      ),
     );
   }
 
@@ -57,42 +62,13 @@ class _MainShellState extends State<MainShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(index: _currentIndex, children: _screens),
-      bottomNavigationBar: NavigationBar(
-        height: 72,
-        selectedIndex: _currentIndex,
-        backgroundColor: Colors.white,
-        indicatorColor: const Color(0x1AD4AF37),
-        surfaceTintColor: Colors.white,
-        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-        onDestinationSelected: _goToTab,
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home_rounded),
-            label: 'Inicio',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.auto_awesome_outlined),
-            selectedIcon: Icon(Icons.auto_awesome),
-            label: 'Oración',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.event_outlined),
-            selectedIcon: Icon(Icons.event),
-            label: 'Retiros',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.menu_book_outlined),
-            selectedIcon: Icon(Icons.menu_book),
-            label: 'Contenido',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
-            label: 'Perfil',
-          ),
-        ],
+      body: IndexedStack(
+        index: _currentIndex,
+        children: _screens,
+      ),
+      bottomNavigationBar: CustomBottomNav(
+        currentIndex: _currentIndex,
+        onTap: _goToTab,
       ),
     );
   }
