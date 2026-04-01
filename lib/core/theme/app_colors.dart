@@ -10,4 +10,12 @@ class AppColors {
 
   static const gold = Color(0xFFD4AF37);
   static const borderSoft = Color(0xFFE7ECF7);
+
+  static get lightBlue => null;
+
+  static Color? get surface => null;
+
+  static Color? get textMuted => null;
+
+  static get goldSoft => null;
 }

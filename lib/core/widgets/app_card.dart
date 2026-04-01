@@ -1,40 +1,47 @@
+import 'package:escoge/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
-import '../theme/app_colors.dart';
 
 class AppCard extends StatelessWidget {
   final Widget child;
-  final EdgeInsets padding;
+  final EdgeInsetsGeometry padding;
   final VoidCallback? onTap;
+  final EdgeInsetsGeometry? margin;
+  final Color? color;
 
   const AppCard({
     super.key,
     required this.child,
-    this.padding = const EdgeInsets.all(16),
+    this.padding = const EdgeInsets.all(AppSpacing.md),
     this.onTap,
+    this.margin,
+    this.color,
   });
 
   @override
   Widget build(BuildContext context) {
-    final card = Container(
+    final borderRadius = BorderRadius.circular(AppRadius.lg);
+
+    final content = Container(
+      margin: margin,
       padding: padding,
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primaryBlue.withValues(alpha: 0.05),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
+        color: color ?? AppColors.card,
+        borderRadius: borderRadius,
+        boxShadow: AppShadows.card,
+        border: Border.all(color: AppColors.border),
       ),
       child: child,
     );
 
-    if (onTap != null) {
-      return GestureDetector(onTap: onTap, child: card);
-    }
+    if (onTap == null) return content;
 
-    return card;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: borderRadius,
+        onTap: onTap,
+        child: content,
+      ),
+    );
   }
 }

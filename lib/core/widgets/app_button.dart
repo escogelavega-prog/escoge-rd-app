@@ -1,36 +1,59 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../theme/app_colors.dart';
 
 class AppButton extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final bool isPrimary;
+  final IconData? icon;
+  final bool expanded;
+  final double height;
 
   const AppButton({
     super.key,
     required this.text,
     required this.onPressed,
     this.isPrimary = true,
+    this.icon,
+    this.expanded = true,
+    this.height = 54,
   });
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        elevation: 0,
-        backgroundColor: isPrimary ? AppColors.primaryBlue : Colors.white,
-        foregroundColor: isPrimary ? Colors.white : AppColors.primaryBlue,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        side: isPrimary ? null : BorderSide(color: AppColors.primaryBlue),
-        textStyle: GoogleFonts.poppins(
-          fontWeight: FontWeight.w500,
-          fontSize: 15,
+    final child = Row(
+      mainAxisSize: expanded ? MainAxisSize.max : MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        if (icon != null) ...[
+          Icon(icon, size: 18),
+          const SizedBox(width: 8),
+        ],
+        Flexible(
+          child: Text(
+            text,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
+      ],
+    );
+
+    if (isPrimary) {
+      return ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          minimumSize:
+              expanded ? Size(double.infinity, height) : Size(0, height),
+        ),
+        child: child,
+      );
+    }
+
+    return OutlinedButton(
+      onPressed: onPressed,
+      style: OutlinedButton.styleFrom(
+        minimumSize: expanded ? Size(double.infinity, height) : Size(0, height),
       ),
-      child: Text(text),
+      child: child,
     );
   }
 }

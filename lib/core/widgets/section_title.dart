@@ -1,37 +1,55 @@
+import 'package:escoge/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../theme/app_colors.dart';
 
 class SectionTitle extends StatelessWidget {
   final String title;
   final String subtitle;
+  final EdgeInsetsGeometry padding;
+  final Widget? trailing;
 
-  const SectionTitle({super.key, required this.title, required this.subtitle});
+  const SectionTitle({
+    super.key,
+    required this.title,
+    required this.subtitle,
+    this.padding = const EdgeInsets.symmetric(horizontal: 2),
+    this.trailing,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 2),
-      child: Column(
+      padding: padding,
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: GoogleFonts.poppins(
-              color: AppColors.primaryBlue,
-              fontSize: 22,
-              fontWeight: FontWeight.w800,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: textTheme.headlineSmall?.copyWith(
+                    color: AppColors.primaryBlue,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  subtitle,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                    height: 1.45,
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 6),
-          Text(
-            subtitle,
-            style: GoogleFonts.poppins(
-              color: AppColors.textSecondary,
-              fontSize: 14.5,
-              height: 1.45,
-            ),
-          ),
+          if (trailing != null) ...[
+            const SizedBox(width: 12),
+            trailing!,
+          ],
         ],
       ),
     );

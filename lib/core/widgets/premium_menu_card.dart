@@ -1,3 +1,5 @@
+import 'package:escoge/core/theme/app_colors.dart';
+import 'package:escoge/core/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 
 class PremiumMenuCard extends StatelessWidget {
@@ -16,22 +18,24 @@ class PremiumMenuCard extends StatelessWidget {
     this.showArrow = true,
   });
 
-  static const Color gold = Color(0xFFD4AF37);
-  static const Color blue = Color(0xFF173B8F);
-
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
         borderRadius: BorderRadius.circular(28),
         onTap: onTap,
         child: Ink(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          padding:  EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.md,
+          ),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.surface,
             borderRadius: BorderRadius.circular(28),
-            border: Border.all(color: const Color(0xFFE4E8F1)),
+            border: Border.all(color: AppColors.border),
             boxShadow: const [
               BoxShadow(
                 color: Color(0x12000000),
@@ -46,8 +50,8 @@ class PremiumMenuCard extends StatelessWidget {
                 width: 62,
                 height: 62,
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFF4D46A), gold],
+                  gradient: LinearGradient(
+                    colors: [AppColors.goldSoft, AppColors.gold],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -60,7 +64,11 @@ class PremiumMenuCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: Icon(icon, color: blue, size: 30),
+                child: const Icon(
+                  Icons.auto_awesome_rounded,
+                  color: AppColors.primaryBlue,
+                  size: 30,
+                ),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -69,28 +77,26 @@ class PremiumMenuCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
-                        fontSize: 17.5,
+                      style: textTheme.titleLarge?.copyWith(
+                        color: AppColors.primaryBlue,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF243B78),
                       ),
                     ),
                     const SizedBox(height: 6),
                     Text(
                       subtitle,
-                      style: const TextStyle(
-                        fontSize: 14.5,
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
                         height: 1.35,
-                        color: Color(0xFF7C869C),
                       ),
                     ),
                   ],
                 ),
               ),
               if (showArrow)
-                const Icon(
+                Icon(
                   Icons.chevron_right_rounded,
-                  color: Color(0xFF9AA3B2),
+                  color: AppColors.textMuted,
                   size: 28,
                 ),
             ],

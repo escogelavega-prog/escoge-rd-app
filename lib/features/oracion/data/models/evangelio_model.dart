@@ -25,4 +25,5 @@ class EvangelioModel {
       reflexion: json['reflexion'] ?? '',
     );
   }
+
 }
