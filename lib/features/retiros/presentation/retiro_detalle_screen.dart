@@ -1,14 +1,14 @@
 import 'package:escoge/core/theme/app_colors.dart';
+import 'package:escoge/core/widgets/premium_menu_card.dart';
 import 'package:escoge/features/retiros/domain/retiro_item.dart';
-import 'package:escoge/features/retiros/presentation/inscripcion_screen.dart'
-    as retiro_local;
 import 'package:escoge/features/retiros/presentation/inscripcion_fds_screen.dart'
     as retiro_fds;
-import 'package:escoge/core/widgets/premium_menu_card.dart';
+import 'package:escoge/features/retiros/presentation/inscripcion_screen.dart'
+    as retiro_local;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class RetiroDetalleScreen extends StatelessWidget {
+class RetiroDetalleScreen extends StatefulWidget {
   final RetiroItem retiro;
 
   const RetiroDetalleScreen({
@@ -16,14 +16,61 @@ class RetiroDetalleScreen extends StatelessWidget {
     required this.retiro,
   });
 
-  String get _retiroId => '${retiro.titulo}_${retiro.ciudad}_${retiro.fecha}'
-      .toLowerCase()
-      .replaceAll(RegExp(r'\s+'), '_')
-      .replaceAll(RegExp(r'[^a-z0-9_áéíóúñ-]'), '');
+  @override
+  State<RetiroDetalleScreen> createState() => _RetiroDetalleScreenState();
+}
+
+class _RetiroDetalleScreenState extends State<RetiroDetalleScreen> {
+  bool _inscripcionEnviada = false;
+
+  RetiroItem get retiro => widget.retiro;
+
+  String get _retiroId => retiro.id;
+
+  Future<void> _openInscripcion() async {
+    final Widget destination = retiro.tipoFormulario == 'fds'
+        ? retiro_fds.InscripcionFDSScreen(
+            diocesis: retiro.diocesis,
+            retiroId: _retiroId,
+            retiroNombre: retiro.titulo,
+          )
+        : retiro_local.InscripcionScreen(
+            diocesis: retiro.diocesis,
+            retiroId: _retiroId,
+            retiroNombre: retiro.titulo,
+          );
+
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+
+    final result = await navigator.push(
+      MaterialPageRoute(builder: (_) => destination),
+    );
+
+    if (!mounted) return;
+
+    if (result == true) {
+      setState(() {
+        _inscripcionEnviada = true;
+      });
+
+      messenger.showSnackBar(
+        SnackBar(
+          content: const Text('Tu inscripción fue enviada correctamente.'),
+          backgroundColor: AppColors.primaryBlue,
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.all(16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final bottomSpace = 24 + MediaQuery.of(context).padding.bottom;
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -46,13 +93,21 @@ class RetiroDetalleScreen extends StatelessWidget {
           ),
         ),
       ),
+      bottomNavigationBar: _BottomInscripcionBar(
+        yaInscrito: _inscripcionEnviada,
+        onTap: _openInscripcion,
+      ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(12, 10, 12, bottomSpace),
+        padding: EdgeInsets.fromLTRB(12, 10, 12, 130 + bottomPadding),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _RetiroHeroCard(retiro: retiro),
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
+            if (_inscripcionEnviada) ...[
+              const _InscripcionExitosaBanner(),
+              const SizedBox(height: 12),
+            ],
             _SectionCard(
               title: 'Descripción',
               child: _DescripcionContent(descripcion: retiro.descripcion),
@@ -69,13 +124,85 @@ class RetiroDetalleScreen extends StatelessWidget {
                 recomendaciones: retiro.recomendaciones,
               ),
             ),
+            const SizedBox(height: 12),
+            _SectionCard(
+              title: 'Participación',
+              child: _InscripcionSectionInline(
+                yaInscrito: _inscripcionEnviada,
+                onTap: _openInscripcion,
+              ),
+            ),
             const SizedBox(height: 16),
-            _InscripcionSection(
-              retiro: retiro,
-              retiroId: _retiroId,
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF5F8FF),
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(
+                  color: AppColors.primaryBlue.withValues(alpha: 0.08),
+                ),
+              ),
+              child: Text(
+                'Este retiro puede marcar un antes y un después en tu vida espiritual.',
+                style: GoogleFonts.lora(
+                  fontSize: 15,
+                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primaryBlue,
+                  height: 1.5,
+                ),
+              ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _InscripcionExitosaBanner extends StatelessWidget {
+  const _InscripcionExitosaBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF2F8FF),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: AppColors.primaryBlue.withValues(alpha: 0.10),
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            height: 42,
+            width: 42,
+            decoration: BoxDecoration(
+              color: AppColors.primaryBlue.withValues(alpha: 0.10),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.check_circle_rounded,
+              color: AppColors.primaryBlue,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'Tu solicitud ya fue enviada. El equipo organizador podrá contactarte pronto.',
+              style: GoogleFonts.poppins(
+                fontSize: 13.2,
+                color: AppColors.textSecondary,
+                height: 1.45,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -89,10 +216,10 @@ class _RetiroHeroCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 190,
+      height: 210,
       width: double.infinity,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.08),
@@ -102,7 +229,7 @@ class _RetiroHeroCard extends StatelessWidget {
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(24),
         child: Stack(
           children: [
             Positioned.fill(
@@ -121,8 +248,8 @@ class _RetiroHeroCard extends StatelessWidget {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      AppColors.primaryBlue.withValues(alpha: 0.16),
-                      AppColors.primaryBlue.withValues(alpha: 0.84),
+                      AppColors.primaryBlue.withValues(alpha: 0.14),
+                      AppColors.primaryBlue.withValues(alpha: 0.88),
                     ],
                   ),
                 ),
@@ -166,20 +293,69 @@ class _RetiroHeroCard extends StatelessWidget {
                       height: 1.05,
                     ),
                   ),
-                  const SizedBox(height: 6),
-                  Text(
-                    '${retiro.ciudad} · ${retiro.fecha}',
-                    style: GoogleFonts.poppins(
-                      color: Colors.white.withValues(alpha: 0.92),
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 6,
+                    children: [
+                      _HeroMetaChip(
+                        icon: Icons.location_on_rounded,
+                        text: retiro.ciudad,
+                      ),
+                      _HeroMetaChip(
+                        icon: Icons.calendar_today_rounded,
+                        text: retiro.fecha,
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _HeroMetaChip extends StatelessWidget {
+  final IconData icon;
+  final String text;
+
+  const _HeroMetaChip({
+    required this.icon,
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.16),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.20),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 14,
+            color: Colors.white,
+          ),
+          const SizedBox(width: 6),
+          Text(
+            text,
+            style: GoogleFonts.poppins(
+              fontSize: 11.5,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -257,15 +433,28 @@ class _InfoGeneralContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _InfoRow(icon: Icons.calendar_month_rounded, text: retiro.fecha),
+        _InfoRow(
+          icon: Icons.calendar_month_rounded,
+          label: 'Fecha',
+          text: retiro.fecha,
+        ),
         const SizedBox(height: 12),
-        _InfoRow(icon: Icons.location_on_rounded, text: retiro.ciudad),
+        _InfoRow(
+          icon: Icons.location_on_rounded,
+          label: 'Ciudad',
+          text: retiro.ciudad,
+        ),
         const SizedBox(height: 12),
-        _InfoRow(icon: Icons.home_work_outlined, text: retiro.lugar),
+        _InfoRow(
+          icon: Icons.home_work_outlined,
+          label: 'Lugar',
+          text: retiro.lugar,
+        ),
         const SizedBox(height: 12),
         _InfoRow(
           icon: Icons.church_rounded,
-          text: 'Diócesis: ${retiro.diocesis}',
+          label: 'Diócesis',
+          text: retiro.diocesis,
         ),
       ],
     );
@@ -274,16 +463,19 @@ class _InfoGeneralContent extends StatelessWidget {
 
 class _InfoRow extends StatelessWidget {
   final IconData icon;
+  final String label;
   final String text;
 
   const _InfoRow({
     required this.icon,
+    required this.label,
     required this.text,
   });
 
   @override
   Widget build(BuildContext context) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           height: 44,
@@ -300,13 +492,28 @@ class _InfoRow extends StatelessWidget {
         ),
         const SizedBox(width: 14),
         Expanded(
-          child: Text(
-            text,
-            style: GoogleFonts.poppins(
-              fontSize: 14,
-              color: AppColors.textSecondary,
-              fontWeight: FontWeight.w500,
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: GoogleFonts.poppins(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.primaryBlue,
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                text,
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w500,
+                  height: 1.4,
+                ),
+              ),
+            ],
           ),
         ),
       ],
@@ -323,9 +530,13 @@ class _RecomendacionesContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: recomendaciones
+          .asMap()
+          .entries
           .map(
-            (item) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
+            (entry) => Padding(
+              padding: EdgeInsets.only(
+                bottom: entry.key == recomendaciones.length - 1 ? 0 : 12,
+              ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -337,7 +548,7 @@ class _RecomendacionesContent extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      item,
+                      entry.value,
                       style: GoogleFonts.poppins(
                         fontSize: 13.8,
                         height: 1.5,
@@ -354,58 +565,99 @@ class _RecomendacionesContent extends StatelessWidget {
   }
 }
 
-class _InscripcionSection extends StatelessWidget {
-  final RetiroItem retiro;
-  final String retiroId;
+class _InscripcionSectionInline extends StatelessWidget {
+  final bool yaInscrito;
+  final VoidCallback onTap;
 
-  const _InscripcionSection({
-    required this.retiro,
-    required this.retiroId,
+  const _InscripcionSectionInline({
+    required this.yaInscrito,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    void openInscripcion() {
-      final ciudad = retiro.ciudad.trim().toLowerCase();
+    return PremiumMenuCard(
+      icon:
+          yaInscrito ? Icons.verified_rounded : Icons.app_registration_rounded,
+      title: yaInscrito ? 'Solicitud enviada' : 'Inscribirme',
+      subtitle: yaInscrito
+          ? 'Tu participación ya fue solicitada para este encuentro.'
+          : 'Completa tu formulario para reservar tu participación en este encuentro.',
+      onTap: onTap,
+    );
+  }
+}
 
-      final Widget destination = ciudad == 'la vega'
-          ? retiro_local.InscripcionScreen(
-              diocesis: retiro.diocesis,
-              retiroId: retiroId,
-              retiroNombre: retiro.titulo,
-            )
-          : retiro_fds.InscripcionFDSScreen(
-              diocesis: retiro.diocesis,
-              retiroId: retiroId,
-              retiroNombre: retiro.titulo,
-            );
+class _BottomInscripcionBar extends StatelessWidget {
+  final bool yaInscrito;
+  final VoidCallback onTap;
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => destination),
-      );
-    }
+  const _BottomInscripcionBar({
+    required this.yaInscrito,
+    required this.onTap,
+  });
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Participación',
-          style: GoogleFonts.poppins(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: AppColors.primaryBlue,
+  @override
+  Widget build(BuildContext context) {
+    final bottom = MediaQuery.of(context).padding.bottom;
+
+    return Container(
+      padding: EdgeInsets.fromLTRB(16, 12, 16, 12 + bottom),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 16,
+            offset: const Offset(0, -4),
           ),
-        ),
-        const SizedBox(height: 12),
-        PremiumMenuCard(
-          icon: Icons.app_registration_rounded,
-          title: 'Inscribirme',
-          subtitle:
-              'Completa tu formulario para reservar tu participación en este encuentro.',
-          onTap: openInscripcion,
-        ),
-      ],
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  yaInscrito
+                      ? 'Tu solicitud ya fue enviada.'
+                      : '¿Listo para vivir esta experiencia?',
+                  style: GoogleFonts.poppins(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            width: double.infinity,
+            height: 54,
+            child: ElevatedButton(
+              onPressed: onTap,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryBlue,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+              child: Text(
+                yaInscrito ? 'VER FORMULARIO' : 'INSCRIBIRME',
+                style: GoogleFonts.poppins(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.4,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

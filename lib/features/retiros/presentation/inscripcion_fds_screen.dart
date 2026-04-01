@@ -1,7 +1,9 @@
-import 'package:escoge/features/retiros/domain/inscripcion_fds_model.dart';
 import 'package:escoge/features/retiros/data/services/diocesis_service.dart';
 import 'package:escoge/features/retiros/data/services/inscripcion_fds_service.dart';
+import 'package:escoge/features/retiros/domain/inscripcion_fds_model.dart';
+import 'package:escoge/features/retiros/presentation/inscripcion_success_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class InscripcionFDSScreen extends StatefulWidget {
   final String diocesis;
@@ -20,54 +22,26 @@ class InscripcionFDSScreen extends StatefulWidget {
 }
 
 class _InscripcionFDSScreenState extends State<InscripcionFDSScreen> {
-  final _formKey = GlobalKey<FormState>();
   final _service = InscripcionFDSService();
   final _diocesisService = DiocesisService();
 
   bool _guardando = false;
-  List<Map<String, dynamic>> _diocesis = [];
+  bool _cargandoDiocesis = true;
 
+  List<Map<String, dynamic>> _diocesis = [];
   String? _diocesisId;
   String? _diocesisNombre;
 
   final _numeroFinDeSemanaCtrl = TextEditingController();
-  DateTime _fechaEvento = DateTime.now();
-
   final _nombresCtrl = TextEditingController();
   final _apellidosCtrl = TextEditingController();
-  final _cedulaCtrl = TextEditingController();
-  final _edadCtrl = TextEditingController();
-  final _sexoCtrl = TextEditingController();
-  final _estadoCivilCtrl = TextEditingController();
-  final _gradoEstudioCtrl = TextEditingController();
-  final _direccionCtrl = TextEditingController();
-  final _ciudadCtrl = TextEditingController();
   final _telefonoCtrl = TextEditingController();
-  final _lugarTrabajoCtrl = TextEditingController();
-  final _telefonoTrabajoCtrl = TextEditingController();
-  final _religionCtrl = TextEditingController();
-  final _sizeSueterCtrl = TextEditingController();
-
   final _invitadorNombreCtrl = TextEditingController();
-  final _invitadorNumeroEscogeCtrl = TextEditingController();
   final _invitadorTelefonoCtrl = TextEditingController();
-
-  final _conQuienViveCtrl = TextEditingController();
-  final _nombresConQuienViveCtrl = TextEditingController();
-  final _nombrePadresCtrl = TextEditingController();
-  final _telefonoPadresCtrl = TextEditingController();
-
-  final _cualRetiroCtrl = TextEditingController();
   final _porqueQuiereVivirCtrl = TextEditingController();
   final _queEsperaEncontrarCtrl = TextEditingController();
 
-  bool _bautizado = false;
-  bool _primeraComunion = false;
-  bool _confirmado = false;
-  bool _familiares = false;
-  bool _haParticipadoRetiro = false;
-
-  DateTime? _fechaNacimiento;
+  DateTime _fechaEvento = DateTime.now();
 
   @override
   void initState() {
@@ -75,22 +49,160 @@ class _InscripcionFDSScreenState extends State<InscripcionFDSScreen> {
     _cargarDiocesis();
   }
 
+  @override
+  void dispose() {
+    _numeroFinDeSemanaCtrl.dispose();
+    _nombresCtrl.dispose();
+    _apellidosCtrl.dispose();
+    _telefonoCtrl.dispose();
+    _invitadorNombreCtrl.dispose();
+    _invitadorTelefonoCtrl.dispose();
+    _porqueQuiereVivirCtrl.dispose();
+    _queEsperaEncontrarCtrl.dispose();
+    super.dispose();
+  }
+
   Future<void> _cargarDiocesis() async {
     try {
       final data = await _diocesisService.obtenerDiocesis();
+
       if (!mounted) return;
+
       setState(() {
         _diocesis = data;
+        _cargandoDiocesis = false;
       });
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-              'No se pudieron cargar las diócesis. Intenta de nuevo en unos minutos.'),
-        ),
-      );
+
+      setState(() {
+        _cargandoDiocesis = false;
+      });
+
+      _showError('No se pudieron cargar las diócesis.');
     }
+  }
+
+  Future<void> _seleccionarDiocesis() async {
+    if (_diocesis.isEmpty) {
+      _showError('No hay diócesis disponibles en este momento.');
+      return;
+    }
+
+    final seleccion = await showModalBottomSheet<Map<String, dynamic>>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.72,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(28),
+            ),
+          ),
+          child: Column(
+            children: [
+              const SizedBox(height: 12),
+              Container(
+                width: 52,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFD8DFEC),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+              ),
+              const SizedBox(height: 18),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Selecciona una diócesis',
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFF1736B6),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Divider(height: 1),
+              Expanded(
+                child: ListView.separated(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+                  itemCount: _diocesis.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 10),
+                  itemBuilder: (context, index) {
+                    final item = _diocesis[index];
+                    final id = item['id']?.toString() ?? '';
+                    final nombre = item['nombre']?.toString() ?? 'Sin nombre';
+                    final isSelected = _diocesisId == id;
+
+                    return InkWell(
+                      borderRadius: BorderRadius.circular(18),
+                      onTap: () {
+                        Navigator.pop(context, item);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 16,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? const Color(0xFF1736B6).withValues(alpha: 0.08)
+                              : const Color(0xFFF8FAFF),
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(
+                            color: isSelected
+                                ? const Color(0xFF1736B6)
+                                : const Color(0xFFE3E8F2),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                nombre,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 14.5,
+                                  fontWeight: isSelected
+                                      ? FontWeight.w700
+                                      : FontWeight.w500,
+                                  color: const Color(0xFF1F2A44),
+                                ),
+                              ),
+                            ),
+                            if (isSelected)
+                              const Icon(
+                                Icons.check_circle_rounded,
+                                color: Color(0xFF1736B6),
+                              ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (seleccion == null || !mounted) return;
+
+    setState(() {
+      _diocesisId = seleccion['id']?.toString();
+      _diocesisNombre = seleccion['nombre']?.toString();
+    });
   }
 
   Future<void> _seleccionarFechaEvento() async {
@@ -102,42 +214,86 @@ class _InscripcionFDSScreenState extends State<InscripcionFDSScreen> {
     );
 
     if (picked != null) {
-      setState(() => _fechaEvento = picked);
+      setState(() {
+        _fechaEvento = picked;
+      });
     }
   }
 
-  Future<void> _seleccionarFechaNacimiento() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _fechaNacimiento ?? DateTime(2005),
-      firstDate: DateTime(1950),
-      lastDate: DateTime.now(),
-    );
-
-    if (picked != null) {
-      setState(() => _fechaNacimiento = picked);
+  bool _validarFormulario() {
+    if (_diocesisId == null || _diocesisNombre == null) {
+      _showError('Debes seleccionar una diócesis.');
+      return false;
     }
+
+    if (_numeroFinDeSemanaCtrl.text.trim().isEmpty) {
+      _showError('Debes indicar el número de fin de semana.');
+      return false;
+    }
+
+    if (int.tryParse(_numeroFinDeSemanaCtrl.text.trim()) == null) {
+      _showError('El número de fin de semana debe ser numérico.');
+      return false;
+    }
+
+    if (_nombresCtrl.text.trim().isEmpty) {
+      _showError('Debes indicar los nombres.');
+      return false;
+    }
+
+    if (_apellidosCtrl.text.trim().isEmpty) {
+      _showError('Debes indicar los apellidos.');
+      return false;
+    }
+
+    if (_telefonoCtrl.text.trim().isEmpty) {
+      _showError('Debes indicar el teléfono.');
+      return false;
+    }
+
+    if (_telefonoCtrl.text.trim().length < 7) {
+      _showError('El teléfono parece inválido.');
+      return false;
+    }
+
+    if (_invitadorNombreCtrl.text.trim().isEmpty) {
+      _showError('Debes indicar el nombre del invitador.');
+      return false;
+    }
+
+    if (_invitadorTelefonoCtrl.text.trim().isEmpty) {
+      _showError('Debes indicar el teléfono del invitador.');
+      return false;
+    }
+
+    if (_invitadorTelefonoCtrl.text.trim().length < 7) {
+      _showError('El teléfono del invitador parece inválido.');
+      return false;
+    }
+
+    if (_porqueQuiereVivirCtrl.text.trim().isEmpty) {
+      _showError('Debes indicar por qué quieres vivir esta experiencia.');
+      return false;
+    }
+
+    if (_queEsperaEncontrarCtrl.text.trim().isEmpty) {
+      _showError('Debes indicar qué esperas encontrar.');
+      return false;
+    }
+
+    return true;
   }
 
   Future<void> _guardar() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (_guardando) return;
 
-    if (_diocesisId == null || _diocesisNombre == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Debes seleccionar una diócesis')),
-      );
-      return;
-    }
+    FocusScope.of(context).unfocus();
 
-    if (_fechaNacimiento == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Debes seleccionar la fecha de nacimiento')),
-      );
-      return;
-    }
+    if (!_validarFormulario()) return;
 
-    setState(() => _guardando = true);
+    setState(() {
+      _guardando = true;
+    });
 
     try {
       final inscripcion = InscripcionFdsModel(
@@ -151,39 +307,14 @@ class _InscripcionFDSScreenState extends State<InscripcionFDSScreen> {
         datosGenerales: {
           'nombres': _nombresCtrl.text.trim(),
           'apellidos': _apellidosCtrl.text.trim(),
-          'cedulaPasaporte': _cedulaCtrl.text.trim(),
-          'edad': int.tryParse(_edadCtrl.text.trim()) ?? 0,
-          'sexo': _sexoCtrl.text.trim(),
-          'estadoCivil': _estadoCivilCtrl.text.trim(),
-          'fechaNacimiento': _fechaNacimiento,
-          'gradoMaximoEstudio': _gradoEstudioCtrl.text.trim(),
-          'direccion': _direccionCtrl.text.trim(),
-          'ciudad': _ciudadCtrl.text.trim(),
           'telefono': _telefonoCtrl.text.trim(),
-          'lugarTrabajo': _lugarTrabajoCtrl.text.trim(),
-          'telefonoTrabajo': _telefonoTrabajoCtrl.text.trim(),
-          'religion': _religionCtrl.text.trim(),
-          'bautizado': _bautizado,
-          'primeraComunion': _primeraComunion,
-          'confirmado': _confirmado,
-          'sizeSueter': _sizeSueterCtrl.text.trim(),
         },
         invitador: {
           'nombreCompleto': _invitadorNombreCtrl.text.trim(),
-          'numeroEscoge':
-              int.tryParse(_invitadorNumeroEscogeCtrl.text.trim()) ?? 0,
           'telefono': _invitadorTelefonoCtrl.text.trim(),
         },
-        familiares: {
-          'conQuienVive': _conQuienViveCtrl.text.trim(),
-          'familiares': _familiares,
-          'nombresConQuienVive': _nombresConQuienViveCtrl.text.trim(),
-          'nombrePadres': _nombrePadresCtrl.text.trim(),
-          'telefonoPadres': _telefonoPadresCtrl.text.trim(),
-        },
+        familiares: {},
         experienciaEspiritual: {
-          'haParticipadoRetiro': _haParticipadoRetiro,
-          'cualRetiro': _cualRetiroCtrl.text.trim(),
           'porqueQuiereVivirExperiencia': _porqueQuiereVivirCtrl.text.trim(),
           'queEsperaEncontrar': _queEsperaEncontrarCtrl.text.trim(),
         },
@@ -192,20 +323,37 @@ class _InscripcionFDSScreenState extends State<InscripcionFDSScreen> {
       await _service.guardarInscripcion(inscripcion);
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Inscripción enviada correctamente')),
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => InscripcionSuccessScreen(
+            retiroNombre: widget.retiroNombre,
+            diocesis: _diocesisNombre ?? widget.diocesis,
+          ),
+        ),
       );
-      Navigator.pop(context);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al guardar inscripción: $e')),
-      );
+      _showError('Error al guardar inscripción: $e');
     } finally {
       if (mounted) {
-        setState(() => _guardando = false);
+        setState(() {
+          _guardando = false;
+        });
       }
     }
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red.shade700,
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(16),
+      ),
+    );
   }
 
   Widget _campo({
@@ -213,271 +361,277 @@ class _InscripcionFDSScreenState extends State<InscripcionFDSScreen> {
     required TextEditingController controller,
     TextInputType keyboardType = TextInputType.text,
     int maxLines = 1,
-    bool requiredField = false,
   }) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: TextFormField(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: TextField(
         controller: controller,
         keyboardType: keyboardType,
         maxLines: maxLines,
-        validator: requiredField
-            ? (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'Campo requerido';
-                }
-                return null;
-              }
-            : null,
         decoration: InputDecoration(
           labelText: label,
+          hintText: 'Escribe aquí',
+          filled: true,
+          fillColor: const Color(0xFFF8FAFF),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 16,
+          ),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(color: Color(0xFFE3E8F2)),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(color: Color(0xFFE3E8F2)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(
+              color: Color(0xFF1736B6),
+              width: 1.4,
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _seccion(String titulo) {
+  Widget _diocesisSelector() {
+    final hasValue = _diocesisId != null &&
+        _diocesisId!.trim().isNotEmpty &&
+        _diocesisNombre != null &&
+        _diocesisNombre!.trim().isNotEmpty;
+
     return Padding(
-      padding: const EdgeInsets.only(top: 10, bottom: 16),
-      child: Text(
-        titulo,
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w700,
+      padding: const EdgeInsets.only(bottom: 16),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: _seleccionarDiocesis,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF8FAFF),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: const Color(0xFFE3E8F2)),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  hasValue
+                      ? _diocesisNombre!
+                      : 'Toca para seleccionar diócesis',
+                  style: GoogleFonts.poppins(
+                    fontSize: 14.5,
+                    color: hasValue
+                        ? const Color(0xFF1F2A44)
+                        : const Color(0xFF6E7A96),
+                  ),
+                ),
+              ),
+              const Icon(
+                Icons.keyboard_arrow_down_rounded,
+                color: Color(0xFF1736B6),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  @override
-  void dispose() {
-    _numeroFinDeSemanaCtrl.dispose();
-    _nombresCtrl.dispose();
-    _apellidosCtrl.dispose();
-    _cedulaCtrl.dispose();
-    _edadCtrl.dispose();
-    _sexoCtrl.dispose();
-    _estadoCivilCtrl.dispose();
-    _gradoEstudioCtrl.dispose();
-    _direccionCtrl.dispose();
-    _ciudadCtrl.dispose();
-    _telefonoCtrl.dispose();
-    _lugarTrabajoCtrl.dispose();
-    _telefonoTrabajoCtrl.dispose();
-    _religionCtrl.dispose();
-    _sizeSueterCtrl.dispose();
-    _invitadorNombreCtrl.dispose();
-    _invitadorNumeroEscogeCtrl.dispose();
-    _invitadorTelefonoCtrl.dispose();
-    _conQuienViveCtrl.dispose();
-    _nombresConQuienViveCtrl.dispose();
-    _nombrePadresCtrl.dispose();
-    _telefonoPadresCtrl.dispose();
-    _cualRetiroCtrl.dispose();
-    _porqueQuiereVivirCtrl.dispose();
-    _queEsperaEncontrarCtrl.dispose();
-    super.dispose();
+  Widget _dateTile({
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FAFF),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE3E8F2)),
+      ),
+      child: ListTile(
+        title: Text(
+          title,
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.w600,
+            color: const Color(0xFF1F2A44),
+          ),
+        ),
+        subtitle: Text(
+          subtitle,
+          style: GoogleFonts.poppins(
+            color: const Color(0xFF6E7A96),
+          ),
+        ),
+        trailing: const Icon(
+          Icons.calendar_today_rounded,
+          color: Color(0xFF1736B6),
+        ),
+        onTap: onTap,
+      ),
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    final d = date.day.toString().padLeft(2, '0');
+    final m = date.month.toString().padLeft(2, '0');
+    final y = date.year.toString();
+    return '$d/$m/$y';
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_cargandoDiocesis) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(
+            color: Color(0xFF1736B6),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
+      backgroundColor: const Color(0xFFF4F7FC),
       appBar: AppBar(
-        title: const Text('Inscripción FDS'),
+        elevation: 0,
+        backgroundColor: const Color(0xFF1736B6),
+        foregroundColor: Colors.white,
+        centerTitle: true,
+        title: Text(
+          'Inscripción FDS',
+          style: GoogleFonts.poppins(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+          ),
+        ),
       ),
-      body: _diocesis.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : Form(
-              key: _formKey,
-              child: ListView(
-                padding: const EdgeInsets.all(16),
-                children: [
-                  _seccion('Diócesis y evento'),
-                  DropdownButtonFormField<String>(
-                    initialValue: _diocesisId,
-                    decoration: const InputDecoration(
-                      labelText: 'Diócesis',
-                      border: OutlineInputBorder(),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.retiroNombre,
+                style: GoogleFonts.poppins(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF1F2A44),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Completa este formulario para solicitar tu participación.',
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  color: const Color(0xFF6E7A96),
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x12000000),
+                      blurRadius: 16,
+                      offset: Offset(0, 6),
                     ),
-                    items: _diocesis.map((item) {
-                      return DropdownMenuItem<String>(
-                        value: item['id'] as String,
-                        child: Text(item['nombre'] as String),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      final selected =
-                          _diocesis.firstWhere((e) => e['id'] == value);
-                      setState(() {
-                        _diocesisId = selected['id'] as String;
-                        _diocesisNombre = selected['nombre'] as String;
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 14),
-                  _campo(
-                    label: 'Número de fin de semana',
-                    controller: _numeroFinDeSemanaCtrl,
-                    keyboardType: TextInputType.number,
-                    requiredField: true,
-                  ),
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: const Text('Fecha del evento'),
-                    subtitle: Text(
-                      '${_fechaEvento.day}/${_fechaEvento.month}/${_fechaEvento.year}',
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    _diocesisSelector(),
+                    _campo(
+                      label: 'Número de fin de semana',
+                      controller: _numeroFinDeSemanaCtrl,
+                      keyboardType: TextInputType.number,
                     ),
-                    trailing: const Icon(Icons.calendar_today),
-                    onTap: _seleccionarFechaEvento,
-                  ),
-                  _seccion('Datos generales'),
-                  _campo(
+                    _dateTile(
+                      title: 'Fecha del evento',
+                      subtitle: _formatDate(_fechaEvento),
+                      onTap: _seleccionarFechaEvento,
+                    ),
+                    _campo(
                       label: 'Nombres',
                       controller: _nombresCtrl,
-                      requiredField: true),
-                  _campo(
+                    ),
+                    _campo(
                       label: 'Apellidos',
                       controller: _apellidosCtrl,
-                      requiredField: true),
-                  _campo(
-                      label: 'Cédula o pasaporte',
-                      controller: _cedulaCtrl,
-                      requiredField: true),
-                  _campo(
-                    label: 'Edad',
-                    controller: _edadCtrl,
-                    keyboardType: TextInputType.number,
-                    requiredField: true,
-                  ),
-                  _campo(
-                      label: 'Sexo',
-                      controller: _sexoCtrl,
-                      requiredField: true),
-                  _campo(label: 'Estado civil', controller: _estadoCivilCtrl),
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: const Text('Fecha de nacimiento'),
-                    subtitle: Text(
-                      _fechaNacimiento == null
-                          ? 'Seleccionar fecha'
-                          : '${_fechaNacimiento!.day}/${_fechaNacimiento!.month}/${_fechaNacimiento!.year}',
                     ),
-                    trailing: const Icon(Icons.calendar_today),
-                    onTap: _seleccionarFechaNacimiento,
-                  ),
-                  _campo(
-                      label: 'Grado máximo de estudio',
-                      controller: _gradoEstudioCtrl),
-                  _campo(
-                      label: 'Dirección',
-                      controller: _direccionCtrl,
-                      requiredField: true),
-                  _campo(
-                      label: 'Ciudad',
-                      controller: _ciudadCtrl,
-                      requiredField: true),
-                  _campo(
+                    _campo(
                       label: 'Teléfono',
                       controller: _telefonoCtrl,
-                      requiredField: true),
-                  _campo(
-                      label: 'Lugar de trabajo', controller: _lugarTrabajoCtrl),
-                  _campo(
-                      label: 'Teléfono de trabajo',
-                      controller: _telefonoTrabajoCtrl),
-                  _campo(label: 'Religión', controller: _religionCtrl),
-                  SwitchListTile(
-                    title: const Text('Bautizado'),
-                    value: _bautizado,
-                    onChanged: (value) => setState(() => _bautizado = value),
-                  ),
-                  SwitchListTile(
-                    title: const Text('Primera comunión'),
-                    value: _primeraComunion,
-                    onChanged: (value) =>
-                        setState(() => _primeraComunion = value),
-                  ),
-                  SwitchListTile(
-                    title: const Text('Confirmado'),
-                    value: _confirmado,
-                    onChanged: (value) => setState(() => _confirmado = value),
-                  ),
-                  _campo(label: 'Size en suéter', controller: _sizeSueterCtrl),
-                  _seccion('Invitador'),
-                  _campo(
-                    label: 'Nombre completo del invitador',
-                    controller: _invitadorNombreCtrl,
-                    requiredField: true,
-                  ),
-                  _campo(
-                    label: 'Número de Escoge del invitador',
-                    controller: _invitadorNumeroEscogeCtrl,
-                    keyboardType: TextInputType.number,
-                  ),
-                  _campo(
-                    label: 'Teléfono del invitador',
-                    controller: _invitadorTelefonoCtrl,
-                    requiredField: true,
-                  ),
-                  _seccion('Familiares'),
-                  _campo(
-                      label: '¿Con quién vive?', controller: _conQuienViveCtrl),
-                  SwitchListTile(
-                    title: const Text('Tiene familiares'),
-                    value: _familiares,
-                    onChanged: (value) => setState(() => _familiares = value),
-                  ),
-                  _campo(
-                    label: 'Nombres de las personas con quien vive',
-                    controller: _nombresConQuienViveCtrl,
-                  ),
-                  _campo(
-                      label: 'Nombre de los padres',
-                      controller: _nombrePadresCtrl),
-                  _campo(
-                      label: 'Teléfono de los padres',
-                      controller: _telefonoPadresCtrl),
-                  _seccion('Experiencia espiritual'),
-                  SwitchListTile(
-                    title: const Text('¿Ha participado en algún retiro?'),
-                    value: _haParticipadoRetiro,
-                    onChanged: (value) =>
-                        setState(() => _haParticipadoRetiro = value),
-                  ),
-                  _campo(label: '¿Cuál retiro?', controller: _cualRetiroCtrl),
-                  _campo(
-                    label: '¿Por qué quiere vivir esta experiencia?',
-                    controller: _porqueQuiereVivirCtrl,
-                    maxLines: 4,
-                    requiredField: true,
-                  ),
-                  _campo(
-                    label: '¿Qué espera encontrar en este fin de semana?',
-                    controller: _queEsperaEncontrarCtrl,
-                    maxLines: 4,
-                    requiredField: true,
-                  ),
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    height: 52,
-                    child: ElevatedButton(
-                      onPressed: _guardando ? null : _guardar,
-                      child: _guardando
-                          ? const SizedBox(
-                              height: 22,
-                              width: 22,
-                              child:
-                                  CircularProgressIndicator(strokeWidth: 2.5),
-                            )
-                          : const Text('Enviar inscripción'),
+                      keyboardType: TextInputType.phone,
                     ),
-                  ),
-                ],
+                    _campo(
+                      label: 'Nombre completo del invitador',
+                      controller: _invitadorNombreCtrl,
+                    ),
+                    _campo(
+                      label: 'Teléfono del invitador',
+                      controller: _invitadorTelefonoCtrl,
+                      keyboardType: TextInputType.phone,
+                    ),
+                    _campo(
+                      label: '¿Por qué quiere vivir esta experiencia?',
+                      controller: _porqueQuiereVivirCtrl,
+                      maxLines: 4,
+                    ),
+                    _campo(
+                      label: '¿Qué espera encontrar en este fin de semana?',
+                      controller: _queEsperaEncontrarCtrl,
+                      maxLines: 4,
+                    ),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 54,
+                      child: ElevatedButton(
+                        onPressed: _guardando ? null : _guardar,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF1736B6),
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        child: _guardando
+                            ? const SizedBox(
+                                height: 18,
+                                width: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : Text(
+                                'Enviar inscripción',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

@@ -1,8 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:escoge/core/theme/app_colors.dart';
 import 'package:escoge/features/retiros/domain/retiro_item.dart';
+import 'package:escoge/features/retiros/presentation/retiro_detalle_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'retiro_detalle_screen.dart';
 
 class RetirosScreen extends StatefulWidget {
   const RetirosScreen({super.key});
@@ -12,700 +13,567 @@ class RetirosScreen extends StatefulWidget {
 }
 
 class _RetirosScreenState extends State<RetirosScreen> {
-  String _selectedDiocesis = 'Todas';
-  bool _animateIn = false;
+  String _filtroDiocesis = 'Todas';
 
-  final List<String> _diocesis = const [
-    'Todas',
-    'La Vega',
-    'Santo Domingo',
-    'Santiago',
-    'San Francisco',
-  ];
+  Stream<List<RetiroItem>> _streamRetiros() {
+    return FirebaseFirestore.instance
+        .collection('retiros')
+        .where('activo', isEqualTo: true)
+        .snapshots()
+        .map((snapshot) {
+      final items = snapshot.docs.map((doc) {
+        final data = doc.data();
 
-  final List<RetiroItem> _retiros = const [
-    RetiroItem(
-      categoria: 'Retiro Espiritual',
-      titulo: 'Renacer en la Fe',
-      ciudad: 'La Vega',
-      fecha: '2 - 11 mayo, 2026',
-      diocesis: 'La Vega',
-      imagePath: 'assets/images/capilla.png',
-      descripcion:
-          'Un fin de semana de encuentro con Dios, reflexión personal, comunidad y crecimiento espiritual.',
-      lugar: 'Casa de encuentro diocesana',
-      recomendaciones: [
-        'Llenar la ficha personalmente.',
-        'Proporcionar datos reales y legibles.',
-        'Estar atento a la confirmación del coordinador.',
-        'Llevar lo indicado por el equipo organizador.',
-      ],
-    ),
-    RetiroItem(
-      categoria: 'Retiro de Jóvenes',
-      titulo: 'Encuentro con Cristo',
-      ciudad: 'Santo Domingo',
-      fecha: '25 - 27 junio, 2026',
-      diocesis: 'Santo Domingo',
-      imagePath: 'assets/images/banner.png',
-      descripcion:
-          'Una experiencia de fe dirigida a jóvenes que desean reencontrarse con Dios y fortalecer su camino espiritual.',
-      lugar: 'Centro juvenil arquidiocesano',
-      recomendaciones: [
-        'Llevar identificación personal.',
-        'Completar correctamente el formulario.',
-        'Estar atento a la llamada de confirmación.',
-        'Seguir las orientaciones del equipo de retiro.',
-      ],
-    ),
-    RetiroItem(
-      categoria: 'Retiro Familiar',
-      titulo: 'Unidos en el Señor',
-      ciudad: 'Santiago',
-      fecha: '8 - 10 julio, 2026',
-      diocesis: 'Santiago',
-      imagePath: 'assets/images/capilla.png',
-      descripcion:
-          'Un espacio para fortalecer la vida familiar, compartir en comunidad y crecer juntos en la fe.',
-      lugar: 'Casa pastoral familiar',
-      recomendaciones: [
-        'Llevar artículos personales necesarios.',
-        'Mantener datos de contacto actualizados.',
-        'Confirmar asistencia con anticipación.',
-        'Seguir las indicaciones del retiro.',
-      ],
-    ),
-  ];
+        final recomendaciones = (data['recomendaciones'] as List?)
+                ?.map((e) => e.toString())
+                .toList() ??
+            <String>[];
 
-  @override
-  void initState() {
-    super.initState();
-    Future.microtask(() {
-      if (mounted) {
-        setState(() {
-          _animateIn = true;
-        });
-      }
+        final imagePath = (data['imagenUrl'] ?? '').toString().trim().isNotEmpty
+            ? (data['imagenUrl'] ?? '').toString()
+            : 'assets/images/retiro_default.png';
+
+        return RetiroItem(
+          id: doc.id,
+          titulo: (data['titulo'] ?? '').toString(),
+          descripcion: (data['descripcion'] ?? '').toString(),
+          ciudad: (data['ciudad'] ?? '').toString(),
+          lugar: (data['lugar'] ?? '').toString(),
+          fecha: (data['fechaTexto'] ?? '').toString(),
+          diocesis: (data['diocesis'] ?? '').toString(),
+          categoria: (data['subtitulo'] ?? 'Retiro').toString(),
+          recomendaciones: recomendaciones,
+          imagePath: imagePath,
+          tipoFormulario: (data['tipoFormulario'] ?? 'general').toString(),
+        );
+      }).toList();
+
+      items.sort((a, b) {
+        final aData = snapshot.docs.firstWhere((doc) => doc.id == a.id).data();
+        final bData = snapshot.docs.firstWhere((doc) => doc.id == b.id).data();
+
+        final aDestacado = aData['destacado'] == true ? 1 : 0;
+        final bDestacado = bData['destacado'] == true ? 1 : 0;
+
+        if (aDestacado != bDestacado) {
+          return bDestacado.compareTo(aDestacado);
+        }
+
+        final ordenA =
+            aData['orden'] is num ? (aData['orden'] as num).toInt() : 9999;
+        final ordenB =
+            bData['orden'] is num ? (bData['orden'] as num).toInt() : 9999;
+
+        return ordenA.compareTo(ordenB);
+      });
+
+      return items;
     });
   }
 
-  List<RetiroItem> get _filteredRetiros {
-    if (_selectedDiocesis == 'Todas') {
-      return _retiros;
+  List<String> _obtenerDiocesis(List<RetiroItem> retiros) {
+    final set = <String>{};
+
+    for (final retiro in retiros) {
+      final diocesis = retiro.diocesis.trim();
+      if (diocesis.isNotEmpty) {
+        set.add(diocesis);
+      }
     }
-    return _retiros.where((r) => r.diocesis == _selectedDiocesis).toList();
+
+    final lista = set.toList()..sort();
+    return ['Todas', ...lista];
+  }
+
+  List<RetiroItem> _aplicarFiltro(List<RetiroItem> retiros) {
+    if (_filtroDiocesis == 'Todas') return retiros;
+
+    return retiros.where((r) => r.diocesis.trim() == _filtroDiocesis).toList();
+  }
+
+  void _abrirDetalle(RetiroItem retiro) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => RetiroDetalleScreen(retiro: retiro),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final bottomSpace = 100 + MediaQuery.of(context).padding.bottom;
-
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F7FB),
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Opacity(
-              opacity: 0.04,
-              child: Image.asset(
-                'assets/backgrounds/espiritual.png',
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: AppColors.primaryBlue,
+        foregroundColor: Colors.white,
+        centerTitle: true,
+        title: Text(
+          'Retiros',
+          style: GoogleFonts.poppins(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      body: StreamBuilder<List<RetiroItem>>(
+        stream: _streamRetiros(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(
+                color: AppColors.primaryBlue,
               ),
-            ),
-          ),
-          SafeArea(
-            bottom: false,
-            child: Column(
-              children: [
-                _AnimatedEntrance(
-                  visible: _animateIn,
-                  delay: 0,
-                  child: const _RetirosTopArea(),
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.fromLTRB(16, 18, 16, bottomSpace),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _AnimatedEntrance(
-                          visible: _animateIn,
-                          delay: 120,
-                          child: const _SectionHeader(
-                            title: 'Filtrar por diócesis',
-                            subtitle:
-                                'Selecciona una diócesis para explorar los retiros disponibles.',
-                          ),
-                        ),
-                        const SizedBox(height: 14),
-                        _AnimatedEntrance(
-                          visible: _animateIn,
-                          delay: 180,
-                          child: SizedBox(
-                            height: 44,
-                            child: ListView.separated(
-                              padding: const EdgeInsets.only(right: 8),
-                              scrollDirection: Axis.horizontal,
-                              itemCount: _diocesis.length,
-                              separatorBuilder:
-                                  (_, __) => const SizedBox(width: 10),
-                              itemBuilder: (context, index) {
-                                final item = _diocesis[index];
-                                final isSelected = item == _selectedDiocesis;
+            );
+          }
 
-                                return _FilterChipPremium(
-                                  label: item,
-                                  isSelected: isSelected,
-                                  onTap: () {
-                                    setState(() {
-                                      _selectedDiocesis = item;
-                                    });
-                                  },
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                        _AnimatedEntrance(
-                          visible: _animateIn,
-                          delay: 240,
-                          child: const _SectionHeader(
-                            title: 'Próximos retiros',
-                            subtitle:
-                                'Renueva tu fe y tu corazón con experiencias espirituales vivas.',
-                          ),
-                        ),
-                        const SizedBox(height: 14),
-                        ...List.generate(_filteredRetiros.length, (index) {
-                          final retiro = _filteredRetiros[index];
+          if (snapshot.hasError) {
+            return const _ErrorState(
+              message: 'No se pudieron cargar los retiros.',
+            );
+          }
 
-                          return Padding(
-                            padding: EdgeInsets.only(
-                              bottom:
-                                  index == _filteredRetiros.length - 1 ? 0 : 16,
-                            ),
-                            child: _AnimatedEntrance(
-                              visible: _animateIn,
-                              delay: 300 + (index * 70),
-                              child: _RetiroCardPremium(
-                                retiro: retiro,
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder:
-                                          (_) => RetiroDetalleScreen(
-                                            retiro: retiro,
-                                          ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          );
-                        }),
-                      ],
-                    ),
-                  ),
+          final retiros = snapshot.data ?? [];
+          final diocesisDisponibles = _obtenerDiocesis(retiros);
+          final retirosFiltrados = _aplicarFiltro(retiros);
+
+          if (!diocesisDisponibles.contains(_filtroDiocesis)) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                setState(() {
+                  _filtroDiocesis = 'Todas';
+                });
+              }
+            });
+          }
+
+          if (retiros.isEmpty) {
+            return const _EmptyState();
+          }
+
+          return Column(
+            children: [
+              _HeaderResumen(
+                total: retirosFiltrados.length,
+                filtroDiocesis: _filtroDiocesis,
+              ),
+              _FiltroDiocesisBar(
+                opciones: diocesisDisponibles,
+                seleccionado: _filtroDiocesis,
+                onSelected: (value) {
+                  setState(() {
+                    _filtroDiocesis = value;
+                  });
+                },
+              ),
+              Expanded(
+                child: ListView.separated(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                  itemCount: retirosFiltrados.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 16),
+                  itemBuilder: (context, index) {
+                    final retiro = retirosFiltrados[index];
+
+                    return _RetiroCard(
+                      retiro: retiro,
+                      onTap: () => _abrirDetalle(retiro),
+                    );
+                  },
                 ),
-              ],
-            ),
-          ),
-        ],
+              ),
+            ],
+          );
+        },
       ),
     );
   }
 }
 
-class _AnimatedEntrance extends StatelessWidget {
-  final bool visible;
-  final int delay;
-  final Widget child;
+class _HeaderResumen extends StatelessWidget {
+  final int total;
+  final String filtroDiocesis;
 
-  const _AnimatedEntrance({
-    required this.visible,
-    required this.delay,
-    required this.child,
+  const _HeaderResumen({
+    required this.total,
+    required this.filtroDiocesis,
   });
-
-  @override
-  Widget build(BuildContext context) {
-    final duration = Duration(milliseconds: 650 + delay);
-
-    return AnimatedOpacity(
-      opacity: visible ? 1 : 0,
-      duration: duration,
-      curve: Curves.easeOutCubic,
-      child: AnimatedSlide(
-        offset: visible ? Offset.zero : const Offset(0, 0.08),
-        duration: duration,
-        curve: Curves.easeOutCubic,
-        child: child,
-      ),
-    );
-  }
-}
-
-class _RetirosTopArea extends StatelessWidget {
-  const _RetirosTopArea();
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF0B1E66), Color(0xFF1639A6)],
-        ),
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
-      ),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-            child: Container(
-              height: 75,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(28),
-                image: const DecorationImage(
-                  image: AssetImage('assets/backgrounds/espiritual.png'),
-                  fit: BoxFit.cover,
-                  opacity: 0.14,
-                ),
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0x33FFFFFF), Color(0x11000000)],
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.14),
-                    blurRadius: 22,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(28),
-                child: Stack(
-                  children: [
-                    Positioned.fill(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.white.withValues(alpha: 0.04),
-                              Colors.black.withValues(alpha: 0.10),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
-                      child: Row(
-                        children: [
-                          Container(
-                            height: 62,
-                            width: 62,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.94),
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.08),
-                                  blurRadius: 12,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            clipBehavior: Clip.antiAlias,
-                            child: Padding(
-                              padding: const EdgeInsets.all(5),
-                              child: Image.asset(
-                                'assets/images/logo.png',
-                                fit: BoxFit.contain,
-                                errorBuilder:
-                                    (_, __, ___) => const Icon(
-                                      Icons.church_rounded,
-                                      color: AppColors.primaryBlue,
-                                      size: 28,
-                                    ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Text(
-                              'RETIROS',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.poppins(
-                                color: Colors.white,
-                                fontSize: 30,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: 0.8,
-                                height: 1,
-                              ),
-                            ),
-                          ),
-                          Container(
-                            height: 42,
-                            width: 42,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.14),
-                              borderRadius: BorderRadius.circular(14),
-                              border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.18),
-                              ),
-                            ),
-                            child: const Icon(
-                              Icons.notifications_none_rounded,
-                              color: Colors.white,
-                              size: 22,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 18, 16, 22),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(28),
-              child: Stack(
-                children: [
-                  Image.asset(
-                    'assets/images/capilla.png',
-                    height: 180,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) {
-                      return Container(
-                        height: 180,
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [Color(0xFFDAA04E), Color(0xFF6B3E13)],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  Positioned.fill(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.black.withValues(alpha: 0.08),
-                            Colors.black.withValues(alpha: 0.48),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    left: 18,
-                    right: 18,
-                    bottom: 18,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Próximos retiros',
-                          style: GoogleFonts.lora(
-                            color: Colors.white,
-                            fontSize: 30,
-                            fontWeight: FontWeight.w700,
-                            fontStyle: FontStyle.italic,
-                            height: 1.05,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          'Renueva tu fe y tu corazón',
-                          style: GoogleFonts.poppins(
-                            color: Colors.white.withValues(alpha: 0.96),
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            height: 1.35,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _FilterChipPremium extends StatelessWidget {
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _FilterChipPremium({
-    required this.label,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(999),
-        onTap: onTap,
-        child: Ink(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          decoration: BoxDecoration(
-            color: isSelected ? AppColors.primaryBlue : Colors.white,
-            borderRadius: BorderRadius.circular(999),
-            border: Border.all(
-              color:
-                  isSelected
-                      ? AppColors.primaryBlue
-                      : Colors.black.withValues(alpha: 0.05),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Center(
-            child: Text(
-              label,
-              style: GoogleFonts.poppins(
-                fontSize: 13.5,
-                fontWeight: FontWeight.w600,
-                color: isSelected ? Colors.white : AppColors.primaryBlue,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _RetiroCardPremium extends StatefulWidget {
-  final RetiroItem retiro;
-  final VoidCallback? onTap;
-
-  const _RetiroCardPremium({required this.retiro, this.onTap});
-
-  @override
-  State<_RetiroCardPremium> createState() => _RetiroCardPremiumState();
-}
-
-class _RetiroCardPremiumState extends State<_RetiroCardPremium> {
-  bool _pressed = false;
-
-  void _setPressed(bool value) {
-    if (_pressed != value) {
-      setState(() => _pressed = value);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final retiro = widget.retiro;
-
-    return AnimatedScale(
-      scale: _pressed ? 0.985 : 1,
-      duration: const Duration(milliseconds: 120),
-      curve: Curves.easeOut,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(22),
-          onTap: widget.onTap,
-          onTapDown: (_) => _setPressed(true),
-          onTapUp: (_) => _setPressed(false),
-          onTapCancel: () => _setPressed(false),
-          child: Ink(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(22),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.06),
-                  blurRadius: 16,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                ClipRRect(
-                  borderRadius: const BorderRadius.horizontal(
-                    left: Radius.circular(22),
-                  ),
-                  child: Image.asset(
-                    retiro.imagePath,
-                    width: 110,
-                    height: 120,
-                    fit: BoxFit.cover,
-                    errorBuilder:
-                        (_, __, ___) => Container(
-                          width: 110,
-                          height: 120,
-                          color: AppColors.primaryBlue.withValues(alpha: 0.10),
-                          child: const Icon(
-                            Icons.church_rounded,
-                            color: AppColors.primaryBlue,
-                            size: 28,
-                          ),
-                        ),
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          retiro.titulo,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.poppins(
-                            fontSize: 14.5,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.primaryBlue,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          retiro.descripcion,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.poppins(
-                            fontSize: 12.5,
-                            color: AppColors.textSecondary,
-                            height: 1.35,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.location_on_rounded,
-                              size: 14,
-                              color: AppColors.primaryBlue,
-                            ),
-                            const SizedBox(width: 4),
-                            Expanded(
-                              child: Text(
-                                retiro.ciudad,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: GoogleFonts.poppins(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.textPrimary,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.calendar_today_rounded,
-                              size: 13,
-                              color: AppColors.primaryBlue,
-                            ),
-                            const SizedBox(width: 4),
-                            Expanded(
-                              child: Text(
-                                retiro.fecha,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: GoogleFonts.poppins(
-                                  fontSize: 11.5,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.textPrimary,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 12),
-                  child: Icon(
-                    Icons.arrow_forward_ios_rounded,
-                    size: 16,
-                    color: AppColors.textSecondary.withValues(alpha: 0.6),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _SectionHeader extends StatelessWidget {
-  final String title;
-  final String subtitle;
-
-  const _SectionHeader({required this.title, required this.subtitle});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 2),
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            title,
+            'Encuentra tu próximo retiro',
             style: GoogleFonts.poppins(
-              color: AppColors.primaryBlue,
-              fontSize: 18.5,
+              fontSize: 22,
               fontWeight: FontWeight.w800,
+              color: AppColors.textPrimary,
             ),
           ),
           const SizedBox(height: 6),
           Text(
-            subtitle,
+            filtroDiocesis == 'Todas'
+                ? '$total retiro(s) disponibles'
+                : '$total retiro(s) en $filtroDiocesis',
             style: GoogleFonts.poppins(
+              fontSize: 13.5,
               color: AppColors.textSecondary,
-              fontSize: 14,
-              height: 1.5,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _FiltroDiocesisBar extends StatelessWidget {
+  final List<String> opciones;
+  final String seleccionado;
+  final ValueChanged<String> onSelected;
+
+  const _FiltroDiocesisBar({
+    required this.opciones,
+    required this.seleccionado,
+    required this.onSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 52,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: opciones.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 10),
+        itemBuilder: (context, index) {
+          final item = opciones[index];
+          final isSelected = item == seleccionado;
+
+          return ChoiceChip(
+            label: Text(
+              item,
+              style: GoogleFonts.poppins(
+                fontSize: 12.5,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                color: isSelected ? Colors.white : AppColors.primaryBlue,
+              ),
+            ),
+            selected: isSelected,
+            onSelected: (_) => onSelected(item),
+            selectedColor: AppColors.primaryBlue,
+            backgroundColor: Colors.white,
+            side: BorderSide(
+              color: isSelected
+                  ? AppColors.primaryBlue
+                  : AppColors.primaryBlue.withValues(alpha: 0.18),
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(999),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _RetiroCard extends StatelessWidget {
+  final RetiroItem retiro;
+  final VoidCallback onTap;
+
+  const _RetiroCard({
+    required this.retiro,
+    required this.onTap,
+  });
+
+  bool get _isNetworkImage {
+    final path = retiro.imagePath.trim().toLowerCase();
+    return path.startsWith('http://') || path.startsWith('https://');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(28),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(color: AppColors.borderSoft),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x12000000),
+              blurRadius: 16,
+              offset: Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(28),
+                topRight: Radius.circular(28),
+              ),
+              child: SizedBox(
+                height: 190,
+                width: double.infinity,
+                child: _buildImage(),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    retiro.titulo,
+                    style: GoogleFonts.poppins(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  if (retiro.categoria.trim().isNotEmpty) ...[
+                    const SizedBox(height: 6),
+                    Text(
+                      retiro.categoria,
+                      style: GoogleFonts.poppins(
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.primaryBlue,
+                      ),
+                    ),
+                  ],
+                  if (retiro.descripcion.trim().isNotEmpty) ...[
+                    const SizedBox(height: 10),
+                    Text(
+                      retiro.descripcion,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.poppins(
+                        fontSize: 13.5,
+                        height: 1.5,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 16),
+                  if (retiro.diocesis.trim().isNotEmpty)
+                    _InfoRow(
+                      icon: Icons.church_rounded,
+                      text: retiro.diocesis,
+                    ),
+                  if (retiro.ciudad.trim().isNotEmpty)
+                    _InfoRow(
+                      icon: Icons.location_on_rounded,
+                      text: retiro.ciudad,
+                    ),
+                  if (retiro.lugar.trim().isNotEmpty)
+                    _InfoRow(
+                      icon: Icons.place_rounded,
+                      text: retiro.lugar,
+                    ),
+                  if (retiro.fecha.trim().isNotEmpty)
+                    _InfoRow(
+                      icon: Icons.calendar_month_rounded,
+                      text: retiro.fecha,
+                    ),
+                  const SizedBox(height: 18),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryBlue,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      retiro.tipoFormulario == 'fds'
+                          ? 'Ver retiro FDS'
+                          : 'Ver retiro',
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImage() {
+    final path = retiro.imagePath.trim();
+
+    if (path.isEmpty) {
+      return _fallbackImage();
+    }
+
+    if (_isNetworkImage) {
+      return Image.network(
+        path,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => _fallbackImage(),
+      );
+    }
+
+    return Image.asset(
+      path,
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => _fallbackImage(),
+    );
+  }
+
+  Widget _fallbackImage() {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.primaryBlue,
+            Color(0xFF3658C9),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: const Icon(
+        Icons.terrain_rounded,
+        size: 56,
+        color: Colors.white,
+      ),
+    );
+  }
+}
+
+class _InfoRow extends StatelessWidget {
+  final IconData icon;
+  final String text;
+
+  const _InfoRow({
+    required this.icon,
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            icon,
+            size: 18,
+            color: AppColors.primaryBlue,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: GoogleFonts.poppins(
+                fontSize: 13.2,
+                color: AppColors.textSecondary,
+                height: 1.45,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _EmptyState extends StatelessWidget {
+  const _EmptyState();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(28),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.event_busy_rounded,
+              size: 64,
+              color: AppColors.primaryBlue,
+            ),
+            const SizedBox(height: 18),
+            Text(
+              'No hay retiros disponibles',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Cuando se publiquen nuevos retiros aparecerán aquí automáticamente.',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(
+                fontSize: 13.5,
+                color: AppColors.textSecondary,
+                height: 1.5,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ErrorState extends StatelessWidget {
+  final String message;
+
+  const _ErrorState({
+    required this.message,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(28),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.wifi_off_rounded,
+              size: 62,
+              color: Colors.redAccent,
+            ),
+            const SizedBox(height: 18),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

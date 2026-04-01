@@ -2,6 +2,7 @@ import 'package:escoge/core/theme/app_colors.dart';
 import 'package:escoge/features/retiros/data/repositories/inscripciones_repository.dart';
 import 'package:escoge/features/retiros/data/services/inscripcion_fds_service.dart';
 import 'package:escoge/features/retiros/domain/inscripcion_model.dart';
+import 'package:escoge/features/retiros/presentation/inscripcion_success_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -50,7 +51,12 @@ class _InscripcionScreenState extends State<InscripcionScreen> {
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (_isSaving) return;
+
+    FocusScope.of(context).unfocus();
+
+    final isValid = _formKey.currentState?.validate() ?? false;
+    if (!isValid) return;
 
     setState(() => _isSaving = true);
 
@@ -71,7 +77,16 @@ class _InscripcionScreenState extends State<InscripcionScreen> {
       await repository.guardarSimple(model);
 
       if (!mounted) return;
-      await _showSuccessAndReturn();
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => InscripcionSuccessScreen(
+            retiroNombre: widget.retiroNombre,
+            diocesis: widget.diocesis,
+          ),
+        ),
+      );
     } catch (e) {
       if (!mounted) return;
       _showError(e.toString());
@@ -80,26 +95,6 @@ class _InscripcionScreenState extends State<InscripcionScreen> {
         setState(() => _isSaving = false);
       }
     }
-  }
-
-  Future<void> _showSuccessAndReturn() async {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Inscripción enviada correctamente'),
-        backgroundColor: AppColors.primaryBlue,
-        behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.all(16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        duration: const Duration(milliseconds: 1000),
-      ),
-    );
-
-    await Future.delayed(const Duration(milliseconds: 1050));
-
-    if (!mounted) return;
-    Navigator.pop(context, true);
   }
 
   void _showError(String message) {
@@ -119,14 +114,19 @@ class _InscripcionScreenState extends State<InscripcionScreen> {
   void _nextStep() {
     FocusScope.of(context).unfocus();
 
-    if (_currentStep < 2) {
-      _pageController.nextPage(
-        duration: const Duration(milliseconds: 280),
-        curve: Curves.easeInOut,
-      );
-    } else {
+    if (_currentStep == 0) {
+      if (!_validateStep1()) return;
+    } else if (_currentStep == 1) {
+      if (!_validateStep2()) return;
+    } else if (_currentStep == 2) {
       _submit();
+      return;
     }
+
+    _pageController.nextPage(
+      duration: const Duration(milliseconds: 280),
+      curve: Curves.easeInOut,
+    );
   }
 
   void _previousStep() {
@@ -140,6 +140,46 @@ class _InscripcionScreenState extends State<InscripcionScreen> {
     } else {
       Navigator.pop(context);
     }
+  }
+
+  bool _validateStep1() {
+    final nombre = nombreController.text.trim();
+    final apellidos = apellidosController.text.trim();
+    final cedula = cedulaController.text.trim();
+
+    if (nombre.isEmpty || apellidos.isEmpty || cedula.isEmpty) {
+      _showError('Completa todos los campos del paso 1');
+      return false;
+    }
+
+    if (cedula.length < 6) {
+      _showError('La cédula o pasaporte parece inválido');
+      return false;
+    }
+
+    return true;
+  }
+
+  bool _validateStep2() {
+    final telefono = telefonoController.text.trim();
+    final email = emailController.text.trim();
+
+    if (telefono.isEmpty || email.isEmpty) {
+      _showError('Completa todos los campos del paso 2');
+      return false;
+    }
+
+    if (telefono.length < 7) {
+      _showError('El teléfono parece inválido');
+      return false;
+    }
+
+    if (!email.contains('@') || !email.contains('.')) {
+      _showError('Ingresa un correo electrónico válido');
+      return false;
+    }
+
+    return true;
   }
 
   String _stepLabel() => 'Paso ${_currentStep + 1} de 3';
@@ -285,13 +325,37 @@ class _InscripcionScreenState extends State<InscripcionScreen> {
               Expanded(
                 child: OutlinedButton(
                   onPressed: _isSaving ? null : _previousStep,
-                  child: const Text('Atrás'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.primaryBlue,
+                    side: BorderSide(
+                      color: AppColors.primaryBlue.withValues(alpha: 0.18),
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                  child: Text(
+                    'Atrás',
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
             if (_currentStep > 0) const SizedBox(width: 12),
             Expanded(
               child: ElevatedButton(
                 onPressed: _isSaving ? null : _nextStep,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primaryBlue,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
                 child: _isSaving
                     ? const SizedBox(
                         height: 18,
@@ -303,6 +367,9 @@ class _InscripcionScreenState extends State<InscripcionScreen> {
                       )
                     : Text(
                         _currentStep == 2 ? 'Enviar inscripción' : 'Siguiente',
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
               ),
             ),
@@ -333,6 +400,15 @@ class _InscripcionScreenState extends State<InscripcionScreen> {
           telefonoController,
           'Teléfono',
           keyboardType: TextInputType.phone,
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'Requerido';
+            }
+            if (value.trim().length < 7) {
+              return 'Teléfono inválido';
+            }
+            return null;
+          },
         ),
         _input(
           emailController,
@@ -383,6 +459,20 @@ class _InscripcionScreenState extends State<InscripcionScreen> {
               _summaryRow('Retiro', widget.retiroNombre),
               const SizedBox(height: 8),
               _summaryRow('Diócesis', widget.diocesis),
+              const SizedBox(height: 8),
+              _summaryRow(
+                'Nombre',
+                nombreController.text.trim().isEmpty
+                    ? 'Pendiente'
+                    : '${nombreController.text.trim()} ${apellidosController.text.trim()}',
+              ),
+              const SizedBox(height: 8),
+              _summaryRow(
+                'Correo',
+                emailController.text.trim().isEmpty
+                    ? 'Pendiente'
+                    : emailController.text.trim(),
+              ),
             ],
           ),
         ),
@@ -411,6 +501,7 @@ class _InscripcionScreenState extends State<InscripcionScreen> {
             style: GoogleFonts.poppins(
               fontSize: 13,
               color: AppColors.textSecondary,
+              height: 1.4,
             ),
           ),
         ),
@@ -473,6 +564,35 @@ class _InscripcionScreenState extends State<InscripcionScreen> {
         decoration: InputDecoration(
           labelText: label,
           hintText: 'Escribe aquí',
+          filled: true,
+          fillColor: const Color(0xFFF8FAFF),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 16,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: AppColors.borderSoft),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: AppColors.borderSoft),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(
+              color: AppColors.primaryBlue,
+              width: 1.4,
+            ),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: Colors.red.shade400),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: Colors.red.shade600, width: 1.4),
+          ),
         ),
       ),
     );
