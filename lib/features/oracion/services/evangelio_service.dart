@@ -1,19 +1,20 @@
-import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:escoge/features/oracion/data/models/evangelio_model.dart';
-// ignore: depend_on_referenced_packages
-import 'package:http/http.dart' as http;
 
 class EvangelioService {
-  static const String baseUrl = 'https://tu-api.com/evangelio';
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  Future<EvangelioModel> getEvangelio() async {
-    final response = await http.get(Uri.parse(baseUrl));
+  Future<EvangelioModel?> obtenerHoy() async {
+    try {
+      final doc = await _db.collection('evangelio').doc('hoy').get();
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return EvangelioModel.fromJson(data);
-    } else {
-      throw Exception('Error al cargar el evangelio');
+      if (!doc.exists || doc.data() == null) {
+        return null;
+      }
+
+      return EvangelioModel.fromMap(doc.data()!);
+    } catch (e) {
+      return null;
     }
   }
 }

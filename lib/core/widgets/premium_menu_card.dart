@@ -1,6 +1,5 @@
-import 'package:escoge/core/theme/app_colors.dart';
-import 'package:escoge/core/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
+import 'package:escoge/core/theme/app_theme.dart';
 
 class PremiumMenuCard extends StatelessWidget {
   final IconData icon;
@@ -28,7 +27,7 @@ class PremiumMenuCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(28),
         onTap: onTap,
         child: Ink(
-          padding:  EdgeInsets.symmetric(
+          padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.md,
             vertical: AppSpacing.md,
           ),
@@ -50,7 +49,7 @@ class PremiumMenuCard extends StatelessWidget {
                 width: 62,
                 height: 62,
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
+                  gradient: const LinearGradient(
                     colors: [AppColors.goldSoft, AppColors.gold],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -64,8 +63,8 @@ class PremiumMenuCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: const Icon(
-                  Icons.auto_awesome_rounded,
+                child: Icon(
+                  icon,
                   color: AppColors.primaryBlue,
                   size: 30,
                 ),
@@ -94,7 +93,7 @@ class PremiumMenuCard extends StatelessWidget {
                 ),
               ),
               if (showArrow)
-                Icon(
+                const Icon(
                   Icons.chevron_right_rounded,
                   color: AppColors.textMuted,
                   size: 28,
