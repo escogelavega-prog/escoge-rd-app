@@ -1,5 +1,5 @@
-import 'package:escoge/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:escoge/core/theme/app_theme.dart';
 
 class CustomBottomNav extends StatelessWidget {
   final int currentIndex;
@@ -14,17 +14,17 @@ class CustomBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = <_NavItemData>[
-      _NavItemData(icon: Icons.home_rounded, label: 'Inicio'),
-      _NavItemData(icon: Icons.auto_awesome_rounded, label: 'Oración'),
-      _NavItemData(icon: Icons.terrain_rounded, label: 'Retiros'),
-      _NavItemData(icon: Icons.grid_view_rounded, label: 'Contenido'),
-      _NavItemData(icon: Icons.person_rounded, label: 'Perfil'),
+      const _NavItemData(icon: Icons.home_rounded, label: 'Inicio'),
+      const _NavItemData(icon: Icons.auto_awesome_rounded, label: 'Oración'),
+      const _NavItemData(icon: Icons.terrain_rounded, label: 'Retiros'),
+      const _NavItemData(icon: Icons.grid_view_rounded, label: 'Contenido'),
+      const _NavItemData(icon: Icons.person_rounded, label: 'Perfil'),
     ];
 
     return SafeArea(
       top: false,
       child: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: AppColors.surface,
           border: Border(
             top: BorderSide(
@@ -32,7 +32,7 @@ class CustomBottomNav extends StatelessWidget {
               width: 1,
             ),
           ),
-          boxShadow: const [
+          boxShadow: [
             BoxShadow(
               color: Color(0x14000000),
               blurRadius: 18,
@@ -62,7 +62,7 @@ class CustomBottomNav extends StatelessWidget {
                       ),
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? AppColors.primaryBlue.withValues(alpha: 0.08)
+                            ? AppColors.primaryBlue.withOpacity(0.08)
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(18),
                       ),
@@ -76,8 +76,7 @@ class CustomBottomNav extends StatelessWidget {
                             height: 30,
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? AppColors.primaryBlue
-                                      .withValues(alpha: 0.12)
+                                  ? AppColors.primaryBlue.withOpacity(0.12)
                                   : Colors.transparent,
                               borderRadius: BorderRadius.circular(14),
                             ),
@@ -92,17 +91,10 @@ class CustomBottomNav extends StatelessWidget {
                                       : AppColors.textSecondary,
                                 ),
                                 if (isSelected)
-                                  Positioned(
+                                  const Positioned(
                                     top: 1,
                                     right: 7,
-                                    child: Container(
-                                      width: 7,
-                                      height: 7,
-                                      decoration: const BoxDecoration(
-                                        color: AppColors.gold,
-                                        shape: BoxShape.circle,
-                                      ),
-                                    ),
+                                    child: _GoldDot(),
                                   ),
                               ],
                             ),
@@ -133,6 +125,22 @@ class CustomBottomNav extends StatelessWidget {
             }),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _GoldDot extends StatelessWidget {
+  const _GoldDot();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 7,
+      height: 7,
+      decoration: const BoxDecoration(
+        color: AppColors.gold,
+        shape: BoxShape.circle,
       ),
     );
   }
