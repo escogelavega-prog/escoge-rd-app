@@ -1,29 +1,22 @@
 class EvangelioModel {
-  final String fecha;
+  final String titulo;
   final String cita;
-  final String introduccion;
-  final String cuerpo;
-  final String destacado;
-  final String reflexion;
+  final String contenido;
+  final String fecha;
 
   EvangelioModel({
-    required this.fecha,
+    required this.titulo,
     required this.cita,
-    required this.introduccion,
-    required this.cuerpo,
-    required this.destacado,
-    required this.reflexion,
+    required this.contenido,
+    required this.fecha,
   });
 
-  factory EvangelioModel.fromJson(Map<String, dynamic> json) {
+  factory EvangelioModel.fromMap(Map<String, dynamic> map) {
     return EvangelioModel(
-      fecha: json['fecha'] ?? '',
-      cita: json['cita'] ?? '',
-      introduccion: json['introduccion'] ?? '',
-      cuerpo: json['cuerpo'] ?? '',
-      destacado: json['destacado'] ?? '',
-      reflexion: json['reflexion'] ?? '',
+      titulo: map['titulo'] ?? '',
+      cita: map['cita'] ?? '',
+      contenido: map['contenido'] ?? '',
+      fecha: map['fecha'] ?? '',
     );
   }
-
 }
