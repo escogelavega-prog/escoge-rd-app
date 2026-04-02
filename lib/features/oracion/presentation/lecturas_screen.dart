@@ -1,7 +1,4 @@
-import 'package:escoge/features/oracion/presentation/evangelio_screen.dart';
-import 'package:escoge/features/oracion/services/lecturas_service.dart';
-import 'package:escoge/features/oracion/widgets/evangelio_feature_image.dart';
-import 'package:escoge/features/oracion/widgets/oracion_header.dart';
+import 'package:escoge/features/oracion/services/liturgia_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -13,611 +10,747 @@ class LecturasScreen extends StatefulWidget {
 }
 
 class _LecturasScreenState extends State<LecturasScreen> {
-  late Future<LecturasDayData> _futureLecturas;
+  final LiturgiaService _liturgiaService = LiturgiaService();
+
+  bool _isLoading = true;
+  String? _error;
+  Map<String, dynamic>? _liturgia;
 
   @override
   void initState() {
     super.initState();
-    _futureLecturas = LecturasService.getLecturasDelDia();
+    _cargarLiturgia();
   }
 
-  String safe(String? value) => (value ?? '').trim();
+  Future<void> _cargarLiturgia() async {
+    try {
+      setState(() {
+        _isLoading = true;
+        _error = null;
+      });
+
+      final data = await _liturgiaService.obtenerLiturgiaDelDia();
+
+      if (!mounted) return;
+
+      setState(() {
+        _liturgia = data;
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _error =
+            'No se pudieron cargar las lecturas del día. Verifica Firestore y tu conexión.';
+        _isLoading = false;
+      });
+    }
+  }
+
+  String _safeText(dynamic value, {String fallback = ''}) {
+    if (value == null) return fallback;
+    return value.toString();
+  }
+
+  Map<String, dynamic>? _safeMap(dynamic value) {
+    if (value is Map<String, dynamic>) return value;
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
-    Theme.of(context);
-
-    const backgroundTop = Color(0xFF081B4B);
-    const backgroundBottom = Color(0xFF0C2A66);
+    const deepBlue = Color(0xFF0B1E66);
+    const royalBlue = Color(0xFF1736A2);
+    const softBlueBg = Color(0xFFF3F6FD);
     const gold = Color(0xFFD4AF37);
-    const softGold = Color(0xFFF4E7B2);
-    const textPrimary = Color(0xFF10224F);
-    const textBody = Color(0xFF2D3653);
+    const white = Colors.white;
+    const textPrimary = Color(0xFF1B2559);
+    const textSecondary = Color(0xFF667085);
+
+    final primeraLectura = _safeMap(_liturgia?['primeraLectura']);
+    final salmo = _safeMap(_liturgia?['salmo']);
+    final segundaLectura = _safeMap(_liturgia?['segundaLectura']);
+    final evangelio = _safeMap(_liturgia?['evangelio']);
+
+    final tituloDia = _safeText(
+      _liturgia?['tituloDia'],
+      fallback: 'Lecturas del día',
+    );
+    final celebracion = _safeText(_liturgia?['celebracion']);
+    final tiempoLiturgico = _safeText(_liturgia?['tiempoLiturgico']);
+    final colorLiturgico = _safeText(_liturgia?['colorLiturgico']);
 
     return Scaffold(
-      backgroundColor: backgroundTop,
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [backgroundTop, backgroundBottom],
+      backgroundColor: softBlueBg,
+      body: RefreshIndicator(
+        onRefresh: _cargarLiturgia,
+        color: deepBlue,
+        child: CustomScrollView(
+          physics: const BouncingScrollPhysics(
+            parent: AlwaysScrollableScrollPhysics(),
           ),
-        ),
-        child: SafeArea(
-          child: FutureBuilder<LecturasDayData>(
-            future: _futureLecturas,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: CircularProgressIndicator(color: gold),
-                );
-              }
-
-              if (snapshot.hasError || !snapshot.hasData) {
-                return _ErrorState(
-                  onRetry: () {
-                    setState(() {
-                      _futureLecturas = LecturasService.getLecturasDelDia();
-                    });
-                  },
-                );
-              }
-
-              final data = snapshot.data!;
-
-              final fecha = safe(data.fecha);
-              final tiempoLiturgico = safe(data.tiempoLiturgico);
-              final descripcionLiturgica = safe(data.descripcionLiturgica);
-
-              final primeraLecturaCita = safe(data.primeraLecturaCita);
-              final primeraLecturaContenido = safe(
-                data.primeraLecturaContenido,
-              );
-
-              final salmoCita = safe(data.salmoCita);
-              final salmoContenido = safe(data.salmoContenido);
-
-              final segundaLecturaCita = safe(data.segundaLecturaCita);
-              final segundaLecturaContenido = safe(
-                data.segundaLecturaContenido,
-              );
-
-              final evangelioCita = safe(data.evangelioCita);
-              final evangelioIntroduccion = safe(data.evangelioIntroduccion);
-              final evangelioContenido = safe(data.evangelioContenido);
-              final evangelioDestacado = safe(data.evangelioDestacado);
-
-              final hasSegundaLectura = segundaLecturaCita.isNotEmpty &&
-                  segundaLecturaContenido.isNotEmpty;
-
-              return CustomScrollView(
-                physics: const BouncingScrollPhysics(),
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: OracionHeader(
-                      title: 'Lecturas del Día',
-                      subtitle:
-                          'La liturgia diaria para acompañar tu encuentro con Dios',
-                      onBackTap: Navigator.canPop(context)
-                          ? () => Navigator.pop(context)
-                          : null,
-                    ),
+          slivers: [
+            SliverToBoxAdapter(
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [deepBlue, royalBlue],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
                   ),
-                  const SliverToBoxAdapter(
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(20, 8, 20, 0),
-                      child: EvangelioFeatureImage(
-                        imagePath: 'assets/images/fondo2.png',
-                      ),
-                    ),
-                  ),
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 18, 20, 6),
-                      child: _LiturgiaEditorialCard(
-                        fecha: fecha,
-                        tiempoLiturgico: tiempoLiturgico,
-                        descripcionLiturgica: descripcionLiturgica,
-                        gold: gold,
-                        softGold: softGold,
-                        textPrimary: textPrimary,
-                        textBody: textBody,
-                      ),
-                    ),
-                  ),
-                  if (primeraLecturaCita.isNotEmpty ||
-                      primeraLecturaContenido.isNotEmpty)
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-                        child: _ReadingCard(
-                          label: 'Primera lectura',
-                          cita: primeraLecturaCita,
-                          contenido: primeraLecturaContenido,
-                          gold: gold,
-                          textPrimary: textPrimary,
-                          textBody: textBody,
-                        ),
-                      ),
-                    ),
-                  if (salmoCita.isNotEmpty || salmoContenido.isNotEmpty)
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-                        child: _ReadingCard(
-                          label: 'Salmo',
-                          cita: salmoCita,
-                          contenido: salmoContenido,
-                          gold: gold,
-                          textPrimary: textPrimary,
-                          textBody: textBody,
-                          isPsalm: true,
-                        ),
-                      ),
-                    ),
-                  if (hasSegundaLectura)
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-                        child: _ReadingCard(
-                          label: 'Segunda lectura',
-                          cita: segundaLecturaCita,
-                          contenido: segundaLecturaContenido,
-                          gold: gold,
-                          textPrimary: textPrimary,
-                          textBody: textBody,
-                        ),
-                      ),
-                    ),
-                  if (evangelioCita.isNotEmpty ||
-                      evangelioIntroduccion.isNotEmpty ||
-                      evangelioContenido.isNotEmpty ||
-                      evangelioDestacado.isNotEmpty)
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
-                        child: _EvangelioSpotlightCard(
-                          cita: evangelioCita,
-                          introduccion: evangelioIntroduccion,
-                          contenido: evangelioContenido,
-                          destacado: evangelioDestacado,
-                          gold: gold,
-                        ),
-                      ),
-                    ),
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 22, 20, 34),
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const EvangelioScreen(),
-                                  ),
-                                );
-                              },
-                              child: const Text('Meditar Evangelio'),
-                            ),
-                          ),
-                          if (Navigator.canPop(context)) ...[
-                            const SizedBox(height: 14),
+                ),
+                child: SafeArea(
+                  bottom: false,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 14, 20, 28),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
                             GestureDetector(
-                              onTap: () => Navigator.pop(context),
+                              onTap: () => Navigator.of(context).maybePop(),
                               child: Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 14,
-                                ),
-                                alignment: Alignment.center,
-                                child: Text(
-                                  'Volver',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white.withValues(alpha: 0.85),
+                                width: 46,
+                                height: 46,
+                                decoration: BoxDecoration(
+                                  color: white.withOpacity(0.12),
+                                  borderRadius: BorderRadius.circular(14),
+                                  border: Border.all(
+                                    color: white.withOpacity(0.10),
                                   ),
+                                ),
+                                child: const Icon(
+                                  Icons.arrow_back_ios_new_rounded,
+                                  color: white,
+                                  size: 18,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Oración',
+                                    style: GoogleFonts.poppins(
+                                      color: white.withOpacity(0.75),
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    'Lecturas del día',
+                                    style: GoogleFonts.poppins(
+                                      color: white,
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: gold.withOpacity(0.16),
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                              child: Text(
+                                'Hoy',
+                                style: GoogleFonts.poppins(
+                                  color: gold,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
                             ),
                           ],
-                        ],
-                      ),
+                        ),
+                        const SizedBox(height: 22),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(22),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(28),
+                            gradient: LinearGradient(
+                              colors: [
+                                white.withOpacity(0.10),
+                                white.withOpacity(0.04),
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            border: Border.all(
+                              color: white.withOpacity(0.10),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: gold.withOpacity(0.16),
+                                  borderRadius: BorderRadius.circular(999),
+                                ),
+                                child: Text(
+                                  tituloDia,
+                                  style: GoogleFonts.poppins(
+                                    color: gold,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 14),
+                              Text(
+                                celebracion.isNotEmpty
+                                    ? celebracion
+                                    : 'Liturgia del día',
+                                style: GoogleFonts.lora(
+                                  color: white,
+                                  fontSize: 27,
+                                  height: 1.25,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(height: 14),
+                              Wrap(
+                                spacing: 10,
+                                runSpacing: 10,
+                                children: [
+                                  if (tiempoLiturgico.isNotEmpty)
+                                    _TopChip(text: tiempoLiturgico),
+                                  if (colorLiturgico.isNotEmpty)
+                                    _TopChip(text: 'Color: $colorLiturgico'),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              );
-            },
-          ),
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Transform.translate(
+                offset: const Offset(0, -14),
+                child: Container(
+                  decoration: const BoxDecoration(
+                    color: softBlueBg,
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(28),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 22, 20, 32),
+                    child: _buildBody(
+                      primeraLectura: primeraLectura,
+                      salmo: salmo,
+                      segundaLectura: segundaLectura,
+                      evangelio: evangelio,
+                      textPrimary: textPrimary,
+                      textSecondary: textSecondary,
+                      deepBlue: deepBlue,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
+
+  Widget _buildBody({
+    required Map<String, dynamic>? primeraLectura,
+    required Map<String, dynamic>? salmo,
+    required Map<String, dynamic>? segundaLectura,
+    required Map<String, dynamic>? evangelio,
+    required Color textPrimary,
+    required Color textSecondary,
+    required Color deepBlue,
+  }) {
+    const white = Colors.white;
+
+    if (_isLoading) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(28),
+        decoration: BoxDecoration(
+          color: white,
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Column(
+          children: [
+            const CircularProgressIndicator(
+              color: Color(0xFF0B1E66),
+              strokeWidth: 2.5,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Cargando lecturas del día...',
+              style: GoogleFonts.poppins(
+                color: textSecondary,
+                fontSize: 13.5,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_error != null) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: white,
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Column(
+          children: [
+            const Icon(
+              Icons.cloud_off_rounded,
+              size: 38,
+              color: Color(0xFF0B1E66),
+            ),
+            const SizedBox(height: 14),
+            Text(
+              _error!,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(
+                color: textSecondary,
+                fontSize: 13.5,
+                height: 1.6,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 18),
+            GestureDetector(
+              onTap: _cargarLiturgia,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 13,
+                ),
+                decoration: BoxDecoration(
+                  color: deepBlue,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Text(
+                  'Intentar de nuevo',
+                  style: GoogleFonts.poppins(
+                    color: white,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_liturgia == null) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: white,
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Column(
+          children: [
+            const Icon(
+              Icons.menu_book_rounded,
+              size: 40,
+              color: Color(0xFF0B1E66),
+            ),
+            const SizedBox(height: 14),
+            Text(
+              'Aún no hay lecturas disponibles para hoy.',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(
+                color: textPrimary,
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'Cuando agregues el documento del día en Firestore, aquí se mostrarán automáticamente.',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(
+                color: textSecondary,
+                fontSize: 13,
+                height: 1.6,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (primeraLectura != null)
+          _ReadingCard(
+            sectionLabel: 'Primera lectura',
+            title: _safeText(
+              primeraLectura['titulo'],
+              fallback: 'Primera lectura',
+            ),
+            cita: _safeText(primeraLectura['cita']),
+            content: _safeText(primeraLectura['texto']),
+          ),
+        if (primeraLectura != null) const SizedBox(height: 18),
+        if (salmo != null)
+          _PsalmCard(
+            cita: _safeText(salmo['cita']),
+            respuesta: _safeText(salmo['respuesta']),
+            content: _safeText(salmo['texto']),
+          ),
+        if (salmo != null) const SizedBox(height: 18),
+        if (segundaLectura != null)
+          _ReadingCard(
+            sectionLabel: 'Segunda lectura',
+            title: _safeText(
+              segundaLectura['titulo'],
+              fallback: 'Segunda lectura',
+            ),
+            cita: _safeText(segundaLectura['cita']),
+            content: _safeText(segundaLectura['texto']),
+          ),
+        if (segundaLectura != null) const SizedBox(height: 18),
+        if (evangelio != null)
+          _ReadingCard(
+            sectionLabel: 'Evangelio',
+            title: _safeText(
+              evangelio['titulo'],
+              fallback: 'Evangelio del día',
+            ),
+            cita: _safeText(evangelio['cita']),
+            content: _safeText(evangelio['texto']),
+            isHighlighted: true,
+          ),
+        if (primeraLectura == null &&
+            salmo == null &&
+            segundaLectura == null &&
+            evangelio == null)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: white,
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: Column(
+              children: [
+                const Icon(
+                  Icons.chrome_reader_mode_rounded,
+                  size: 40,
+                  color: Color(0xFF0B1E66),
+                ),
+                const SizedBox(height: 14),
+                Text(
+                  'El documento existe, pero aún no contiene lecturas configuradas.',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.poppins(
+                    color: textPrimary,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Agrega primeraLectura, salmo, segundaLectura o evangelio dentro del documento de hoy.',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.poppins(
+                    color: textSecondary,
+                    fontSize: 13,
+                    height: 1.6,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
 }
 
-class _LiturgiaEditorialCard extends StatelessWidget {
-  const _LiturgiaEditorialCard({
-    required this.fecha,
-    required this.tiempoLiturgico,
-    required this.descripcionLiturgica,
-    required this.gold,
-    required this.softGold,
-    required this.textPrimary,
-    required this.textBody,
-  });
+class _TopChip extends StatelessWidget {
+  final String text;
 
-  final String fecha;
-  final String tiempoLiturgico;
-  final String descripcionLiturgica;
-  final Color gold;
-  final Color softGold;
-  final Color textPrimary;
-  final Color textBody;
+  const _TopChip({required this.text});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(22),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(28),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFFFDF8EC), Color(0xFFF6EFD8)],
+        color: Colors.white.withOpacity(0.10),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.08),
         ),
-        border: Border.all(color: const Color(0xFFE6D7A6)),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x18000000),
-            blurRadius: 18,
-            offset: Offset(0, 10),
-          ),
-        ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Hoy en la Iglesia',
-            style: GoogleFonts.poppins(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: const Color(0xFF8A6A00),
-              letterSpacing: 0.4,
-            ),
-          ),
-          const SizedBox(height: 10),
-          if (fecha.isNotEmpty)
-            Text(
-              fecha,
-              style: GoogleFonts.poppins(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: const Color(0xFF7A6840),
-              ),
-            ),
-          const SizedBox(height: 12),
-          Text(
-            tiempoLiturgico.isNotEmpty ? tiempoLiturgico : 'Liturgia del día',
-            style: GoogleFonts.lora(
-              fontSize: 26,
-              fontWeight: FontWeight.w700,
-              height: 1.15,
-              color: textPrimary,
-            ),
-          ),
-          const SizedBox(height: 14),
-          Container(
-            width: 70,
-            height: 4,
-            decoration: BoxDecoration(
-              color: gold,
-              borderRadius: BorderRadius.circular(999),
-            ),
-          ),
-          if (descripcionLiturgica.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            Text(
-              descripcionLiturgica,
-              style: GoogleFonts.poppins(
-                fontSize: 15,
-                height: 1.7,
-                color: textBody,
-              ),
-            ),
-          ],
-          const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            decoration: BoxDecoration(
-              color: softGold,
-              borderRadius: BorderRadius.circular(999),
-            ),
-            child: Text(
-              'Contenido litúrgico del día',
-              style: GoogleFonts.poppins(
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                color: const Color(0xFF8A6A00),
-              ),
-            ),
-          ),
-        ],
+      child: Text(
+        text,
+        style: GoogleFonts.poppins(
+          color: Colors.white,
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }
 }
 
 class _ReadingCard extends StatelessWidget {
+  final String sectionLabel;
+  final String title;
+  final String cita;
+  final String content;
+  final bool isHighlighted;
+
   const _ReadingCard({
-    required this.label,
+    required this.sectionLabel,
+    required this.title,
     required this.cita,
-    required this.contenido,
-    required this.gold,
-    required this.textPrimary,
-    required this.textBody,
-    this.isPsalm = false,
+    required this.content,
+    this.isHighlighted = false,
   });
 
-  final String label;
-  final String cita;
-  final String contenido;
-  final Color gold;
-  final Color textPrimary;
-  final Color textBody;
-  final bool isPsalm;
-
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 18,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _SectionTag(label: label, gold: gold),
-          if (cita.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            Text(
-              cita,
-              style: GoogleFonts.poppins(
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-                color: textPrimary,
-              ),
-            ),
-          ],
-          if (contenido.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            Text(
-              contenido,
-              style: isPsalm
-                  ? GoogleFonts.lora(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      height: 1.9,
-                      color: textBody,
-                    )
-                  : GoogleFonts.lora(
-                      fontSize: 16,
-                      height: 1.9,
-                      color: textBody,
-                    ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _EvangelioSpotlightCard extends StatelessWidget {
-  const _EvangelioSpotlightCard({
-    required this.cita,
-    required this.introduccion,
-    required this.contenido,
-    required this.destacado,
-    required this.gold,
-  });
-
-  final String cita;
-  final String introduccion;
-  final String contenido;
-  final String destacado;
-  final Color gold;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF0F2A66), Color(0xFF091D4F)],
-        ),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x26000000),
-            blurRadius: 22,
-            offset: Offset(0, 12),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _SectionTag(label: 'Evangelio del día', gold: gold, darkMode: true),
-          if (cita.isNotEmpty) ...[
-            const SizedBox(height: 18),
-            Text(
-              cita,
-              style: GoogleFonts.poppins(
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-                color: gold,
-              ),
-            ),
-          ],
-          if (introduccion.isNotEmpty) ...[
-            const SizedBox(height: 14),
-            Text(
-              introduccion,
-              style: GoogleFonts.lora(
-                fontSize: 22,
-                fontWeight: FontWeight.w700,
-                height: 1.3,
-                color: Colors.white,
-              ),
-            ),
-          ],
-          if (contenido.isNotEmpty) ...[
-            const SizedBox(height: 18),
-            Text(
-              contenido,
-              style: GoogleFonts.poppins(
-                fontSize: 15,
-                height: 1.9,
-                color: Colors.white.withValues(alpha: 0.92),
-              ),
-            ),
-          ],
-          if (destacado.isNotEmpty) ...[
-            const SizedBox(height: 20),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(18),
-              decoration: BoxDecoration(
-                color: const Color(0xFF173673),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
-              ),
-              child: Text(
-                destacado,
-                style: GoogleFonts.lora(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  height: 1.55,
-                  color: gold,
-                ),
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _SectionTag extends StatelessWidget {
-  const _SectionTag({
-    required this.label,
-    required this.gold,
-    this.darkMode = false,
-  });
-
-  final String label;
-  final Color gold;
-  final bool darkMode;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      decoration: BoxDecoration(
-        color:
-            darkMode ? gold.withValues(alpha: 0.16) : const Color(0xFFF4E7B2),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        label,
-        style: GoogleFonts.poppins(
-          fontSize: 12,
-          fontWeight: FontWeight.w700,
-          color: darkMode ? gold : const Color(0xFF7A5A00),
-        ),
-      ),
-    );
-  }
-}
-
-class _ErrorState extends StatelessWidget {
-  const _ErrorState({required this.onRetry});
-
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
+    const white = Colors.white;
+    const textPrimary = Color(0xFF1B2559);
+    const textSecondary = Color(0xFF667085);
+    const deepBlue = Color(0xFF0B1E66);
     const gold = Color(0xFFD4AF37);
 
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 28),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.menu_book_rounded, size: 54, color: gold),
-            const SizedBox(height: 18),
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: white,
+        borderRadius: BorderRadius.circular(24),
+        border: isHighlighted
+            ? Border.all(
+                color: gold.withOpacity(0.45),
+                width: 1.2,
+              )
+            : null,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (sectionLabel.isNotEmpty)
             Text(
-              'No fue posible cargar las lecturas del día.',
-              textAlign: TextAlign.center,
+              sectionLabel,
               style: GoogleFonts.poppins(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
+                color: isHighlighted ? deepBlue : textSecondary,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
               ),
             ),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            style: GoogleFonts.lora(
+              color: textPrimary,
+              fontSize: 23,
+              height: 1.35,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          if (cita.isNotEmpty) ...[
             const SizedBox(height: 10),
-            Text(
-              'Intenta nuevamente para continuar con la liturgia diaria.',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                height: 1.6,
-                color: Colors.white70,
-              ),
-            ),
-            const SizedBox(height: 22),
-            ElevatedButton(
-              onPressed: onRetry,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: gold,
-                foregroundColor: const Color(0xFF081B4B),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 22,
-                  vertical: 14,
-                ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+              decoration: BoxDecoration(
+                color: isHighlighted
+                    ? gold.withOpacity(0.16)
+                    : deepBlue.withOpacity(0.07),
+                borderRadius: BorderRadius.circular(999),
               ),
               child: Text(
-                'Reintentar',
-                style: GoogleFonts.poppins(fontWeight: FontWeight.w700),
+                cita,
+                style: GoogleFonts.poppins(
+                  color: isHighlighted ? const Color(0xFF8A6A00) : deepBlue,
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
           ],
-        ),
+          const SizedBox(height: 18),
+          Container(
+            width: 56,
+            height: 4,
+            decoration: BoxDecoration(
+              color: isHighlighted ? gold : deepBlue.withOpacity(0.22),
+              borderRadius: BorderRadius.circular(999),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            content.isNotEmpty
+                ? content
+                : 'No hay contenido disponible en esta lectura.',
+            style: GoogleFonts.lora(
+              color: textPrimary,
+              fontSize: 16.5,
+              height: 1.9,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PsalmCard extends StatelessWidget {
+  final String cita;
+  final String respuesta;
+  final String content;
+
+  const _PsalmCard({
+    required this.cita,
+    required this.respuesta,
+    required this.content,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    const white = Colors.white;
+    const textPrimary = Color(0xFF1B2559);
+    const textSecondary = Color(0xFF667085);
+    const deepBlue = Color(0xFF0B1E66);
+    const gold = Color(0xFFD4AF37);
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Salmo',
+            style: GoogleFonts.poppins(
+              color: textSecondary,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            respuesta.isNotEmpty ? respuesta : 'Salmo responsorial',
+            style: GoogleFonts.lora(
+              color: textPrimary,
+              fontSize: 23,
+              height: 1.35,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          if (cita.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+              decoration: BoxDecoration(
+                color: deepBlue.withOpacity(0.07),
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: Text(
+                cita,
+                style: GoogleFonts.poppins(
+                  color: deepBlue,
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+          const SizedBox(height: 18),
+          Container(
+            width: 56,
+            height: 4,
+            decoration: BoxDecoration(
+              color: gold,
+              borderRadius: BorderRadius.circular(999),
+            ),
+          ),
+          const SizedBox(height: 18),
+          if (respuesta.isNotEmpty)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: gold.withOpacity(0.10),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Text(
+                respuesta,
+                style: GoogleFonts.poppins(
+                  color: const Color(0xFF8A6A00),
+                  fontSize: 14,
+                  height: 1.6,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          if (respuesta.isNotEmpty) const SizedBox(height: 16),
+          Text(
+            content.isNotEmpty
+                ? content
+                : 'No hay texto disponible para el salmo.',
+            style: GoogleFonts.lora(
+              color: textPrimary,
+              fontSize: 16.5,
+              height: 1.9,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ),
     );
   }

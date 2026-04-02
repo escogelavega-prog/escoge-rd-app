@@ -1,6 +1,7 @@
+import 'package:flutter/material.dart';
+
 import 'package:escoge/core/theme/app_colors.dart';
 import 'package:escoge/core/theme/app_spacing.dart';
-import 'package:flutter/material.dart';
 
 class AppHeader extends StatelessWidget {
   final String title;
@@ -27,9 +28,9 @@ class AppHeader extends StatelessWidget {
       padding: padding ??
           const EdgeInsets.fromLTRB(
             AppSpacing.lg,
-            52,
+            54,
             AppSpacing.lg,
-            AppSpacing.lg,
+            22,
           ),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
@@ -44,40 +45,47 @@ class AppHeader extends StatelessWidget {
           bottom: Radius.circular(30),
         ),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
+        alignment: Alignment.center,
         children: [
-          if (leftWidget != null) ...[
-            leftWidget!,
-            const SizedBox(width: 12),
-          ],
-          Expanded(
+          if (leftWidget != null)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: leftWidget!,
+            ),
+          if (rightWidget != null)
+            Align(
+              alignment: Alignment.centerRight,
+              child: rightWidget!,
+            ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 68),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   title,
+                  textAlign: TextAlign.center,
                   style: textTheme.headlineSmall?.copyWith(
                     color: Colors.white,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w800,
+                    height: 1.15,
                   ),
                 ),
                 if (subtitle != null) ...[
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 5),
                   Text(
                     subtitle!,
+                    textAlign: TextAlign.center,
                     style: textTheme.bodyMedium?.copyWith(
-                      color: Colors.white.withValues(alpha: 0.82),
+                      color: Colors.white.withOpacity(0.82),
+                      height: 1.3,
                     ),
                   ),
                 ],
               ],
             ),
           ),
-          if (rightWidget != null) ...[
-            const SizedBox(width: 12),
-            rightWidget!,
-          ],
         ],
       ),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:escoge/core/widgets/custom_bottom_nav.dart';
+
 import 'package:escoge/features/contenido/presentation/contenido_screen.dart';
 import 'package:escoge/features/home/presentation/home_screen.dart';
 import 'package:escoge/features/oracion/presentation/oracion_screen.dart';
@@ -19,47 +20,34 @@ class _MainShellState extends State<MainShell> {
 
   void _goToTab(int index) {
     if (_currentIndex == index) return;
-
     setState(() {
       _currentIndex = index;
     });
   }
 
-  Future<bool> _onWillPop() async {
-    if (_currentIndex != 0) {
-      _goToTab(0);
-      return false;
-    }
-    return true;
-  }
+  late final List<Widget> _screens = [
+    HomeScreen(
+      onOpenOracion: () => _goToTab(1),
+      onOpenRetiros: () => _goToTab(2),
+      onOpenContenido: () => _goToTab(3),
+    ),
+    const OracionScreen(),
+    const RetirosScreen(),
+    const ContenidoScreen(),
+    const PerfilScreen(),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final screens = <Widget>[
-      HomeScreen(
-        onOpenOracion: () => _goToTab(1),
-        onOpenRetiros: () => _goToTab(2),
-        onOpenContenido: () => _goToTab(3),
-        onOpenPerfil: () => _goToTab(4),
+    return Scaffold(
+      extendBody: true,
+      body: IndexedStack(
+        index: _currentIndex,
+        children: _screens,
       ),
-      const OracionScreen(),
-      const RetirosScreen(),
-      const ContenidoScreen(),
-      const PerfilScreen(),
-    ];
-
-    // ignore: deprecated_member_use
-    return WillPopScope(
-      onWillPop: _onWillPop,
-      child: Scaffold(
-        body: IndexedStack(
-          index: _currentIndex,
-          children: screens,
-        ),
-        bottomNavigationBar: CustomBottomNav(
-          currentIndex: _currentIndex,
-          onTap: _goToTab,
-        ),
+      bottomNavigationBar: CustomBottomNav(
+        currentIndex: _currentIndex,
+        onTap: _goToTab,
       ),
     );
   }

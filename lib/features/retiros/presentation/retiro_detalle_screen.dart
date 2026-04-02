@@ -22,42 +22,72 @@ class RetiroDetalleScreen extends StatefulWidget {
 
 class _RetiroDetalleScreenState extends State<RetiroDetalleScreen> {
   bool _inscripcionEnviada = false;
+  bool _abriendoInscripcion = false;
 
   RetiroItem get retiro => widget.retiro;
 
   String get _retiroId => retiro.id;
 
+  bool get _esFds {
+    final tipo = retiro.tipoFormulario.trim().toLowerCase();
+    return tipo == 'fds' || tipo.contains('fds');
+  }
+
   Future<void> _openInscripcion() async {
-    final Widget destination = retiro.tipoFormulario == 'fds'
-        ? retiro_fds.InscripcionFDSScreen(
-            diocesis: retiro.diocesis,
-            retiroId: _retiroId,
-            retiroNombre: retiro.titulo,
-          )
-        : retiro_local.InscripcionScreen(
-            diocesis: retiro.diocesis,
-            retiroId: _retiroId,
-            retiroNombre: retiro.titulo,
-          );
+    if (_abriendoInscripcion) return;
 
-    final navigator = Navigator.of(context);
-    final messenger = ScaffoldMessenger.of(context);
+    setState(() {
+      _abriendoInscripcion = true;
+    });
 
-    final result = await navigator.push(
-      MaterialPageRoute(builder: (_) => destination),
-    );
+    try {
+      final Widget destination = _esFds
+          ? retiro_fds.InscripcionFDSScreen(
+              diocesis: retiro.diocesis,
+              retiroId: _retiroId,
+              retiroNombre: retiro.titulo,
+            )
+          : retiro_local.InscripcionScreen(
+              diocesis: retiro.diocesis,
+              retiroId: _retiroId,
+              retiroNombre: retiro.titulo,
+            );
 
-    if (!mounted) return;
+      final result = await Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => destination),
+      );
 
-    if (result == true) {
-      setState(() {
-        _inscripcionEnviada = true;
-      });
+      if (!mounted) return;
 
-      messenger.showSnackBar(
+      final fueExitosa =
+          result == true || result == 'success' || result == 'ok';
+
+      if (fueExitosa) {
+        setState(() {
+          _inscripcionEnviada = true;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Tu inscripción fue enviada correctamente.'),
+            backgroundColor: AppColors.primaryBlue,
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+          ),
+        );
+      }
+    } catch (_) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Tu inscripción fue enviada correctamente.'),
-          backgroundColor: AppColors.primaryBlue,
+          content: const Text(
+            'No se pudo abrir el formulario de inscripción.',
+          ),
+          backgroundColor: Colors.red.shade700,
           behavior: SnackBarBehavior.floating,
           margin: const EdgeInsets.all(16),
           shape: RoundedRectangleBorder(
@@ -65,6 +95,12 @@ class _RetiroDetalleScreenState extends State<RetiroDetalleScreen> {
           ),
         ),
       );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _abriendoInscripcion = false;
+        });
+      }
     }
   }
 
@@ -95,6 +131,7 @@ class _RetiroDetalleScreenState extends State<RetiroDetalleScreen> {
       ),
       bottomNavigationBar: _BottomInscripcionBar(
         yaInscrito: _inscripcionEnviada,
+        cargando: _abriendoInscripcion,
         onTap: _openInscripcion,
       ),
       body: SingleChildScrollView(
@@ -129,6 +166,7 @@ class _RetiroDetalleScreenState extends State<RetiroDetalleScreen> {
               title: 'Participación',
               child: _InscripcionSectionInline(
                 yaInscrito: _inscripcionEnviada,
+                cargando: _abriendoInscripcion,
                 onTap: _openInscripcion,
               ),
             ),
@@ -528,6 +566,17 @@ class _RecomendacionesContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (recomendaciones.isEmpty) {
+      return Text(
+        'No hay recomendaciones disponibles por el momento.',
+        style: GoogleFonts.poppins(
+          fontSize: 13.8,
+          height: 1.5,
+          color: AppColors.textSecondary,
+        ),
+      );
+    }
+
     return Column(
       children: recomendaciones
           .asMap()
@@ -567,33 +616,43 @@ class _RecomendacionesContent extends StatelessWidget {
 
 class _InscripcionSectionInline extends StatelessWidget {
   final bool yaInscrito;
+  final bool cargando;
   final VoidCallback onTap;
 
   const _InscripcionSectionInline({
     required this.yaInscrito,
+    required this.cargando,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return PremiumMenuCard(
-      icon:
-          yaInscrito ? Icons.verified_rounded : Icons.app_registration_rounded,
-      title: yaInscrito ? 'Solicitud enviada' : 'Inscribirme',
+      icon: yaInscrito
+          ? Icons.verified_rounded
+          : Icons.app_registration_rounded,
+      title: yaInscrito
+          ? 'Solicitud enviada'
+          : cargando
+              ? 'Abriendo formulario...'
+              : 'Inscribirme',
       subtitle: yaInscrito
           ? 'Tu participación ya fue solicitada para este encuentro.'
           : 'Completa tu formulario para reservar tu participación en este encuentro.',
-      onTap: onTap,
+      onTap: cargando ? null : onTap,
+      showArrow: !cargando,
     );
   }
 }
 
 class _BottomInscripcionBar extends StatelessWidget {
   final bool yaInscrito;
+  final bool cargando;
   final VoidCallback onTap;
 
   const _BottomInscripcionBar({
     required this.yaInscrito,
+    required this.cargando,
     required this.onTap,
   });
 
@@ -637,23 +696,35 @@ class _BottomInscripcionBar extends StatelessWidget {
             width: double.infinity,
             height: 54,
             child: ElevatedButton(
-              onPressed: onTap,
+              onPressed: cargando ? null : onTap,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryBlue,
                 foregroundColor: Colors.white,
                 elevation: 0,
+                disabledBackgroundColor:
+                    AppColors.primaryBlue.withValues(alpha: 0.45),
+                disabledForegroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
               ),
-              child: Text(
-                yaInscrito ? 'VER FORMULARIO' : 'INSCRIBIRME',
-                style: GoogleFonts.poppins(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.4,
-                ),
-              ),
+              child: cargando
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : Text(
+                      yaInscrito ? 'YA INSCRITO' : 'INSCRIBIRME',
+                      style: GoogleFonts.poppins(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.4,
+                      ),
+                    ),
             ),
           ),
         ],

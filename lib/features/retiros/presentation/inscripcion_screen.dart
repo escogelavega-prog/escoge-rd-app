@@ -1,6 +1,5 @@
 import 'package:escoge/core/theme/app_colors.dart';
-import 'package:escoge/features/retiros/data/repositories/inscripciones_repository.dart';
-import 'package:escoge/features/retiros/data/services/inscripcion_fds_service.dart';
+import 'package:escoge/features/retiros/data/services/inscripcion_retiro_service.dart';
 import 'package:escoge/features/retiros/domain/inscripcion_model.dart';
 import 'package:escoge/features/retiros/presentation/inscripcion_success_screen.dart';
 import 'package:flutter/material.dart';
@@ -25,8 +24,7 @@ class InscripcionScreen extends StatefulWidget {
 class _InscripcionScreenState extends State<InscripcionScreen> {
   final _pageController = PageController();
   final _formKey = GlobalKey<FormState>();
-  final InscripcionesRepository repository =
-      InscripcionesRepository(InscripcionFDSService());
+  final _service = InscripcionRetiroService();
 
   int _currentStep = 0;
   bool _isSaving = false;
@@ -64,7 +62,7 @@ class _InscripcionScreenState extends State<InscripcionScreen> {
       final model = InscripcionModel(
         diocesis: widget.diocesis,
         retiroId: widget.retiroId,
-        retiroNombre: widget.retiroNombre,
+        retiroTitulo: widget.retiroNombre,
         tipoFormulario: 'general',
         nombre: nombreController.text.trim(),
         apellidos: apellidosController.text.trim(),
@@ -74,7 +72,10 @@ class _InscripcionScreenState extends State<InscripcionScreen> {
         direccion: direccionController.text.trim(),
       );
 
-      await repository.guardarSimple(model);
+      await _service.inscribir(
+        retiroId: widget.retiroId,
+        data: model.toJson(),
+      );
 
       if (!mounted) return;
 
@@ -89,7 +90,7 @@ class _InscripcionScreenState extends State<InscripcionScreen> {
       );
     } catch (e) {
       if (!mounted) return;
-      _showError(e.toString());
+      _showError(e.toString().replaceFirst('Exception: ', ''));
     } finally {
       if (mounted) {
         setState(() => _isSaving = false);
@@ -100,7 +101,7 @@ class _InscripcionScreenState extends State<InscripcionScreen> {
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Error: $message'),
+        content: Text(message),
         backgroundColor: Colors.red.shade700,
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.all(16),
@@ -148,12 +149,12 @@ class _InscripcionScreenState extends State<InscripcionScreen> {
     final cedula = cedulaController.text.trim();
 
     if (nombre.isEmpty || apellidos.isEmpty || cedula.isEmpty) {
-      _showError('Completa todos los campos del paso 1');
+      _showError('Completa todos los campos del paso 1.');
       return false;
     }
 
     if (cedula.length < 6) {
-      _showError('La cédula o pasaporte parece inválido');
+      _showError('La cédula o pasaporte parece inválido.');
       return false;
     }
 
@@ -165,17 +166,17 @@ class _InscripcionScreenState extends State<InscripcionScreen> {
     final email = emailController.text.trim();
 
     if (telefono.isEmpty || email.isEmpty) {
-      _showError('Completa todos los campos del paso 2');
+      _showError('Completa todos los campos del paso 2.');
       return false;
     }
 
     if (telefono.length < 7) {
-      _showError('El teléfono parece inválido');
+      _showError('El teléfono parece inválido.');
       return false;
     }
 
     if (!email.contains('@') || !email.contains('.')) {
-      _showError('Ingresa un correo electrónico válido');
+      _showError('Ingresa un correo electrónico válido.');
       return false;
     }
 

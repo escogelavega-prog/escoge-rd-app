@@ -1,8 +1,9 @@
 class InscripcionModel {
   final String diocesis;
   final String retiroId;
-  final String retiroNombre;
+  final String retiroTitulo;
   final String tipoFormulario;
+
   final String nombre;
   final String apellidos;
   final String cedula;
@@ -13,7 +14,7 @@ class InscripcionModel {
   const InscripcionModel({
     required this.diocesis,
     required this.retiroId,
-    required this.retiroNombre,
+    required this.retiroTitulo,
     required this.tipoFormulario,
     required this.nombre,
     required this.apellidos,
@@ -26,13 +27,20 @@ class InscripcionModel {
   Map<String, dynamic> toJson() => {
         'diocesis': diocesis,
         'retiroId': retiroId,
-        'retiroNombre': retiroNombre,
+        'retiroTitulo': retiroTitulo,
         'tipoFormulario': tipoFormulario,
+
         'nombre': nombre,
         'apellidos': apellidos,
         'cedula': cedula,
         'telefono': telefono,
         'email': email,
         'direccion': direccion,
+
+        // 🔥 base común
+        'estado': 'pendiente',
+        'origen': 'app',
+        'activo': true,
+        'createdAt': DateTime.now(), // luego el service lo reemplaza si usas serverTimestamp
       };
 }

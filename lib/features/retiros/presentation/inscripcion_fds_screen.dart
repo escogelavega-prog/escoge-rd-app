@@ -1,5 +1,5 @@
 import 'package:escoge/features/retiros/data/services/diocesis_service.dart';
-import 'package:escoge/features/retiros/data/services/inscripcion_fds_service.dart';
+import 'package:escoge/features/retiros/data/services/inscripcion_retiro_service.dart';
 import 'package:escoge/features/retiros/domain/inscripcion_fds_model.dart';
 import 'package:escoge/features/retiros/presentation/inscripcion_success_screen.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +22,7 @@ class InscripcionFDSScreen extends StatefulWidget {
 }
 
 class _InscripcionFDSScreenState extends State<InscripcionFDSScreen> {
-  final _service = InscripcionFDSService();
+  final _service = InscripcionRetiroService();
   final _diocesisService = DiocesisService();
 
   bool _guardando = false;
@@ -72,7 +72,7 @@ class _InscripcionFDSScreenState extends State<InscripcionFDSScreen> {
         _diocesis = data;
         _cargandoDiocesis = false;
       });
-    } catch (e) {
+    } catch (_) {
       if (!mounted) return;
 
       setState(() {
@@ -297,6 +297,8 @@ class _InscripcionFDSScreenState extends State<InscripcionFDSScreen> {
 
     try {
       final inscripcion = InscripcionFdsModel(
+        retiroId: widget.retiroId,
+        retiroTitulo: widget.retiroNombre,
         diocesisId: _diocesisId!,
         diocesisNombre: _diocesisNombre!,
         tipoFormulario: 'invitado_fds',
@@ -313,14 +315,17 @@ class _InscripcionFDSScreenState extends State<InscripcionFDSScreen> {
           'nombreCompleto': _invitadorNombreCtrl.text.trim(),
           'telefono': _invitadorTelefonoCtrl.text.trim(),
         },
-        familiares: {},
+        familiares: const {},
         experienciaEspiritual: {
           'porqueQuiereVivirExperiencia': _porqueQuiereVivirCtrl.text.trim(),
           'queEsperaEncontrar': _queEsperaEncontrarCtrl.text.trim(),
         },
       );
 
-      await _service.guardarInscripcion(inscripcion);
+      await _service.inscribir(
+        retiroId: widget.retiroId,
+        data: inscripcion.toMap(),
+      );
 
       if (!mounted) return;
 
@@ -335,7 +340,7 @@ class _InscripcionFDSScreenState extends State<InscripcionFDSScreen> {
       );
     } catch (e) {
       if (!mounted) return;
-      _showError('Error al guardar inscripción: $e');
+      _showError(e.toString().replaceFirst('Exception: ', ''));
     } finally {
       if (mounted) {
         setState(() {

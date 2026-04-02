@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:escoge/core/theme/app_theme.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class CustomBottomNav extends StatelessWidget {
   final int currentIndex;
@@ -11,136 +11,99 @@ class CustomBottomNav extends StatelessWidget {
     required this.onTap,
   });
 
+  static const Color primaryBlue = Color(0xFF0B1E66);
+  static const Color activeGold = Color(0xFFD4AF37);
+  static const Color inactive = Color(0xFF98A2B3);
+  static const Color navBackground = Colors.white;
+
   @override
   Widget build(BuildContext context) {
     final items = <_NavItemData>[
-      const _NavItemData(icon: Icons.home_rounded, label: 'Inicio'),
-      const _NavItemData(icon: Icons.auto_awesome_rounded, label: 'Oración'),
-      const _NavItemData(icon: Icons.terrain_rounded, label: 'Retiros'),
-      const _NavItemData(icon: Icons.grid_view_rounded, label: 'Contenido'),
-      const _NavItemData(icon: Icons.person_rounded, label: 'Perfil'),
+      const _NavItemData(
+        icon: Icons.home_rounded,
+        label: 'Inicio',
+      ),
+      const _NavItemData(
+        icon: Icons.auto_awesome,
+        label: 'Oración',
+      ),
+      const _NavItemData(
+        icon: Icons.groups_rounded,
+        label: 'Retiros',
+      ),
+      const _NavItemData(
+        icon: Icons.grid_view_rounded,
+        label: 'Contenido',
+      ),
+      const _NavItemData(
+        icon: Icons.person_rounded,
+        label: 'Perfil',
+      ),
     ];
 
     return SafeArea(
       top: false,
       child: Container(
-        decoration: const BoxDecoration(
-          color: AppColors.surface,
-          border: Border(
-            top: BorderSide(
-              color: AppColors.border,
-              width: 1,
-            ),
-          ),
+        margin: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        decoration: BoxDecoration(
+          color: navBackground,
+          borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: Color(0x14000000),
-              blurRadius: 18,
-              offset: Offset(0, -4),
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 24,
+              offset: const Offset(0, 10),
             ),
           ],
         ),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(8, 10, 8, 10),
-          child: Row(
-            children: List.generate(items.length, (index) {
-              final item = items[index];
-              final isSelected = currentIndex == index;
+        child: Row(
+          children: List.generate(items.length, (index) {
+            final item = items[index];
+            final isActive = index == currentIndex;
 
-              return Expanded(
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () => onTap(index),
+            return Expanded(
+              child: GestureDetector(
+                onTap: () => onTap(index),
+                behavior: HitTestBehavior.opaque,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 220),
+                  curve: Curves.easeOut,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: isActive
+                        ? primaryBlue.withOpacity(0.08)
+                        : Colors.transparent,
                     borderRadius: BorderRadius.circular(18),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 220),
-                      curve: Curves.easeOut,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 8,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        item.icon,
+                        size: 22,
+                        color: isActive ? activeGold : inactive,
                       ),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? AppColors.primaryBlue.withOpacity(0.08)
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(18),
+                      const SizedBox(height: 5),
+                      Text(
+                        item.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.poppins(
+                          fontSize: 11,
+                          fontWeight:
+                              isActive ? FontWeight.w700 : FontWeight.w500,
+                          color: isActive ? primaryBlue : inactive,
+                        ),
                       ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          AnimatedContainer(
-                            duration: const Duration(milliseconds: 220),
-                            curve: Curves.easeOut,
-                            width: 42,
-                            height: 30,
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? AppColors.primaryBlue.withOpacity(0.12)
-                                  : Colors.transparent,
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                Icon(
-                                  item.icon,
-                                  size: 24,
-                                  color: isSelected
-                                      ? AppColors.primaryBlue
-                                      : AppColors.textSecondary,
-                                ),
-                                if (isSelected)
-                                  const Positioned(
-                                    top: 1,
-                                    right: 7,
-                                    child: _GoldDot(),
-                                  ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            item.label,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context)
-                                .textTheme
-                                .labelSmall
-                                ?.copyWith(
-                                  fontWeight: isSelected
-                                      ? FontWeight.w700
-                                      : FontWeight.w500,
-                                  color: isSelected
-                                      ? AppColors.primaryBlue
-                                      : AppColors.textSecondary,
-                                ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    ],
                   ),
                 ),
-              );
-            }),
-          ),
+              ),
+            );
+          }),
         ),
-      ),
-    );
-  }
-}
-
-class _GoldDot extends StatelessWidget {
-  const _GoldDot();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 7,
-      height: 7,
-      decoration: const BoxDecoration(
-        color: AppColors.gold,
-        shape: BoxShape.circle,
       ),
     );
   }

@@ -1,4 +1,7 @@
 class InscripcionFdsModel {
+  final String retiroId;
+  final String retiroTitulo;
+
   final String diocesisId;
   final String diocesisNombre;
   final String tipoFormulario;
@@ -12,6 +15,8 @@ class InscripcionFdsModel {
   final Map<String, dynamic> experienciaEspiritual;
 
   const InscripcionFdsModel({
+    required this.retiroId,
+    required this.retiroTitulo,
     required this.diocesisId,
     required this.diocesisNombre,
     required this.tipoFormulario,
@@ -26,16 +31,24 @@ class InscripcionFdsModel {
 
   Map<String, dynamic> toMap() {
     return {
+      'retiroId': retiroId,
+      'retiroTitulo': retiroTitulo,
+
       'diocesisId': diocesisId,
       'diocesisNombre': diocesisNombre,
       'tipoFormulario': tipoFormulario,
       'tipoEvento': tipoEvento,
       'numeroFinDeSemana': numeroFinDeSemana,
       'fechaEvento': fechaEvento,
+
+      // 🔥 base común
       'estado': 'pendiente',
       'estadoPago': null,
       'origen': 'app',
       'activo': true,
+      'createdAt': DateTime.now(),
+
+      // 🔥 bloques del formulario FDS
       'datosGenerales': datosGenerales,
       'invitador': invitador,
       'familiares': familiares,
