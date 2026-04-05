@@ -1,6 +1,7 @@
-import 'package:escoge/features/oracion/services/liturgia_service.dart';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:escoge/features/oracion/services/lecturas_service.dart';
 
 class EvangelioScreen extends StatefulWidget {
   const EvangelioScreen({super.key});
@@ -10,602 +11,348 @@ class EvangelioScreen extends StatefulWidget {
 }
 
 class _EvangelioScreenState extends State<EvangelioScreen> {
-  final LiturgiaService _liturgiaService = LiturgiaService();
+  static const Color gold = Color(0xFFD4AF37);
+  static const Color softGold = Color(0xFFE8C76A);
 
-  bool _isLoading = true;
-  String? _error;
-  Map<String, dynamic>? _liturgia;
+  LecturasDayData? data;
+  bool loading = true;
 
   @override
   void initState() {
     super.initState();
-    _cargarLiturgia();
+    _load();
   }
 
-  Future<void> _cargarLiturgia() async {
-    try {
-      setState(() {
-        _isLoading = true;
-        _error = null;
-      });
+  Future<void> _load() async {
+    final result = await LecturasService.getLecturasDelDiaConFallback();
+    if (!mounted) return;
 
-      final data = await _liturgiaService.obtenerLiturgiaDelDia();
+    setState(() {
+      data = result;
+      loading = false;
+    });
+  }
 
-      if (!mounted) return;
+  String _getEvangelioTitulo() {
+    final evangelio = data?.evangelio;
+    if (evangelio == null || evangelio.isEmpty) return 'Evangelio del día';
+    return evangelio['titulo']?.toString() ?? 'Evangelio del día';
+  }
 
-      setState(() {
-        _liturgia = data;
-        _isLoading = false;
-      });
-    } catch (e) {
-      if (!mounted) return;
+  String _getEvangelioCita() {
+    final evangelio = data?.evangelio;
+    if (evangelio == null || evangelio.isEmpty) return '';
+    return evangelio['cita']?.toString() ?? '';
+  }
 
-      setState(() {
-        _error =
-            'No se pudo cargar el evangelio del día. Verifica tu conexión o la estructura en Firestore.';
-        _isLoading = false;
-      });
+  String _getEvangelioTexto() {
+    final evangelio = data?.evangelio;
+    if (evangelio == null || evangelio.isEmpty) {
+      return 'No hay evangelio disponible para este día.';
     }
+
+    final texto = evangelio['texto']?.toString() ?? '';
+    if (texto.trim().isNotEmpty) return texto;
+
+    final contenido = evangelio['evangelio']?.toString() ?? '';
+    if (contenido.trim().isNotEmpty) return contenido;
+
+    return 'No hay evangelio disponible para este día.';
   }
 
-  String _safeText(dynamic value, {String fallback = ''}) {
-    if (value == null) return fallback;
-    return value.toString();
+  String _getTituloLiturgico() {
+    return data?.titulo ?? 'Evangelio del día';
   }
 
-  Map<String, dynamic>? _safeMap(dynamic value) {
-    if (value is Map<String, dynamic>) return value;
-    return null;
+  String _getFraseClave() {
+    final frase = data?.fraseClave ?? '';
+    return frase.trim();
   }
 
   @override
   Widget build(BuildContext context) {
-    const deepBlue = Color(0xFF0B1E66);
-    const royalBlue = Color(0xFF1736A2);
-    const softBlueBg = Color(0xFFF3F6FD);
-    const gold = Color(0xFFD4AF37);
-    const white = Colors.white;
-    const textPrimary = Color(0xFF1B2559);
-    const textSecondary = Color(0xFF667085);
-
-    final evangelio = _safeMap(_liturgia?['evangelio']);
-    final reflexion = _safeMap(_liturgia?['reflexion']);
-    final celebracion = _safeText(_liturgia?['celebracion']);
-    final tiempoLiturgico = _safeText(_liturgia?['tiempoLiturgico']);
-    final colorLiturgico = _safeText(_liturgia?['colorLiturgico']);
-    final tituloDia = _safeText(
-      _liturgia?['tituloDia'],
-      fallback: 'Evangelio del día',
-    );
-
-    final evangelioTitulo = _safeText(
-      evangelio?['titulo'],
-      fallback: 'Evangelio del día',
-    );
-    final evangelioCita = _safeText(evangelio?['cita']);
-    final evangelioTexto = _safeText(evangelio?['texto']);
-
-    final reflexionTitulo = _safeText(
-      reflexion?['titulo'],
-      fallback: 'Reflexión del día',
-    );
-    final reflexionTexto = _safeText(reflexion?['texto']);
-    final reflexionAutor = _safeText(reflexion?['autor']);
-
     return Scaffold(
-      backgroundColor: softBlueBg,
-      body: RefreshIndicator(
-        onRefresh: _cargarLiturgia,
-        color: deepBlue,
-        child: CustomScrollView(
-          physics: const BouncingScrollPhysics(
-            parent: AlwaysScrollableScrollPhysics(),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/lecturas.png',
+              fit: BoxFit.cover,
+            ),
           ),
-          slivers: [
-            SliverToBoxAdapter(
-              child: Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [deepBlue, royalBlue],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                ),
-                child: SafeArea(
-                  bottom: false,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 14, 20, 28),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            GestureDetector(
-                              onTap: () => Navigator.of(context).maybePop(),
-                              child: Container(
-                                width: 46,
-                                height: 46,
-                                decoration: BoxDecoration(
-                                  color: white.withOpacity(0.12),
-                                  borderRadius: BorderRadius.circular(14),
-                                  border: Border.all(
-                                    color: white.withOpacity(0.10),
-                                  ),
-                                ),
-                                child: const Icon(
-                                  Icons.arrow_back_ios_new_rounded,
-                                  color: white,
-                                  size: 18,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Oración',
-                                    style: GoogleFonts.poppins(
-                                      color: white.withOpacity(0.75),
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    'Evangelio',
-                                    style: GoogleFonts.poppins(
-                                      color: white,
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
-                              ),
-                              decoration: BoxDecoration(
-                                color: gold.withOpacity(0.16),
-                                borderRadius: BorderRadius.circular(999),
-                              ),
-                              child: Text(
-                                'Hoy',
-                                style: GoogleFonts.poppins(
-                                  color: gold,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 22),
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(22),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(28),
-                            gradient: LinearGradient(
-                              colors: [
-                                white.withOpacity(0.10),
-                                white.withOpacity(0.04),
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            border: Border.all(
-                              color: white.withOpacity(0.10),
-                            ),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 8,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: gold.withOpacity(0.16),
-                                  borderRadius: BorderRadius.circular(999),
-                                ),
-                                child: Text(
-                                  tituloDia,
-                                  style: GoogleFonts.poppins(
-                                    color: gold,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 14),
-                              Text(
-                                celebracion.isNotEmpty
-                                    ? celebracion
-                                    : 'Liturgia del día',
-                                style: GoogleFonts.lora(
-                                  color: white,
-                                  fontSize: 27,
-                                  height: 1.25,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              const SizedBox(height: 14),
-                              Wrap(
-                                spacing: 10,
-                                runSpacing: 10,
-                                children: [
-                                  if (tiempoLiturgico.isNotEmpty)
-                                    _TopChip(text: tiempoLiturgico),
-                                  if (colorLiturgico.isNotEmpty)
-                                    _TopChip(text: 'Color: $colorLiturgico'),
-                                  if (evangelioCita.isNotEmpty)
-                                    _TopChip(text: evangelioCita),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.34),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withOpacity(0.30),
+                    Colors.black.withOpacity(0.22),
+                    Colors.black.withOpacity(0.36),
+                  ],
                 ),
               ),
             ),
-            SliverToBoxAdapter(
-              child: Transform.translate(
-                offset: const Offset(0, -14),
-                child: Container(
-                  decoration: const BoxDecoration(
-                    color: softBlueBg,
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(28),
+          ),
+          SafeArea(
+            child: loading
+                ? const Center(
+                    child: CircularProgressIndicator(
+                      color: softGold,
                     ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 22, 20, 32),
-                    child: _buildBody(
-                      evangelioTitulo: evangelioTitulo,
-                      evangelioTexto: evangelioTexto,
-                      reflexionTitulo: reflexionTitulo,
-                      reflexionTexto: reflexionTexto,
-                      reflexionAutor: reflexionAutor,
-                      textPrimary: textPrimary,
-                      textSecondary: textSecondary,
-                      deepBlue: deepBlue,
-                      gold: gold,
-                    ),
-                  ),
+                  )
+                : data == null
+                    ? _buildEmptyState(context)
+                    : Column(
+                        children: [
+                          _buildHeader(context),
+                          Expanded(
+                            child: _buildContent(),
+                          ),
+                        ],
+                      ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+            child: Container(
+              padding: const EdgeInsets.all(22),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.08),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.08),
                 ),
               ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.menu_book_rounded,
+                    color: softGold,
+                    size: 34,
+                  ),
+                  const SizedBox(height: 14),
+                  Text(
+                    'No hay evangelio disponible',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.lora(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'No se encontró contenido litúrgico para este día.',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.lora(
+                      color: Colors.white.withOpacity(0.88),
+                      fontSize: 17,
+                      height: 1.6,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildBody({
-    required String evangelioTitulo,
-    required String evangelioTexto,
-    required String reflexionTitulo,
-    required String reflexionTexto,
-    required String reflexionAutor,
-    required Color textPrimary,
-    required Color textSecondary,
-    required Color deepBlue,
-    required Color gold,
-  }) {
-    const white = Colors.white;
-
-    if (_isLoading) {
-      return Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(28),
-        decoration: BoxDecoration(
-          color: white,
-          borderRadius: BorderRadius.circular(24),
-        ),
-        child: Column(
-          children: [
-            const CircularProgressIndicator(
-              color: Color(0xFF0B1E66),
-              strokeWidth: 2.5,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Cargando evangelio del día...',
-              style: GoogleFonts.poppins(
-                color: textSecondary,
-                fontSize: 13.5,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    if (_error != null) {
-      return Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: white,
-          borderRadius: BorderRadius.circular(24),
-        ),
-        child: Column(
-          children: [
-            const Icon(
-              Icons.cloud_off_rounded,
-              size: 38,
-              color: Color(0xFF0B1E66),
-            ),
-            const SizedBox(height: 14),
-            Text(
-              _error!,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.poppins(
-                color: textSecondary,
-                fontSize: 13.5,
-                height: 1.6,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(height: 18),
-            GestureDetector(
-              onTap: _cargarLiturgia,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 18,
-                  vertical: 13,
-                ),
-                decoration: BoxDecoration(
-                  color: deepBlue,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Text(
-                  'Intentar de nuevo',
-                  style: GoogleFonts.poppins(
-                    color: white,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                  ),
+  Widget _buildHeader(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Container(
+              margin: const EdgeInsets.only(top: 2),
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withOpacity(0.08),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.08),
                 ),
               ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    if (_liturgia == null) {
-      return Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: white,
-          borderRadius: BorderRadius.circular(24),
-        ),
-        child: Column(
-          children: [
-            const Icon(
-              Icons.menu_book_rounded,
-              size: 40,
-              color: Color(0xFF0B1E66),
-            ),
-            const SizedBox(height: 14),
-            Text(
-              'Aún no hay contenido litúrgico disponible para hoy.',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.poppins(
-                color: textPrimary,
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
+              child: const Icon(
+                Icons.arrow_back_ios_new,
+                color: Colors.white,
+                size: 18,
               ),
             ),
-            const SizedBox(height: 10),
-            Text(
-              'Cuando agregues el documento del día en Firestore, aquí se mostrará automáticamente.',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.poppins(
-                color: textSecondary,
-                fontSize: 13,
-                height: 1.6,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: white,
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 16,
-                offset: const Offset(0, 8),
-              ),
-            ],
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              _getTituloLiturgico(),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.lora(
+                color: Colors.white,
+                fontSize: 24,
+                height: 1.2,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          const SizedBox(width: 46),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContent() {
+    final frase = _getFraseClave();
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(24, 18, 24, 34),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(999),
+                color: Colors.white.withOpacity(0.08),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.08),
+                ),
+              ),
+              child: Text(
                 'Evangelio',
                 style: GoogleFonts.poppins(
-                  color: textSecondary,
-                  fontSize: 12,
+                  color: gold,
+                  fontSize: 13.5,
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(height: 8),
-              Text(
-                evangelioTitulo,
-                style: GoogleFonts.lora(
-                  color: textPrimary,
-                  fontSize: 25,
-                  height: 1.35,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 18),
-              Container(
-                width: 56,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: gold,
-                  borderRadius: BorderRadius.circular(999),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                evangelioTexto.isNotEmpty
-                    ? evangelioTexto
-                    : 'No se encontró el texto del evangelio en el documento de hoy.',
-                style: GoogleFonts.lora(
-                  color: textPrimary,
-                  fontSize: 17,
-                  height: 1.9,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
-        const SizedBox(height: 18),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: white,
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 16,
-                offset: const Offset(0, 8),
+          const SizedBox(height: 18),
+          Center(
+            child: Text(
+              _getEvangelioCita(),
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(
+                color: softGold.withOpacity(0.92),
+                fontSize: 15.5,
+                fontWeight: FontWeight.w500,
               ),
-            ],
+            ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                reflexionTitulo,
-                style: GoogleFonts.poppins(
-                  color: textPrimary,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                reflexionTexto.isNotEmpty
-                    ? reflexionTexto
-                    : 'Todavía no se ha agregado una reflexión para el día de hoy.',
-                style: GoogleFonts.poppins(
-                  color: textSecondary,
-                  fontSize: 14,
-                  height: 1.8,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              if (reflexionAutor.isNotEmpty) ...[
-                const SizedBox(height: 14),
-                Text(
-                  '— $reflexionAutor',
-                  style: GoogleFonts.poppins(
-                    color: deepBlue,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
+          const SizedBox(height: 26),
+          Center(
+            child: _buildListenButton(),
+          ),
+          const SizedBox(height: 26),
+          Container(
+            width: double.infinity,
+            height: 1,
+            color: Colors.white.withOpacity(0.10),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            _getEvangelioTitulo(),
+            style: GoogleFonts.lora(
+              color: Colors.white,
+              fontSize: 30,
+              height: 1.2,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          if (frase.isNotEmpty) ...[
+            const SizedBox(height: 22),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(18),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(18),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.07),
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.08),
+                    ),
+                  ),
+                  child: Text(
+                    '“$frase”',
+                    style: GoogleFonts.lora(
+                      color: Colors.white.withOpacity(0.96),
+                      fontSize: 18,
+                      height: 1.6,
+                      fontStyle: FontStyle.italic,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
-              ],
-            ],
-          ),
-        ),
-        const SizedBox(height: 18),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [
-                Color(0xFF0B1E66),
-                Color(0xFF1736A2),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+              ),
             ),
-            borderRadius: BorderRadius.circular(24),
+          ],
+          const SizedBox(height: 28),
+          Text(
+            _getEvangelioTexto(),
+            style: GoogleFonts.lora(
+              color: Colors.white,
+              fontSize: 20,
+              height: 1.82,
+              letterSpacing: 0.2,
+              fontWeight: FontWeight.w400,
+            ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Vive el mensaje de hoy',
-                style: GoogleFonts.lora(
-                  color: white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                'Que esta Palabra ilumine tu día, fortalezca tu corazón y te acerque más al Señor.',
-                style: GoogleFonts.poppins(
-                  color: white.withOpacity(0.85),
-                  fontSize: 13.5,
-                  height: 1.65,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
-}
 
-class _TopChip extends StatelessWidget {
-  final String text;
-
-  const _TopChip({required this.text});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildListenButton() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.10),
         borderRadius: BorderRadius.circular(999),
+        color: Colors.white.withOpacity(0.08),
         border: Border.all(
-          color: Colors.white.withOpacity(0.08),
+          color: Colors.white.withOpacity(0.10),
         ),
       ),
-      child: Text(
-        text,
-        style: GoogleFonts.poppins(
-          color: Colors.white,
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.graphic_eq_rounded,
+            color: gold,
+            size: 18,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            'Escuchar el Evangelio',
+            style: GoogleFonts.poppins(
+              color: Colors.white,
+              fontSize: 13.5,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ),
     );
   }

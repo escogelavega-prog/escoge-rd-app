@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -8,260 +9,374 @@ import 'rosario_screen.dart';
 class OracionScreen extends StatelessWidget {
   const OracionScreen({super.key});
 
-  static const Color primaryBlue = Color(0xFF0B1E66);
-  static const Color secondaryBlue = Color(0xFF1736A2);
   static const Color gold = Color(0xFFD4AF37);
-  static const Color softBackground = Color(0xFFF3F6FD);
-  static const Color textPrimary = Color(0xFF1B2559);
-  static const Color textSecondary = Color(0xFF667085);
+  static const Color softGold = Color(0xFFE8C76A);
+  static const Color deepBlue = Color(0xFF0B1E66);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: softBackground,
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [secondaryBlue, primaryBlue],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/lecturas.png',
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
-        child: SafeArea(
-          bottom: false,
-          child: Column(
-            children: [
-              const SizedBox(height: 8),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
-                child: Column(
-                  children: [
-                    Text(
-                      'Oración',
-                      style: GoogleFonts.lora(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
+          Positioned.fill(
+            child: Container(
+              color: Colors.black.withOpacity(0.34),
+            ),
+          ),
+          SafeArea(
+            bottom: false,
+            child: Column(
+              children: [
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+                  child: Column(
+                    children: [
+                      Text(
+                        'Oración',
+                        style: GoogleFonts.lora(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          height: 1.1,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      'Tu espacio diario con Dios',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        color: Colors.white.withOpacity(0.85),
-                        fontWeight: FontWeight.w500,
+                      const SizedBox(height: 8),
+                      Text(
+                        'Tu espacio diario con Dios',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          color: Colors.white.withOpacity(0.82),
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 22),
-              Expanded(
-                child: Container(
-                  width: double.infinity,
-                  decoration: const BoxDecoration(
-                    color: softBackground,
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(32),
-                    ),
+                    ],
                   ),
+                ),
+                const SizedBox(height: 24),
+                Expanded(
                   child: ListView(
-                    padding: const EdgeInsets.fromLTRB(16, 22, 16, 120),
+                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 120),
                     physics: const BouncingScrollPhysics(),
                     children: [
-                      _HeroOracionCard(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const LecturasScreen(),
-                            ),
-                          );
-                        },
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: _HoyEnLaIglesiaHero(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const LecturasScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 28),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: _SectionHeader(
+                          title: 'Accesos principales',
+                          subtitle:
+                              'Abre lo más importante de tu recorrido espiritual.',
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: _ModuloCard(
+                          titulo: 'Evangelio del Día',
+                          subtitulo:
+                              'Lee y medita la Palabra de Dios en una experiencia contemplativa y cercana.',
+                          icon: Icons.menu_book_rounded,
+                          onTap: null,
+                          destinationBuilder: _buildEvangelioScreen,
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: _ModuloCard(
+                          titulo: 'Santo del Día',
+                          subtitulo:
+                              'Descubre al santo que la Iglesia recuerda hoy y su testimonio de fe.',
+                          icon: Icons.person_rounded,
+                          onTap: null,
+                          destinationBuilder: _buildLecturasScreen,
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: _ModuloCard(
+                          titulo: 'Santo Rosario',
+                          subtitulo:
+                              'Vive una experiencia guiada de oración contemplativa y profunda.',
+                          icon: Icons.auto_awesome,
+                          onTap: null,
+                          destinationBuilder: _buildRosarioScreen,
+                        ),
                       ),
                       const SizedBox(height: 24),
-                      _SectionHeader(
-                        title: 'Accesos principales',
-                        subtitle:
-                            'Abre lo más importante de tu recorrido espiritual.',
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: _SectionHeader(
+                          title: 'Próximamente',
+                          subtitle:
+                              'Módulos que formarán parte del ecosistema espiritual de Escoge RD.',
+                        ),
                       ),
                       const SizedBox(height: 14),
-                      _ModuloCard(
-                        titulo: 'Evangelio del Día',
-                        subtitulo:
-                            'Lee y medita la Palabra de Dios con una experiencia cuidada y contemplativa.',
-                        icon: Icons.menu_book_rounded,
-                        iconBg: const Color(0xFFEAF0FF),
-                        iconColor: primaryBlue,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const EvangelioScreen(),
-                            ),
-                          );
-                        },
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: _ComingSoonCard(
+                          titulo: 'Oraciones',
+                          subtitulo: 'Muy pronto disponibles.',
+                          icon: Icons.self_improvement,
+                        ),
                       ),
                       const SizedBox(height: 14),
-                      _ModuloCard(
-                        titulo: 'Santo Rosario',
-                        subtitulo:
-                            'Vive una experiencia guiada de oración contemplativa y profunda.',
-                        icon: Icons.auto_awesome,
-                        iconBg: const Color(0xFFFFF7E3),
-                        iconColor: gold,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const RosarioScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 24),
-                      _SectionHeader(
-                        title: 'Tu camino de oración',
-                        subtitle:
-                            'Una puerta simple y elegante hacia la liturgia y la vida espiritual.',
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: _ComingSoonCard(
+                          titulo: 'Reflexiones',
+                          subtitulo: 'Muy pronto disponibles.',
+                          icon: Icons.lightbulb_outline,
+                        ),
                       ),
                       const SizedBox(height: 14),
-                      _MiniHighlightCard(
-                        icon: Icons.chrome_reader_mode_rounded,
-                        title: 'Hoy en la Iglesia',
-                        subtitle:
-                            'Accede a las lecturas del día, contexto litúrgico y entrada directa al Evangelio.',
-                        buttonText: 'Entrar',
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const LecturasScreen(),
-                            ),
-                          );
-                        },
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: _ComingSoonCard(
+                          titulo: 'Peticiones',
+                          subtitulo: 'Muy pronto disponibles.',
+                          icon: Icons.favorite_border_rounded,
+                        ),
                       ),
-                      const SizedBox(height: 24),
-                      _SectionHeader(
-                        title: 'Próximamente',
-                        subtitle:
-                            'Módulos que formarán parte del ecosistema espiritual de Escoge RD.',
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  static Widget _buildEvangelioScreen(BuildContext context) =>
+      const EvangelioScreen();
+
+  static Widget _buildLecturasScreen(BuildContext context) =>
+      const LecturasScreen();
+
+  static Widget _buildRosarioScreen(BuildContext context) =>
+      const RosarioScreen();
+}
+
+class _HoyEnLaIglesiaHero extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _HoyEnLaIglesiaHero({
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(30),
+      child: SizedBox(
+        height: 360,
+        width: double.infinity,
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Image.asset(
+                'assets/images/hoy_la_iglesia.png',
+                fit: BoxFit.cover,
+              ),
+            ),
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black.withOpacity(0.10),
+                      Colors.black.withOpacity(0.20),
+                      Colors.black.withOpacity(0.48),
+                      Colors.black.withOpacity(0.78),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 16,
+              left: 16,
+              right: 16,
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.30),
+                    borderRadius: BorderRadius.circular(999),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.10),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      _SegmentPill(
+                        label: 'Hoy',
+                        selected: true,
                       ),
-                      const SizedBox(height: 14),
-                      const _ComingSoonCard(
-                        titulo: 'Oraciones',
-                        subtitulo: 'Muy pronto disponibles.',
-                        icon: Icons.self_improvement,
-                      ),
-                      const SizedBox(height: 14),
-                      const _ComingSoonCard(
-                        titulo: 'Reflexiones',
-                        subtitulo: 'Muy pronto disponibles.',
-                        icon: Icons.lightbulb_outline,
-                      ),
-                      const SizedBox(height: 14),
-                      const _ComingSoonCard(
-                        titulo: 'Peticiones',
-                        subtitulo: 'Muy pronto disponibles.',
-                        icon: Icons.favorite_border_rounded,
+                      SizedBox(width: 6),
+                      _SegmentPill(
+                        label: 'Mañana',
+                        selected: false,
                       ),
                     ],
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+            Positioned(
+              left: 22,
+              right: 22,
+              bottom: 24,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'sábado, 4 de abril de 2026',
+                    style: GoogleFonts.poppins(
+                      color: Colors.white.withOpacity(0.88),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Vigilia Pascual en la Noche Santa',
+                    style: GoogleFonts.lora(
+                      color: Colors.white,
+                      fontSize: 30,
+                      height: 1.14,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Pascua',
+                        style: GoogleFonts.poppins(
+                          color: Colors.white.withOpacity(0.88),
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 18),
+                  GestureDetector(
+                    onTap: onTap,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.08),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.10),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.10),
+                            blurRadius: 14,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.menu_book_rounded,
+                            color: OracionScreen.gold,
+                            size: 18,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Entrar a Hoy en la Iglesia',
+                            style: GoogleFonts.poppins(
+                              color: Colors.white,
+                              fontSize: 13.5,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-class _HeroOracionCard extends StatelessWidget {
-  const _HeroOracionCard({required this.onTap});
+class _SegmentPill extends StatelessWidget {
+  final String label;
+  final bool selected;
 
-  final VoidCallback onTap;
+  const _SegmentPill({
+    required this.label,
+    required this.selected,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(22),
+      padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 10),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF1A3DAB), Color(0xFF0B1E66)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(30),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 20,
-            offset: const Offset(0, 12),
-          ),
-        ],
+        color: selected
+            ? OracionScreen.gold.withOpacity(0.18)
+            : Colors.transparent,
+        borderRadius: BorderRadius.circular(999),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 50,
-            width: 50,
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.14),
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: const Icon(
-              Icons.wb_sunny_outlined,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            'Hoy en la Iglesia',
-            style: GoogleFonts.lora(
-              fontSize: 28,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Descubre las lecturas del día, el evangelio y el contexto litúrgico en una experiencia premium y cercana.',
-            style: GoogleFonts.poppins(
-              fontSize: 14,
-              height: 1.65,
-              color: Colors.white.withOpacity(0.88),
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 20),
-          GestureDetector(
-            onTap: onTap,
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 18,
-                vertical: 13,
-              ),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFFD4AF37), Color(0xFFF1C76B)],
-                ),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Text(
-                'Abrir lecturas',
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFF0B1E66),
-                ),
-              ),
-            ),
-          ),
-        ],
+      child: Text(
+        label,
+        style: GoogleFonts.poppins(
+          color: Colors.white,
+          fontSize: 13.5,
+          fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+        ),
       ),
     );
   }
@@ -286,7 +401,7 @@ class _SectionHeader extends StatelessWidget {
           style: GoogleFonts.poppins(
             fontSize: 19,
             fontWeight: FontWeight.w700,
-            color: OracionScreen.textPrimary,
+            color: Colors.white,
           ),
         ),
         const SizedBox(height: 6),
@@ -295,7 +410,7 @@ class _SectionHeader extends StatelessWidget {
           style: GoogleFonts.poppins(
             fontSize: 13,
             height: 1.55,
-            color: OracionScreen.textSecondary,
+            color: Colors.white.withOpacity(0.72),
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -309,35 +424,45 @@ class _ModuloCard extends StatelessWidget {
     required this.titulo,
     required this.subtitulo,
     required this.icon,
-    required this.iconBg,
-    required this.iconColor,
-    required this.onTap,
+    required this.destinationBuilder,
+    this.onTap,
   });
 
   final String titulo;
   final String subtitulo;
   final IconData icon;
-  final Color iconBg;
-  final Color iconColor;
-  final VoidCallback onTap;
+  final WidgetBuilder destinationBuilder;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
+    final handleTap = onTap ??
+        () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: destinationBuilder,
+            ),
+          );
+        };
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: onTap,
+        onTap: handleTap,
         borderRadius: BorderRadius.circular(24),
-        child: Container(
+        child: Ink(
           padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Colors.white.withOpacity(0.08),
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: const Color(0xFFE2E8F5)),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.08),
+            ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 16,
+                color: Colors.black.withOpacity(0.08),
+                blurRadius: 18,
                 offset: const Offset(0, 8),
               ),
             ],
@@ -348,10 +473,10 @@ class _ModuloCard extends StatelessWidget {
                 height: 54,
                 width: 54,
                 decoration: BoxDecoration(
-                  color: iconBg,
+                  color: Colors.white.withOpacity(0.08),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Icon(icon, color: iconColor),
+                child: Icon(icon, color: OracionScreen.gold),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -363,7 +488,7 @@ class _ModuloCard extends StatelessWidget {
                       style: GoogleFonts.lora(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
-                        color: const Color(0xFF0B1E66),
+                        color: Colors.white,
                       ),
                     ),
                     const SizedBox(height: 5),
@@ -372,121 +497,21 @@ class _ModuloCard extends StatelessWidget {
                       style: GoogleFonts.poppins(
                         fontSize: 13.5,
                         height: 1.55,
-                        color: const Color(0xFF6D7693),
+                        color: Colors.white.withOpacity(0.76),
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],
                 ),
               ),
-              const Icon(
+              Icon(
                 Icons.arrow_forward_ios_rounded,
                 size: 16,
-                color: Color(0xFF0B1E66),
+                color: Colors.white.withOpacity(0.75),
               ),
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _MiniHighlightCard extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final String buttonText;
-  final VoidCallback onTap;
-
-  const _MiniHighlightCard({
-    this.icon = Icons.menu_book_rounded,
-    required this.title,
-    required this.subtitle,
-    required this.buttonText,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFE2E8F5)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 16,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 52,
-            width: 52,
-            decoration: BoxDecoration(
-              color: const Color(0xFFEAF0FF),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: const Icon(
-              Icons.menu_book_rounded,
-              color: OracionScreen.primaryBlue,
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: GoogleFonts.lora(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: OracionScreen.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  subtitle,
-                  style: GoogleFonts.poppins(
-                    fontSize: 13.5,
-                    height: 1.55,
-                    color: OracionScreen.textSecondary,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 14),
-                GestureDetector(
-                  onTap: onTap,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 11,
-                    ),
-                    decoration: BoxDecoration(
-                      color: OracionScreen.primaryBlue,
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: Text(
-                      buttonText,
-                      style: GoogleFonts.poppins(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -508,9 +533,11 @@ class _ComingSoonCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFF),
+        color: Colors.white.withOpacity(0.06),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFE2E8F5)),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.08),
+        ),
       ),
       child: Row(
         children: [
@@ -518,12 +545,12 @@ class _ComingSoonCard extends StatelessWidget {
             height: 52,
             width: 52,
             decoration: BoxDecoration(
-              color: const Color(0xFFEFF3FB),
+              color: Colors.white.withOpacity(0.08),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Icon(
               icon,
-              color: const Color(0xFF7B86A7),
+              color: Colors.white.withOpacity(0.78),
             ),
           ),
           const SizedBox(width: 14),
@@ -536,7 +563,7 @@ class _ComingSoonCard extends StatelessWidget {
                   style: GoogleFonts.lora(
                     fontSize: 19,
                     fontWeight: FontWeight.w700,
-                    color: const Color(0xFF4B5678),
+                    color: Colors.white.withOpacity(0.92),
                   ),
                 ),
                 const SizedBox(height: 5),
@@ -545,7 +572,7 @@ class _ComingSoonCard extends StatelessWidget {
                   style: GoogleFonts.poppins(
                     fontSize: 13.5,
                     height: 1.5,
-                    color: const Color(0xFF7B86A7),
+                    color: Colors.white.withOpacity(0.68),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -558,16 +585,18 @@ class _ComingSoonCard extends StatelessWidget {
               vertical: 6,
             ),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Colors.white.withOpacity(0.08),
               borderRadius: BorderRadius.circular(999),
-              border: Border.all(color: const Color(0xFFE2E8F5)),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.08),
+              ),
             ),
             child: Text(
               'Pronto',
               style: GoogleFonts.poppins(
                 fontSize: 11.5,
                 fontWeight: FontWeight.w600,
-                color: const Color(0xFF7B86A7),
+                color: OracionScreen.softGold,
               ),
             ),
           ),
