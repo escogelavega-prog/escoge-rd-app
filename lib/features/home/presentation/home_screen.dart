@@ -57,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Positioned.fill(
             child: Image.asset(
-              'assets/backgrounds/navegacion.png',
+              'assets/backgrounds/home.png',
               fit: BoxFit.cover,
             ),
           ),

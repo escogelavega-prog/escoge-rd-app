@@ -1,56 +1,59 @@
-import 'package:escoge/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class AppBackground extends StatelessWidget {
+  final String background;
   final Widget child;
+  final double overlayOpacity;
+  final List<Color>? gradientColors;
+  final AlignmentGeometry begin;
+  final AlignmentGeometry end;
+  final bool useSafeArea;
 
-  const AppBackground({super.key, required this.child});
+  const AppBackground({
+    super.key,
+    required this.background,
+    required this.child,
+    this.overlayOpacity = 0.20,
+    this.gradientColors,
+    this.begin = Alignment.topCenter,
+    this.end = Alignment.bottomCenter,
+    this.useSafeArea = true,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
+    final content = Stack(
+      fit: StackFit.expand,
       children: [
-        // 🎨 Fondo base
-        Container(
-          color: AppColors.background,
+        Image.asset(
+          background,
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) {
+            return Container(
+              color: const Color(0xFFF3F5FB),
+            );
+          },
         ),
-
-        // 🌫️ Gradiente superior (halo espiritual)
-        Container(
+        DecoratedBox(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                AppColors.primaryBlue.withOpacity(0.06),
-                Colors.transparent,
-              ],
+              begin: begin,
+              end: end,
+              colors: gradientColors ??
+                  [
+                    Colors.black.withOpacity(overlayOpacity * 0.55),
+                    Colors.black.withOpacity(overlayOpacity),
+                    Colors.black.withOpacity(overlayOpacity * 1.15),
+                  ],
             ),
           ),
         ),
-
-        // ✨ Luz radial suave (centro)
-        Positioned(
-          top: -80,
-          left: -60,
-          right: -60,
-          child: Container(
-            height: 220,
-            decoration: BoxDecoration(
-              gradient: RadialGradient(
-                radius: 0.8,
-                colors: [
-                  AppColors.gold.withValues(alpha: 0.08),
-                  Colors.transparent,
-                ],
-              ),
-            ),
-          ),
-        ),
-
-        // 📄 Contenido
         child,
       ],
     );
+
+    if (!useSafeArea) return content;
+
+    return SafeArea(child: content);
   }
 }
