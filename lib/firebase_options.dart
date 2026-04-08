@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -28,15 +25,9 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -49,21 +40,49 @@ class DefaultFirebaseOptions {
     }
   }
 
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyBh4necMeotmXIa_fX4eP2VNKcAwnMtXj0',
+    appId: '1:735501422337:web:6b9007152c8a557ae99500',
+    messagingSenderId: '735501422337',
+    projectId: 'escogerd-48354',
+    authDomain: 'escogerd-48354.firebaseapp.com',
+    storageBucket: 'escogerd-48354.firebasestorage.app',
+    measurementId: 'G-788YH35WYF',
+  );
+
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBMYW_ELW6MxtHe_Li5AumbPbowVjadogU',
-    appId: '1:825946489840:android:ac49a33bce3f8aa4e11335',
-    messagingSenderId: '825946489840',
-    projectId: 'escoge-f36dc',
-    storageBucket: 'escoge-f36dc.firebasestorage.app',
+    apiKey: 'AIzaSyC7KwOLfGI1FYQnTvj3FBwiPDSzajz3HIM',
+    appId: '1:735501422337:android:4b161c7b0a88d118e99500',
+    messagingSenderId: '735501422337',
+    projectId: 'escogerd-48354',
+    storageBucket: 'escogerd-48354.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDt5RHPyllSneezD796bYl9mWxjl8-L8Ns',
-    appId: '1:825946489840:ios:d55c43a9a09cee3ce11335',
-    messagingSenderId: '825946489840',
-    projectId: 'escoge-f36dc',
-    storageBucket: 'escoge-f36dc.firebasestorage.app',
+    apiKey: 'AIzaSyDCUZ-KzZEXz30zjm9wKluhErliOFvOYe8',
+    appId: '1:735501422337:ios:87e9cbd847adf908e99500',
+    messagingSenderId: '735501422337',
+    projectId: 'escogerd-48354',
+    storageBucket: 'escogerd-48354.firebasestorage.app',
     iosBundleId: 'com.example.escoge',
   );
 
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyDCUZ-KzZEXz30zjm9wKluhErliOFvOYe8',
+    appId: '1:735501422337:ios:87e9cbd847adf908e99500',
+    messagingSenderId: '735501422337',
+    projectId: 'escogerd-48354',
+    storageBucket: 'escogerd-48354.firebasestorage.app',
+    iosBundleId: 'com.example.escoge',
+  );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyBh4necMeotmXIa_fX4eP2VNKcAwnMtXj0',
+    appId: '1:735501422337:web:0fe0931b3c5d929ee99500',
+    messagingSenderId: '735501422337',
+    projectId: 'escogerd-48354',
+    authDomain: 'escogerd-48354.firebaseapp.com',
+    storageBucket: 'escogerd-48354.firebasestorage.app',
+    measurementId: 'G-4KCHWW3L9X',
+  );
 }

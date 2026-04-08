@@ -81,7 +81,7 @@ class _LecturasScreenState extends State<LecturasScreen>
                 );
               },
               child: Image.asset(
-                'assets/images/lecturas.png',
+                'assets/backgrounds/lecturas.png',
                 fit: BoxFit.cover,
               ),
             ),

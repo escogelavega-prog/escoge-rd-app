@@ -76,7 +76,7 @@ class _EvangelioScreenState extends State<EvangelioScreen> {
         children: [
           Positioned.fill(
             child: Image.asset(
-              'assets/images/lecturas.png',
+              'assets/backgrounds/lecturas.png',
               fit: BoxFit.cover,
             ),
           ),

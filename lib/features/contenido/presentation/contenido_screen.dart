@@ -1,59 +1,71 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../core/theme/app_colors.dart';
-import '../../../core/widgets/app_card.dart';
+import 'package:escoge/core/theme/app_backgrounds.dart';
+import 'package:escoge/core/widgets/app_background.dart';
+import 'package:escoge/core/widgets/app_card.dart';
 
 class ContenidoScreen extends StatelessWidget {
   const ContenidoScreen({super.key});
 
+  static const Color primaryBlue = Color(0xFF0B1E66);
+  static const Color gold = Color(0xFFD4AF37);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            const _ContenidoHeader(),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(16, 18, 16, 120),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    _ContenidoIntroCard(),
-                    SizedBox(height: 22),
-                    _SectionTitle(title: 'Explora'),
-                    SizedBox(height: 12),
-                    _ContentCategoryCard(
-                      icon: Icons.campaign_rounded,
-                      title: 'Noticias del movimiento',
-                      subtitle:
-                          'Novedades, actividades y actualizaciones de Escoge RD.',
-                    ),
-                    SizedBox(height: 12),
-                    _ContentCategoryCard(
-                      icon: Icons.account_balance_rounded,
-                      title: 'Historia del movimiento',
-                      subtitle:
-                          'Conoce nuestros inicios y el camino recorrido en República Dominicana.',
-                    ),
-                    SizedBox(height: 12),
-                    _ContentCategoryCard(
-                      icon: Icons.photo_library_rounded,
-                      title: 'Multimedia y testimonios',
-                      subtitle: 'Fotos, videos y experiencias que inspiran.',
-                    ),
-                    SizedBox(height: 22),
-                    _SectionTitle(title: 'Próximamente'),
-                    SizedBox(height: 12),
-                    _FutureCard(),
-                  ],
+      backgroundColor: Colors.transparent,
+      body: AppBackground(
+        background: AppBackgrounds.home,
+        overlayOpacity: 0.18,
+        child: SafeArea(
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 120),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                _ContenidoHeader(),
+                SizedBox(height: 22),
+                _ContenidoIntroCard(),
+                SizedBox(height: 26),
+                _SectionTitle(
+                  title: 'Explora',
+                  subtitle:
+                      'Historia, noticias y materiales que fortalecen la identidad del movimiento.',
                 ),
-              ),
+                SizedBox(height: 14),
+                _ContentCategoryCard(
+                  icon: Icons.campaign_rounded,
+                  title: 'Noticias del movimiento',
+                  subtitle:
+                      'Novedades, actividades y actualizaciones de Escoge RD.',
+                ),
+                SizedBox(height: 14),
+                _ContentCategoryCard(
+                  icon: Icons.account_balance_rounded,
+                  title: 'Historia del movimiento',
+                  subtitle:
+                      'Conoce nuestros inicios y el camino recorrido en República Dominicana.',
+                ),
+                SizedBox(height: 14),
+                _ContentCategoryCard(
+                  icon: Icons.photo_library_rounded,
+                  title: 'Multimedia y testimonios',
+                  subtitle:
+                      'Fotos, videos y experiencias que inspiran y conectan.',
+                ),
+                SizedBox(height: 26),
+                _SectionTitle(
+                  title: 'Próximamente',
+                  subtitle:
+                      'Nuevos contenidos institucionales y formativos seguirán enriqueciendo este espacio.',
+                ),
+                SizedBox(height: 14),
+                _FutureCard(),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -65,37 +77,27 @@ class _ContenidoHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 18),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.primaryBlue, AppColors.secondaryBlue],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Contenido',
+          style: GoogleFonts.lora(
+            fontSize: 30,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+          ),
         ),
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Contenido',
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.w700,
-            ),
+        const SizedBox(height: 6),
+        Text(
+          'Historia, noticias y recursos del movimiento.',
+          style: GoogleFonts.poppins(
+            fontSize: 13,
+            color: Colors.white.withOpacity(0.80),
+            height: 1.45,
           ),
-          const SizedBox(height: 6),
-          Text(
-            'Historia, noticias y recursos del movimiento.',
-            style: GoogleFonts.poppins(
-              color: Colors.white.withValues(alpha: 0.85),
-              fontSize: 14,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -105,7 +107,8 @@ class _ContenidoIntroCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppCard(
+    return AppGlassCard(
+      borderRadius: 32,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -113,12 +116,12 @@ class _ContenidoIntroCard extends StatelessWidget {
             height: 52,
             width: 52,
             decoration: BoxDecoration(
-              color: AppColors.primaryBlue.withValues(alpha: 0.08),
-              borderRadius: BorderRadius.circular(16),
+              color: Colors.white.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(18),
             ),
             child: const Icon(
               Icons.explore_rounded,
-              color: AppColors.primaryBlue,
+              color: Color(0xFFD4AF37),
               size: 26,
             ),
           ),
@@ -129,19 +132,20 @@ class _ContenidoIntroCard extends StatelessWidget {
               children: [
                 Text(
                   'Descubre más de Escoge RD',
-                  style: GoogleFonts.poppins(
-                    fontSize: 16.5,
+                  style: GoogleFonts.lora(
+                    fontSize: 22,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: Colors.white,
+                    height: 1.2,
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 8),
                 Text(
                   'Accede a contenido institucional, materiales del movimiento y experiencias que fortalecen la comunidad.',
                   style: GoogleFonts.poppins(
-                    fontSize: 13.5,
-                    height: 1.5,
-                    color: AppColors.textSecondary,
+                    fontSize: 13.2,
+                    height: 1.55,
+                    color: Colors.white.withOpacity(0.82),
                   ),
                 ),
               ],
@@ -166,18 +170,23 @@ class _ContentCategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppCard(
+    return AppGlassCard(
       onTap: () {},
+      borderRadius: 28,
       child: Row(
         children: [
           Container(
             height: 54,
             width: 54,
             decoration: BoxDecoration(
-              color: AppColors.primaryBlue.withValues(alpha: 0.08),
+              color: Colors.white.withOpacity(0.12),
               borderRadius: BorderRadius.circular(18),
             ),
-            child: Icon(icon, color: AppColors.primaryBlue, size: 26),
+            child: Icon(
+              icon,
+              color: ContenidoScreen.gold,
+              size: 26,
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -187,18 +196,18 @@ class _ContentCategoryCard extends StatelessWidget {
                 Text(
                   title,
                   style: GoogleFonts.poppins(
-                    fontSize: 16,
+                    fontSize: 15.5,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: Colors.white,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 5),
                 Text(
                   subtitle,
                   style: GoogleFonts.poppins(
-                    fontSize: 13.4,
+                    fontSize: 12.4,
                     height: 1.45,
-                    color: AppColors.textSecondary,
+                    color: Colors.white.withOpacity(0.76),
                   ),
                 ),
               ],
@@ -206,8 +215,9 @@ class _ContentCategoryCard extends StatelessWidget {
           ),
           const SizedBox(width: 10),
           const Icon(
-            Icons.chevron_right_rounded,
-            color: AppColors.textSecondary,
+            Icons.arrow_forward_ios_rounded,
+            color: Colors.white,
+            size: 16,
           ),
         ],
       ),
@@ -221,17 +231,22 @@ class _FutureCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppCard(
+      borderRadius: 30,
+      color: Colors.white.withOpacity(0.92),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            height: 48,
-            width: 48,
+            height: 50,
+            width: 50,
             decoration: BoxDecoration(
-              color: AppColors.gold.withValues(alpha: 0.16),
+              color: ContenidoScreen.gold.withOpacity(0.16),
               borderRadius: BorderRadius.circular(16),
             ),
-            child: const Icon(Icons.public_rounded, color: AppColors.gold),
+            child: const Icon(
+              Icons.public_rounded,
+              color: ContenidoScreen.gold,
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -243,16 +258,16 @@ class _FutureCard extends StatelessWidget {
                   style: GoogleFonts.poppins(
                     fontSize: 15.5,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: ContenidoScreen.primaryBlue,
                   ),
                 ),
                 const SizedBox(height: 6),
                 Text(
                   'En una próxima actualización podrás conocer una breve historia de las distintas diócesis del país.',
                   style: GoogleFonts.poppins(
-                    fontSize: 13.5,
+                    fontSize: 13,
                     height: 1.5,
-                    color: AppColors.textSecondary,
+                    color: Colors.black54,
                   ),
                 ),
               ],
@@ -266,18 +281,36 @@ class _FutureCard extends StatelessWidget {
 
 class _SectionTitle extends StatelessWidget {
   final String title;
+  final String subtitle;
 
-  const _SectionTitle({required this.title});
+  const _SectionTitle({
+    required this.title,
+    required this.subtitle,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      title,
-      style: GoogleFonts.poppins(
-        fontSize: 18,
-        fontWeight: FontWeight.w700,
-        color: AppColors.textPrimary,
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: GoogleFonts.lora(
+            fontSize: 22,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          subtitle,
+          style: GoogleFonts.poppins(
+            fontSize: 12.5,
+            color: Colors.white.withOpacity(0.75),
+            height: 1.45,
+          ),
+        ),
+      ],
     );
   }
 }

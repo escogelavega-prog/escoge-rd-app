@@ -1,6 +1,5 @@
 import 'package:escoge/core/theme/app_colors.dart';
 import 'package:escoge/core/theme/app_radius.dart';
-import 'package:escoge/core/theme/app_shadows.dart';
 import 'package:escoge/core/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -24,64 +23,103 @@ class ProfileHeroCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppRadius.hero),
         gradient: const LinearGradient(
-          colors: [AppColors.primaryBlue, AppColors.secondaryBlue],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
+          colors: [
+            AppColors.primaryBlue,
+            AppColors.secondaryBlue,
+          ],
         ),
-        boxShadow: AppShadows.soft,
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.10),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.14),
+            blurRadius: 22,
+            offset: const Offset(0, 12),
+          ),
+          BoxShadow(
+            color: AppColors.primaryBlue.withValues(alpha: 0.12),
+            blurRadius: 28,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: Row(
         children: [
-          /// Avatar
           Container(
+            width: 62,
+            height: 62,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
+              color: Colors.white.withValues(alpha: 0.96),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.2),
+                  color: Colors.black.withValues(alpha: 0.18),
                   blurRadius: 16,
                   offset: const Offset(0, 6),
                 ),
               ],
             ),
-            child: const CircleAvatar(
-              radius: 28,
-              backgroundColor: Colors.white,
-              child: Icon(Icons.person, color: AppColors.primaryBlue, size: 28),
+            child: const Icon(
+              Icons.person,
+              color: AppColors.primaryBlue,
+              size: 30,
             ),
           ),
-
           const SizedBox(width: AppSpacing.md),
-
-          /// Info usuario
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   userName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.lora(
                     fontSize: 18,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w700,
                     color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  userEmail,
-                  style: GoogleFonts.poppins(
-                    fontSize: 12,
-                    color: Colors.white.withValues(alpha: 0.8),
+                    height: 1.15,
                   ),
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  estadoEspiritual,
+                  userEmail,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.poppins(
-                    fontSize: 11,
+                    fontSize: 12.5,
                     fontWeight: FontWeight.w500,
-                    color: AppColors.gold,
+                    color: Colors.white.withValues(alpha: 0.82),
+                    height: 1.3,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.gold.withValues(alpha: 0.14),
+                    borderRadius: BorderRadius.circular(999),
+                    border: Border.all(
+                      color: AppColors.gold.withValues(alpha: 0.18),
+                    ),
+                  ),
+                  child: Text(
+                    estadoEspiritual,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.poppins(
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.gold,
+                      height: 1.2,
+                    ),
                   ),
                 ),
               ],
