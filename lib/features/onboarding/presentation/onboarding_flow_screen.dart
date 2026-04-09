@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:escoge/features/auth/presentation/login_screen.dart';
+import 'package:escoge/features/entry/presentation/entry_choice_screen.dart';
 import 'package:escoge/features/onboarding/presentation/onboarding_features_screen.dart';
 import 'package:escoge/features/onboarding/presentation/onboarding_intro_screen.dart';
 import 'package:escoge/features/onboarding/presentation/onboarding_notifications_screen.dart';
 import 'package:escoge/features/onboarding/presentation/onboarding_preferences_screen.dart';
 import 'package:escoge/features/onboarding/widgets/onboarding_action_button.dart';
-import 'package:escoge/features/entry/presentation/entry_choice_screen.dart';
 
 class OnboardingFlowScreen extends StatefulWidget {
   const OnboardingFlowScreen({super.key});
@@ -41,10 +40,10 @@ class _OnboardingFlowScreenState extends State<OnboardingFlowScreen> {
     );
   }
 
-  void _goToLogin() {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
-    );
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   @override
@@ -54,6 +53,7 @@ class _OnboardingFlowScreenState extends State<OnboardingFlowScreen> {
         children: [
           PageView(
             controller: _pageController,
+            physics: const BouncingScrollPhysics(),
             onPageChanged: (index) {
               setState(() => _currentIndex = index);
             },
@@ -61,19 +61,9 @@ class _OnboardingFlowScreenState extends State<OnboardingFlowScreen> {
           ),
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(24, 20, 24, 28),
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 14),
               child: Column(
                 children: [
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: TextButton(
-                      onPressed: _goToLogin,
-                      child: const Text(
-                        'Ya tengo cuenta',
-                        style: TextStyle(color: Colors.white70),
-                      ),
-                    ),
-                  ),
                   const Spacer(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -82,18 +72,18 @@ class _OnboardingFlowScreenState extends State<OnboardingFlowScreen> {
                       (index) => AnimatedContainer(
                         duration: const Duration(milliseconds: 250),
                         margin: const EdgeInsets.symmetric(horizontal: 4),
-                        width: _currentIndex == index ? 24 : 8,
+                        width: _currentIndex == index ? 22 : 8,
                         height: 8,
                         decoration: BoxDecoration(
                           color: _currentIndex == index
                               ? const Color(0xFFD4AF37)
                               : Colors.white24,
-                          borderRadius: BorderRadius.circular(15),
+                          borderRadius: BorderRadius.circular(20),
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 25),
+                  const SizedBox(height: 14),
                   OnboardingActionButton(
                     text: _isLastPage ? 'Continuar' : 'Siguiente',
                     onTap: _nextPage,
