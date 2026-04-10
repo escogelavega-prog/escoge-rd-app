@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:escoge/app/navigation/main_shell.dart';
+import 'package:escoge/features/auth/presentation/complete_profile_screen.dart';
 import 'package:escoge/features/auth/presentation/login_screen.dart';
 import 'package:escoge/features/onboarding/widgets/onboarding_action_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -61,19 +61,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
         'uid': user.uid,
         'nombre': _nombreController.text.trim(),
         'email': _emailController.text.trim(),
+        'telefono': '',
+        'edad': null,
+        'sexo': '',
+        'diocesisId': '',
+        'diocesisNombre': '',
         'role': 'joven',
-        'diocesisId': null,
+        'isActive': true,
         'onboardingCompleted': true,
         'profileCompleted': false,
         'accountStatus': 'active',
-        'provider': 'email',
+        'provider': 'password',
         'createdAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
 
       if (!mounted) return;
 
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const MainShell()),
+        MaterialPageRoute(builder: (_) => const CompleteProfileScreen()),
         (route) => false,
       );
     } on FirebaseAuthException catch (e) {
@@ -98,9 +104,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       }
 
       _showMessage(message);
-    } catch (_) {
+    } catch (e) {
+      debugPrint('ERROR REGISTRO: $e');
       if (!mounted) return;
-      _showMessage('Ocurrió un error inesperado al crear la cuenta.');
+      _showMessage('Ocurrió un error inesperado: $e');
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
