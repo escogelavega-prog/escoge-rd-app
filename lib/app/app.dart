@@ -1,6 +1,6 @@
 import 'package:escoge/app/routes/app_routes.dart';
-import 'package:escoge/app/routes/route_names.dart';
 import 'package:flutter/material.dart';
+import 'package:escoge/app/session_gate.dart';
 
 class EscogeApp extends StatelessWidget {
   const EscogeApp({super.key});
@@ -10,16 +10,12 @@ class EscogeApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Escoge RD',
-      theme: AppTheme.theme,
-      initialRoute: RouteNames.splash,
+
+      // 🔥 ESTE ES EL CAMBIO CLAVE
+      home: const SessionGate(),
+
+      // Puedes mantener rutas para navegación interna
       onGenerateRoute: AppRoutes.onGenerateRoute,
     );
   }
-}
-
-class AppTheme {
-  static ThemeData get lightTheme => ThemeData();
-  static ThemeData get darkTheme => ThemeData();
-
-  static ThemeData? get theme => null;
 }

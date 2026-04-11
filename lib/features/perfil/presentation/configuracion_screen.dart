@@ -1,22 +1,24 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import 'package:escoge/features/auth/data/services/auth_service.dart';
+
 import '../widgets/settings_profile_preview_card.dart';
 import '../widgets/settings_section_title.dart';
 import '../widgets/settings_tile.dart';
 
 class ConfiguracionScreen extends StatefulWidget {
-  const ConfiguracionScreen({super.key, String? userName, String? userEmail})
-    : userName = userName ?? 'Invitado Escoge',
-      userEmail = userEmail ?? 'usuario@escoge.app';
-
-  final String userName;
-  final String userEmail;
+  const ConfiguracionScreen({super.key});
 
   @override
   State<ConfiguracionScreen> createState() => _ConfiguracionScreenState();
 }
 
 class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
+  final AuthService _authService = AuthService();
+
   bool _notificaciones = true;
   bool _recordatorios = true;
   bool _modoOscuro = false;
@@ -26,6 +28,81 @@ class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
   static const Color accentBlue = Color(0xFF2A49B8);
   static const Color softBackground = Color(0xFFF3F6FD);
 
+  Future<Map<String, dynamic>> _loadUserData() async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser == null) {
+      return {
+        'userName': 'Invitado Escoge',
+        'userEmail': 'usuario@escoge.app',
+      };
+    }
+
+    final doc = await FirebaseFirestore.instance
+        .collection('usuarios')
+        .doc(currentUser.uid)
+        .get();
+
+    final data = doc.data() ?? <String, dynamic>{};
+
+    final userName = (data['nombre'] ?? '').toString().trim();
+    final userEmail =
+        (data['email'] ?? currentUser.email ?? '').toString().trim();
+
+    return {
+      'userName': userName.isEmpty ? 'Invitado Escoge' : userName,
+      'userEmail': userEmail.isEmpty ? 'usuario@escoge.app' : userEmail,
+    };
+  }
+
+  Future<void> _confirmSignOut() async {
+    final shouldLogout = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: const Text('Cerrar sesión'),
+          content: const Text(
+            '¿Deseas salir de tu cuenta en Escoge RD?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: const Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: const Text('Cerrar sesión'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (shouldLogout != true) return;
+
+    try {
+      await _authService.signOut();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('No se pudo cerrar la sesión: $e'),
+        ),
+      );
+    }
+  }
+
+  void _showComingSoon(String title) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('$title estará disponible próximamente.'),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,97 +111,112 @@ class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
         children: [
           _buildTopBackground(),
           SafeArea(
-            child: ListView(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 110),
-              children: [
-                _buildHeader(context),
-                const SizedBox(height: 26),
-                SettingsProfilePreviewCard(
-                  userName: widget.userName,
-                  userEmail: widget.userEmail,
-                ),
-                const SizedBox(height: 28),
-                const SettingsSectionTitle(
-                  title: 'Preferencias',
-                  subtitle: 'Personaliza tu experiencia dentro de Escoge',
-                ),
-                const SizedBox(height: 14),
-                SettingsTile(
-                  icon: Icons.notifications_none_rounded,
-                  title: 'Notificaciones',
-                  subtitle: 'Activa avisos sobre retiros y novedades',
-                  trailing: Switch(
-                    value: _notificaciones,
-                    onChanged: (value) {
-                      setState(() {
-                        _notificaciones = value;
-                      });
-                    },
-                    activeThumbColor: primaryBlue,
-                  ),
-                ),
-                const SizedBox(height: 14),
-                SettingsTile(
-                  icon: Icons.alarm_outlined,
-                  title: 'Recordatorios espirituales',
-                  subtitle: 'Recibe avisos para oración y reflexión diaria',
-                  trailing: Switch(
-                    value: _recordatorios,
-                    onChanged: (value) {
-                      setState(() {
-                        _recordatorios = value;
-                      });
-                    },
-                    activeThumbColor: primaryBlue,
-                  ),
-                ),
-                const SizedBox(height: 14),
-                SettingsTile(
-                  icon: Icons.dark_mode_outlined,
-                  title: 'Modo oscuro',
-                  subtitle: 'Preparado para futura implementación visual',
-                  trailing: Switch(
-                    value: _modoOscuro,
-                    onChanged: (value) {
-                      setState(() {
-                        _modoOscuro = value;
-                      });
-                    },
-                    activeThumbColor: primaryBlue,
-                  ),
-                ),
-                const SizedBox(height: 28),
-                const SettingsSectionTitle(
-                  title: 'Cuenta y acceso',
-                  subtitle: 'Gestiona tu perfil, seguridad y sesión',
-                ),
-                const SizedBox(height: 14),
-                const SettingsTile(
-                  icon: Icons.person_outline_rounded,
-                  title: 'Editar perfil',
-                  subtitle: 'Actualiza nombre, correo y datos personales',
-                ),
-                const SizedBox(height: 14),
-                const SettingsTile(
-                  icon: Icons.lock_outline_rounded,
-                  title: 'Seguridad',
-                  subtitle: 'Configura acceso, contraseña y autenticación',
-                ),
-                const SizedBox(height: 14),
-                const SettingsTile(
-                  icon: Icons.info_outline_rounded,
-                  title: 'Acerca de Escoge RD',
-                  subtitle: 'Información de la aplicación y versión beta',
-                ),
-                const SizedBox(height: 14),
-                const SettingsTile(
-                  icon: Icons.logout_rounded,
-                  title: 'Cerrar sesión',
-                  subtitle: 'Salir de tu cuenta de forma segura',
-                  isDanger: true,
-                ),
-              ],
+            child: FutureBuilder<Map<String, dynamic>>(
+              future: _loadUserData(),
+              builder: (context, snapshot) {
+                final userData = snapshot.data ??
+                    {
+                      'userName': 'Invitado Escoge',
+                      'userEmail': 'usuario@escoge.app',
+                    };
+
+                return ListView(
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 110),
+                  children: [
+                    _buildHeader(context),
+                    const SizedBox(height: 26),
+                    SettingsProfilePreviewCard(
+                      userName: userData['userName'] as String,
+                      userEmail: userData['userEmail'] as String,
+                    ),
+                    const SizedBox(height: 28),
+                    const SettingsSectionTitle(
+                      title: 'Preferencias',
+                      subtitle: 'Personaliza tu experiencia dentro de Escoge',
+                    ),
+                    const SizedBox(height: 14),
+                    SettingsTile(
+                      icon: Icons.notifications_none_rounded,
+                      title: 'Notificaciones',
+                      subtitle: 'Activa avisos sobre retiros y novedades',
+                      trailing: Switch(
+                        value: _notificaciones,
+                        onChanged: (value) {
+                          setState(() {
+                            _notificaciones = value;
+                          });
+                        },
+                        activeThumbColor: primaryBlue,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    SettingsTile(
+                      icon: Icons.alarm_outlined,
+                      title: 'Recordatorios espirituales',
+                      subtitle: 'Recibe avisos para oración y reflexión diaria',
+                      trailing: Switch(
+                        value: _recordatorios,
+                        onChanged: (value) {
+                          setState(() {
+                            _recordatorios = value;
+                          });
+                        },
+                        activeThumbColor: primaryBlue,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    SettingsTile(
+                      icon: Icons.dark_mode_outlined,
+                      title: 'Modo oscuro',
+                      subtitle: 'Preparado para futura implementación visual',
+                      trailing: Switch(
+                        value: _modoOscuro,
+                        onChanged: (value) {
+                          setState(() {
+                            _modoOscuro = value;
+                          });
+                        },
+                        activeThumbColor: primaryBlue,
+                      ),
+                    ),
+                    const SizedBox(height: 28),
+                    const SettingsSectionTitle(
+                      title: 'Cuenta y acceso',
+                      subtitle: 'Gestiona tu perfil, seguridad y sesión',
+                    ),
+                    const SizedBox(height: 14),
+                    SettingsTile(
+                      icon: Icons.person_outline_rounded,
+                      title: 'Editar perfil',
+                      subtitle: 'Actualiza nombre, correo y datos personales',
+                      onTap: () => _showComingSoon('Editar perfil'),
+                    ),
+                    const SizedBox(height: 14),
+                    SettingsTile(
+                      icon: Icons.lock_outline_rounded,
+                      title: 'Seguridad',
+                      subtitle: 'Configura acceso, contraseña y autenticación',
+                      onTap: () => _showComingSoon('Seguridad'),
+                    ),
+                    const SizedBox(height: 14),
+                    SettingsTile(
+                      icon: Icons.info_outline_rounded,
+                      title: 'Acerca de Escoge RD',
+                      subtitle: 'Información general de la aplicación',
+                      onTap: () => _showComingSoon('Acerca de Escoge RD'),
+                    ),
+                    const SizedBox(height: 14),
+                    SettingsTile(
+                      icon: Icons.logout_rounded,
+                      title: 'Cerrar sesión',
+                      subtitle: 'Salir de tu cuenta de forma segura',
+                      isDanger: true,
+                      onTap: _confirmSignOut,
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         ],

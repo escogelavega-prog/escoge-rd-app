@@ -49,7 +49,13 @@ class AuthService {
   Future<UserCredential> signInWithGoogle() async {
     await _googleSignIn.initialize();
 
-    final GoogleSignInAccount googleUser = await _googleSignIn.authenticate();
+    final GoogleSignInAccount googleUser;
+    try {
+      googleUser = await _googleSignIn.authenticate();
+    } catch (e) {
+      throw Exception('Inicio de sesión con Google cancelado o fallido.');
+    }
+
     final GoogleSignInAuthentication googleAuth = googleUser.authentication;
 
     final credential = GoogleAuthProvider.credential(
@@ -69,7 +75,11 @@ class AuthService {
   Future<void> signOut() async {
     try {
       await _googleSignIn.signOut();
-    } catch (_) {}
+    } catch (_) {
+      // Ignoramos fallo de cierre de Google para no bloquear
+      // el signOut principal de Firebase.
+    }
+
     await _auth.signOut();
   }
 

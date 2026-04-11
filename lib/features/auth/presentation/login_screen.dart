@@ -14,11 +14,12 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final AuthService _authService = AuthService();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final AuthService _authService = AuthService();
+
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   bool _isLoading = false;
   bool _isGoogleLoading = false;
@@ -55,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
           .get();
 
       final data = userDoc.data() ?? {};
-      final profileCompleted = data['profileCompleted'] == true;
+      final bool profileCompleted = data['profileCompleted'] == true;
 
       if (!mounted) return;
 
@@ -100,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
           .get();
 
       final data = userDoc.data() ?? {};
-      final profileCompleted = data['profileCompleted'] == true;
+      final bool profileCompleted = data['profileCompleted'] == true;
 
       if (!mounted) return;
 
@@ -213,7 +214,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           Positioned.fill(
             child: Container(
-              color: Colors.black.withOpacity(0.35),
+              color: Colors.black.withValues(alpha: 0.35),
             ),
           ),
           SafeArea(
@@ -262,7 +263,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Container(
                             padding: const EdgeInsets.all(20),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.78),
+                              color: Colors.white.withValues(alpha: 0.78),
                               borderRadius: BorderRadius.circular(26),
                             ),
                             child: Column(
