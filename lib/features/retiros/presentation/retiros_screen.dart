@@ -1,11 +1,12 @@
+
 import 'package:escoge/core/theme/app_backgrounds.dart';
 import 'package:escoge/core/widgets/app_background.dart';
 import 'package:escoge/core/widgets/app_card.dart';
-
+import 'package:escoge/features/auth/data/services/auth_service.dart';
+import 'package:escoge/features/auth/domain/app_user_model.dart';
 import 'package:escoge/features/retiros/data/services/retiros_service.dart';
 import 'package:escoge/features/retiros/domain/retiro_item.dart';
 import 'package:escoge/features/retiros/presentation/retiro_detalle_screen.dart';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -17,59 +18,82 @@ class RetirosScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authService = AuthService();
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: AppBackground(
         background: AppBackgrounds.home,
         overlayOpacity: 0.20,
         child: SafeArea(
-          child: CustomScrollView(
-            physics: const BouncingScrollPhysics(),
-            slivers: [
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-                  child: _Header(),
-                ),
-              ),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 22, 20, 0),
-                  child: const _HeroRetirosCard(),
-                ),
-              ),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 26, 20, 0),
-                  child: Text(
-                    'Próximos retiros',
-                    style: GoogleFonts.lora(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
+          child: FutureBuilder<AppUserModel?>(
+            future: authService.getCurrentAppUser(),
+            builder: (context, userSnapshot) {
+              if (userSnapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              final user = userSnapshot.data;
+
+              // Si no hay usuario autenticado o perfil disponible,
+              // usamos una vista básica tipo joven sin diócesis fija.
+              final role = user?.role ?? 'joven';
+              final diocesisId = user?.diocesisId;
+
+              return CustomScrollView(
+                physics: const BouncingScrollPhysics(),
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                      child: _Header(
+                        roleLabel: user == null ? 'Invitado' : user.role,
+                      ),
                     ),
                   ),
-                ),
-              ),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 6, 20, 0),
-                  child: Text(
-                    'Explora las experiencias disponibles y entra a más detalles.',
-                    style: GoogleFonts.poppins(
-                      fontSize: 12.5,
-                      color: Colors.white.withOpacity(0.75),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 22, 20, 0),
+                      child: const _HeroRetirosCard(),
                     ),
                   ),
-                ),
-              ),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 30),
-                  child: const _RetirosList(),
-                ),
-              ),
-            ],
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 26, 20, 0),
+                      child: Text(
+                        'Próximos retiros',
+                        style: GoogleFonts.lora(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 6, 20, 0),
+                      child: Text(
+                        'Explora las experiencias disponibles según tu perfil y acceso.',
+                        style: GoogleFonts.poppins(
+                          fontSize: 12.5,
+                          color: Colors.white.withOpacity(0.75),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 30),
+                      child: _RetirosList(
+                        role: role,
+                        diocesisId: diocesisId,
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),
@@ -78,15 +102,46 @@ class RetirosScreen extends StatelessWidget {
 }
 
 class _Header extends StatelessWidget {
+  final String roleLabel;
+
+  const _Header({required this.roleLabel});
+
+  String _friendlyRole(String role) {
+    switch (role) {
+      case 'superadmin':
+        return 'Superadmin';
+      case 'nacional':
+        return 'Nacional';
+      case 'diocesano':
+        return 'Diocesano';
+      case 'joven':
+      default:
+        return 'Joven';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Text(
-      'Retiros',
-      style: GoogleFonts.lora(
-        fontSize: 30,
-        fontWeight: FontWeight.w700,
-        color: Colors.white,
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Retiros',
+          style: GoogleFonts.lora(
+            fontSize: 30,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'Vista actual: ${_friendlyRole(roleLabel)}',
+          style: GoogleFonts.poppins(
+            fontSize: 12.5,
+            color: Colors.white.withOpacity(0.72),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -142,14 +197,23 @@ class _HeroRetirosCard extends StatelessWidget {
 }
 
 class _RetirosList extends StatelessWidget {
-  const _RetirosList();
+  final String role;
+  final String? diocesisId;
+
+  const _RetirosList({
+    required this.role,
+    required this.diocesisId,
+  });
 
   @override
   Widget build(BuildContext context) {
     final service = RetirosService();
 
     return StreamBuilder<List<RetiroItem>>(
-      stream: service.escucharRetirosActivos(),
+      stream: service.escucharRetirosPorRol(
+        role: role,
+        diocesisId: diocesisId,
+      ),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const _LoadingCard();
@@ -166,8 +230,9 @@ class _RetirosList extends StatelessWidget {
 
         if (retiros.isEmpty) {
           return const _MessageCard(
-            title: 'Aún no hay retiros',
-            subtitle: 'Cuando existan en Firebase aparecerán aquí.',
+            title: 'No hay retiros disponibles',
+            subtitle:
+                'No existen retiros visibles para tu rol o diócesis en este momento.',
           );
         }
 

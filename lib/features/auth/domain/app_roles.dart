@@ -1,11 +1,9 @@
 class AppRoles {
-  /// 🔹 Roles oficiales del sistema
   static const String joven = 'joven';
   static const String diocesano = 'diocesano';
   static const String nacional = 'nacional';
   static const String superadmin = 'superadmin';
 
-  /// 🔹 Lista completa de roles válidos
   static const List<String> all = [
     joven,
     diocesano,
@@ -13,14 +11,16 @@ class AppRoles {
     superadmin,
   ];
 
-  /// 🔹 Verifica si un rol es válido
   static bool isValid(String? role) {
     if (role == null) return false;
     return all.contains(role);
   }
 
-  /// 🔹 Jerarquía de roles (nivel de acceso)
-  /// Mayor número = mayor privilegio
+  static String normalize(String? role) {
+    if (role == null) return joven;
+    return all.contains(role) ? role : joven;
+  }
+
   static int level(String role) {
     switch (role) {
       case superadmin:
@@ -35,8 +35,6 @@ class AppRoles {
     }
   }
 
-  /// 🔹 Permite verificar acceso por jerarquía
-  /// Ej: nacional puede acceder a cosas de diocesano
   static bool hasAccess({
     required String userRole,
     required String requiredRole,
@@ -44,7 +42,6 @@ class AppRoles {
     return level(userRole) >= level(requiredRole);
   }
 
-  /// 🔹 Etiqueta amigable para UI
   static String label(String role) {
     switch (role) {
       case superadmin:
