@@ -4,7 +4,18 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3eeb037b-8e40-4a77-b998-394a272a0f9d" name="Changes" comment="" />
+    <list default="true" id="3eeb037b-8e40-4a77-b998-394a272a0f9d" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.flutter-plugins-dependencies" beforeDir="false" afterPath="$PROJECT_DIR$/.flutter-plugins-dependencies" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/home/presentation/home_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/home/presentation/home_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/oracion/data/models/evangelio_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/oracion/data/models/evangelio_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/oracion/presentation/evangelio_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/oracion/presentation/evangelio_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/oracion/presentation/lecturas_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/oracion/presentation/lecturas_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/oracion/presentation/oracion_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/oracion/presentation/oracion_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/oracion/services/evangelio_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/oracion/services/evangelio_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/oracion/services/lecturas_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/oracion/services/lecturas_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/oracion/services/liturgia_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/oracion/services/liturgia_service.dart" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -26,9 +37,12 @@
       </file>
     </leaf>
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 4
-}]]></component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 4
+}</component>
   <component name="ProjectId" id="3C9M3zkXEQePeMUBlSOsp1sUo0J" />
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1" />
@@ -44,13 +58,16 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Flutter.main.dart.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.readMode.enableVisualFormatting": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "main",
     "io.flutter.project.isFirstOpen": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/Users/andermedina/Development/App/escoge",

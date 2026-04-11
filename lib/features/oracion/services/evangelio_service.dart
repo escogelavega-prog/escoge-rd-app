@@ -1,20 +1,20 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:escoge/features/oracion/data/models/evangelio_model.dart';
+import 'package:escoge/features/oracion/services/liturgia_service.dart';
 
 class EvangelioService {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  EvangelioService({
+    LiturgiaService? liturgiaService,
+  }) : _liturgiaService = liturgiaService ?? LiturgiaService();
 
-  Future<EvangelioModel?> obtenerHoy() async {
-    try {
-      final doc = await _db.collection('evangelio').doc('hoy').get();
+  final LiturgiaService _liturgiaService;
 
-      if (!doc.exists || doc.data() == null) {
-        return null;
-      }
+  Future<EvangelioModel?> getEvangelioDelDia() async {
+    final liturgia = await _liturgiaService.getTodayLiturgia();
+    return liturgia?.evangelio;
+  }
 
-      return EvangelioModel.fromMap(doc.data()!);
-    } catch (e) {
-      return null;
-    }
+  Future<EvangelioModel?> getEvangelioByDate(DateTime date) async {
+    final liturgia = await _liturgiaService.getLiturgiaByDate(date);
+    return liturgia?.evangelio;
   }
 }

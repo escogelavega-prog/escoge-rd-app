@@ -1,10 +1,18 @@
 import 'dart:ui';
+
+import 'package:escoge/features/oracion/data/models/evangelio_model.dart';
+import 'package:escoge/features/oracion/data/models/liturgia_day_model.dart';
+import 'package:escoge/features/oracion/services/liturgia_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:escoge/features/oracion/services/lecturas_service.dart';
 
 class EvangelioScreen extends StatefulWidget {
-  const EvangelioScreen({super.key});
+  final DateTime? selectedDate;
+
+  const EvangelioScreen({
+    super.key,
+    this.selectedDate,
+  });
 
   @override
   State<EvangelioScreen> createState() => _EvangelioScreenState();
@@ -13,9 +21,14 @@ class EvangelioScreen extends StatefulWidget {
 class _EvangelioScreenState extends State<EvangelioScreen> {
   static const Color gold = Color(0xFFD4AF37);
   static const Color softGold = Color(0xFFE8C76A);
+  static const Color deepBlue = Color(0xFF0B1E66);
 
-  LecturasDayData? data;
-  bool loading = true;
+  final LiturgiaService _liturgiaService = LiturgiaService();
+
+  LiturgiaDayModel? _liturgiaDay;
+  EvangelioModel? _evangelio;
+  bool _loading = true;
+  String? _errorMessage;
 
   @override
   void initState() {
@@ -24,54 +37,120 @@ class _EvangelioScreenState extends State<EvangelioScreen> {
   }
 
   Future<void> _load() async {
-    final result = await LecturasService.getLecturasDelDiaConFallback();
-    if (!mounted) return;
-
     setState(() {
-      data = result;
-      loading = false;
+      _loading = true;
+      _errorMessage = null;
     });
-  }
 
-  String _getEvangelioTitulo() {
-    final evangelio = data?.evangelio;
-    if (evangelio == null || evangelio.isEmpty) return 'Evangelio del día';
-    return evangelio['titulo']?.toString() ?? 'Evangelio del día';
+    try {
+      final targetDate = widget.selectedDate ?? DateTime.now();
+      final liturgia = await _liturgiaService.getLiturgiaByDate(targetDate);
+      final evangelio = liturgia?.evangelio;
+
+      if (!mounted) return;
+
+      setState(() {
+        _liturgiaDay = liturgia;
+        _evangelio = evangelio;
+        _loading = false;
+        _errorMessage = null;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _loading = false;
+        _errorMessage = 'No se pudo cargar el evangelio.';
+      });
+    }
   }
 
   String _getEvangelioCita() {
-    final evangelio = data?.evangelio;
-    if (evangelio == null || evangelio.isEmpty) return '';
-    return evangelio['cita']?.toString() ?? '';
+    final cita = _evangelio?.cita.trim() ?? '';
+    return cita.isNotEmpty ? cita : 'Cita no disponible';
   }
 
   String _getEvangelioTexto() {
-    final evangelio = data?.evangelio;
-    if (evangelio == null || evangelio.isEmpty) {
-      return 'No hay evangelio disponible para este día.';
-    }
-
-    final texto = evangelio['texto']?.toString() ?? '';
-    if (texto.trim().isNotEmpty) return texto;
-
-    final contenido = evangelio['evangelio']?.toString() ?? '';
-    if (contenido.trim().isNotEmpty) return contenido;
-
+    final texto = _evangelio?.texto.trim() ?? '';
+    if (texto.isNotEmpty) return texto;
     return 'No hay evangelio disponible para este día.';
   }
 
   String _getTituloLiturgico() {
-    return data?.titulo ?? 'Evangelio del día';
+    final celebracion = _liturgiaDay?.celebracion.trim() ?? '';
+    return celebracion.isNotEmpty ? celebracion : 'Evangelio del día';
   }
 
-  String _getFraseClave() {
-    final frase = data?.fraseClave ?? '';
-    return frase.trim();
+  String _getTiempoLiturgico() {
+    final tiempo = _liturgiaDay?.tiempoLiturgico.trim() ?? '';
+    return tiempo.isNotEmpty ? tiempo : 'Liturgia diaria';
+  }
+
+  String _getColorLiturgicoTexto() {
+    final color = _liturgiaDay?.colorLiturgico.trim() ?? '';
+    if (color.isEmpty) return '';
+    return 'Color ${color[0].toUpperCase()}${color.substring(1)}';
+  }
+
+  Color _liturgicalColor(String? value) {
+    switch ((value ?? '').trim().toLowerCase()) {
+      case 'verde':
+        return const Color(0xFF3FAE5A);
+      case 'rojo':
+        return const Color(0xFFC84444);
+      case 'blanco':
+        return const Color(0xFFF4F1E8);
+      case 'morado':
+        return const Color(0xFF7A52A1);
+      case 'rosa':
+        return const Color(0xFFD98AA8);
+      case 'dorado':
+        return const Color(0xFFD4AF37);
+      default:
+        return softGold;
+    }
+  }
+
+  String _formatFecha(DateTime date) {
+    const dias = [
+      'lunes',
+      'martes',
+      'miércoles',
+      'jueves',
+      'viernes',
+      'sábado',
+      'domingo',
+    ];
+
+    const meses = [
+      'enero',
+      'febrero',
+      'marzo',
+      'abril',
+      'mayo',
+      'junio',
+      'julio',
+      'agosto',
+      'septiembre',
+      'octubre',
+      'noviembre',
+      'diciembre',
+    ];
+
+    final weekdayIndex = date.weekday == 7 ? 6 : date.weekday - 1;
+    return '${dias[weekdayIndex]}, ${date.day} de ${meses[date.month - 1]} de ${date.year}';
+  }
+
+  bool get _hasEvangelio {
+    final texto = _evangelio?.texto.trim() ?? '';
+    final cita = _evangelio?.cita.trim() ?? '';
+    return texto.isNotEmpty || cita.isNotEmpty;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: Stack(
         children: [
           Positioned.fill(
@@ -81,99 +160,132 @@ class _EvangelioScreenState extends State<EvangelioScreen> {
             ),
           ),
           Positioned.fill(
-            child: Container(
+            child: DecoratedBox(
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.34),
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withOpacity(0.30),
+                    Colors.black.withOpacity(0.28),
                     Colors.black.withOpacity(0.22),
-                    Colors.black.withOpacity(0.36),
+                    Colors.black.withOpacity(0.42),
+                    Colors.black.withOpacity(0.68),
                   ],
                 ),
               ),
             ),
           ),
+          Positioned.fill(
+            child: Container(
+              color: deepBlue.withOpacity(0.10),
+            ),
+          ),
           SafeArea(
-            child: loading
-                ? const Center(
-                    child: CircularProgressIndicator(
-                      color: softGold,
-                    ),
-                  )
-                : data == null
-                    ? _buildEmptyState(context)
-                    : Column(
-                        children: [
-                          _buildHeader(context),
-                          Expanded(
-                            child: _buildContent(),
+            child: _loading
+                ? _buildLoadingState(context)
+                : _errorMessage != null
+                    ? _buildErrorState()
+                    : !_hasEvangelio
+                        ? _buildEmptyState()
+                        : Column(
+                            children: [
+                              _buildTopBar(context),
+                              Expanded(
+                                child: _buildContent(),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildEmptyState(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
-            child: Container(
-              padding: const EdgeInsets.all(22),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.08),
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.08),
-                ),
-              ),
+  Widget _buildLoadingState(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
+      child: Column(
+        children: [
+          _buildTopBar(context, loading: true),
+          const SizedBox(height: 22),
+          Expanded(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
               child: Column(
-                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    Icons.menu_book_rounded,
-                    color: softGold,
-                    size: 34,
-                  ),
-                  const SizedBox(height: 14),
-                  Text(
-                    'No hay evangelio disponible',
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.lora(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'No se encontró contenido litúrgico para este día.',
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.lora(
-                      color: Colors.white.withOpacity(0.88),
-                      fontSize: 17,
-                      height: 1.6,
-                    ),
-                  ),
+                  _buildLoadingHero(),
+                  const SizedBox(height: 20),
+                  _buildLoadingCard(height: 56),
+                  const SizedBox(height: 18),
+                  _buildLoadingCard(height: 340),
                 ],
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLoadingHero() {
+    return Container(
+      width: double.infinity,
+      height: 220,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30),
+        color: Colors.white.withOpacity(0.08),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.08),
         ),
       ),
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
+  Widget _buildLoadingCard({required double height}) {
+    return Container(
+      width: double.infinity,
+      height: height,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        color: Colors.white.withOpacity(0.07),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.08),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: _MessageCard(
+          icon: Icons.error_outline_rounded,
+          title: 'No se pudo cargar el evangelio',
+          message: _errorMessage ?? 'Ocurrió un error inesperado.',
+          buttonLabel: 'Reintentar',
+          onTap: _load,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: _MessageCard(
+          icon: Icons.menu_book_rounded,
+          title: 'No hay evangelio disponible',
+          message: 'No se encontró contenido litúrgico para este día.',
+          buttonLabel: 'Volver',
+          onTap: () => Navigator.pop(context),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTopBar(BuildContext context, {bool loading = false}) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
       child: Row(
@@ -201,7 +313,7 @@ class _EvangelioScreenState extends State<EvangelioScreen> {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              _getTituloLiturgico(),
+              loading ? 'Evangelio' : _getTituloLiturgico(),
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
@@ -220,117 +332,250 @@ class _EvangelioScreenState extends State<EvangelioScreen> {
   }
 
   Widget _buildContent() {
-    final frase = _getFraseClave();
+    final fecha = _liturgiaDay?.fecha ?? widget.selectedDate ?? DateTime.now();
+    final colorText = _getColorLiturgicoTexto();
+    final colorRaw = _liturgiaDay?.colorLiturgico.trim() ?? '';
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(24, 18, 24, 34),
+      padding: const EdgeInsets.fromLTRB(16, 18, 16, 34),
+      physics: const BouncingScrollPhysics(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Center(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(999),
-                color: Colors.white.withOpacity(0.08),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.08),
-                ),
-              ),
-              child: Text(
-                'Evangelio',
-                style: GoogleFonts.poppins(
-                  color: gold,
-                  fontSize: 13.5,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
+          _HeroEvangelioCard(
+            fechaTexto: _formatFecha(fecha),
+            tiempoLiturgico: _getTiempoLiturgico(),
+            colorLiturgicoLabel: colorText,
+            colorLiturgicoValue: colorRaw,
+            colorResolver: _liturgicalColor,
+            cita: _getEvangelioCita(),
           ),
           const SizedBox(height: 18),
-          Center(
-            child: Text(
-              _getEvangelioCita(),
-              textAlign: TextAlign.center,
-              style: GoogleFonts.poppins(
-                color: softGold.withOpacity(0.92),
-                fontSize: 15.5,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
+          const Center(
+            child: _ListenButton(),
           ),
-          const SizedBox(height: 26),
-          Center(
-            child: _buildListenButton(),
-          ),
-          const SizedBox(height: 26),
-          Container(
-            width: double.infinity,
-            height: 1,
-            color: Colors.white.withOpacity(0.10),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            _getEvangelioTitulo(),
-            style: GoogleFonts.lora(
-              color: Colors.white,
-              fontSize: 30,
-              height: 1.2,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          if (frase.isNotEmpty) ...[
-            const SizedBox(height: 22),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(18),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(18),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.07),
-                    borderRadius: BorderRadius.circular(18),
-                    border: Border.all(
-                      color: Colors.white.withOpacity(0.08),
-                    ),
-                  ),
-                  child: Text(
-                    '“$frase”',
-                    style: GoogleFonts.lora(
-                      color: Colors.white.withOpacity(0.96),
-                      fontSize: 18,
-                      height: 1.6,
-                      fontStyle: FontStyle.italic,
-                      fontWeight: FontWeight.w500,
-                    ),
+          const SizedBox(height: 18),
+          _ContentCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _getEvangelioTexto(),
+                  style: GoogleFonts.lora(
+                    color: Colors.white.withOpacity(0.98),
+                    fontSize: 19.2,
+                    height: 1.85,
+                    letterSpacing: 0.15,
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
-              ),
-            ),
-          ],
-          const SizedBox(height: 28),
-          Text(
-            _getEvangelioTexto(),
-            style: GoogleFonts.lora(
-              color: Colors.white,
-              fontSize: 20,
-              height: 1.82,
-              letterSpacing: 0.2,
-              fontWeight: FontWeight.w400,
+                const SizedBox(height: 24),
+                Text(
+                  'Palabra del Señor',
+                  style: GoogleFonts.poppins(
+                    color: softGold,
+                    fontSize: 14.2,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildListenButton() {
+class _HeroEvangelioCard extends StatelessWidget {
+  final String fechaTexto;
+  final String tiempoLiturgico;
+  final String colorLiturgicoLabel;
+  final String colorLiturgicoValue;
+  final Color Function(String?) colorResolver;
+  final String cita;
+
+  const _HeroEvangelioCard({
+    required this.fechaTexto,
+    required this.tiempoLiturgico,
+    required this.colorLiturgicoLabel,
+    required this.colorLiturgicoValue,
+    required this.colorResolver,
+    required this.cita,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(30),
+      child: SizedBox(
+        height: 220,
+        width: double.infinity,
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Image.asset(
+                'assets/images/hoy_la_iglesia.png',
+                fit: BoxFit.cover,
+              ),
+            ),
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    stops: const [0.0, 0.28, 0.68, 1.0],
+                    colors: [
+                      Colors.black.withOpacity(0.16),
+                      Colors.black.withOpacity(0.24),
+                      _EvangelioScreenState.deepBlue.withOpacity(0.52),
+                      Colors.black.withOpacity(0.84),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.08),
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              left: 18,
+              right: 18,
+              top: 16,
+              child: Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: [
+                  _GlassBadge(
+                    icon: Icons.calendar_today_rounded,
+                    label: fechaTexto,
+                  ),
+                  if (colorLiturgicoLabel.isNotEmpty)
+                    _GlassBadge(
+                      icon: Icons.circle,
+                      label: colorLiturgicoLabel,
+                      dotColor: colorResolver(colorLiturgicoValue),
+                    ),
+                ],
+              ),
+            ),
+            Positioned(
+              left: 18,
+              right: 18,
+              bottom: 18,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    tiempoLiturgico,
+                    style: GoogleFonts.poppins(
+                      color: Colors.white.withOpacity(0.82),
+                      fontSize: 13.6,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  if (cita.trim().isNotEmpty) ...[
+                    const SizedBox(height: 10),
+                    Text(
+                      cita,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.lora(
+                        color: _EvangelioScreenState.softGold.withOpacity(0.98),
+                        fontSize: 22,
+                        height: 1.15,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _GlassBadge extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color? dotColor;
+
+  const _GlassBadge({
+    required this.icon,
+    required this.label,
+    this.dotColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDot = icon == Icons.circle;
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(999),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.08),
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.10),
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                size: isDot ? 11 : 14,
+                color: isDot
+                    ? (dotColor ?? _EvangelioScreenState.softGold)
+                    : _EvangelioScreenState.softGold,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: GoogleFonts.poppins(
+                  fontSize: 12.2,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white.withOpacity(0.92),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ListenButton extends StatelessWidget {
+  const _ListenButton();
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(999),
-        color: Colors.white.withOpacity(0.08),
+        gradient: LinearGradient(
+          colors: [
+            _EvangelioScreenState.gold.withOpacity(0.18),
+            Colors.white.withOpacity(0.06),
+          ],
+        ),
         border: Border.all(
           color: Colors.white.withOpacity(0.10),
         ),
@@ -338,9 +583,9 @@ class _EvangelioScreenState extends State<EvangelioScreen> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
+          const Icon(
             Icons.graphic_eq_rounded,
-            color: gold,
+            color: _EvangelioScreenState.gold,
             size: 18,
           ),
           const SizedBox(width: 8),
@@ -349,10 +594,127 @@ class _EvangelioScreenState extends State<EvangelioScreen> {
             style: GoogleFonts.poppins(
               color: Colors.white,
               fontSize: 13.5,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ContentCard extends StatelessWidget {
+  final Widget child;
+
+  const _ContentCard({
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(26),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.07),
+            borderRadius: BorderRadius.circular(26),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.08),
+            ),
+          ),
+          child: child,
+        ),
+      ),
+    );
+  }
+}
+
+class _MessageCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String message;
+  final String buttonLabel;
+  final VoidCallback onTap;
+
+  const _MessageCard({
+    required this.icon,
+    required this.title,
+    required this.message,
+    required this.buttonLabel,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+        child: Container(
+          padding: const EdgeInsets.all(22),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.08),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.08),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                color: _EvangelioScreenState.softGold,
+                size: 34,
+              ),
+              const SizedBox(height: 14),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.lora(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.lora(
+                  color: Colors.white.withOpacity(0.88),
+                  fontSize: 17,
+                  height: 1.6,
+                ),
+              ),
+              const SizedBox(height: 18),
+              ElevatedButton(
+                onPressed: onTap,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _EvangelioScreenState.gold,
+                  foregroundColor: Colors.black87,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 18,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                child: Text(
+                  buttonLabel,
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -1,20 +1,110 @@
 import 'dart:ui';
+
+import 'package:escoge/features/oracion/data/models/liturgia_day_model.dart';
+import 'package:escoge/features/oracion/presentation/evangelio_screen.dart';
+import 'package:escoge/features/oracion/presentation/lecturas_screen.dart';
+import 'package:escoge/features/oracion/presentation/rosario_screen.dart';
+import 'package:escoge/features/oracion/presentation/santo_del_dia_screen.dart';
+import 'package:escoge/features/oracion/services/liturgia_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'evangelio_screen.dart';
-import 'lecturas_screen.dart';
-import 'rosario_screen.dart';
-
-class OracionScreen extends StatelessWidget {
+class OracionScreen extends StatefulWidget {
   const OracionScreen({super.key});
 
   static const Color gold = Color(0xFFD4AF37);
   static const Color softGold = Color(0xFFE8C76A);
   static const Color deepBlue = Color(0xFF0B1E66);
+  static const Color secondaryBlue = Color(0xFF1736B6);
+
+  @override
+  State<OracionScreen> createState() => _OracionScreenState();
+}
+
+class _OracionScreenState extends State<OracionScreen> {
+  final LiturgiaService _liturgiaService = LiturgiaService();
+
+  LiturgiaDayModel? _liturgiaDay;
+  bool _loading = true;
+  String? _errorMessage;
+
+  DateTime _selectedDate = DateTime.now();
+  bool _showTomorrow = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedDate = _dateOnly(DateTime.now());
+    _loadLiturgiaForDate(_selectedDate);
+  }
+
+  DateTime _dateOnly(DateTime date) {
+    return DateTime(date.year, date.month, date.day);
+  }
+
+  DateTime _tomorrow(DateTime date) {
+    return _dateOnly(date.add(const Duration(days: 1)));
+  }
+
+  Future<void> _loadLiturgiaForDate(DateTime date) async {
+    setState(() {
+      _loading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final result = await _liturgiaService.getLiturgiaByDate(date);
+
+      if (!mounted) return;
+
+      setState(() {
+        _selectedDate = _dateOnly(date);
+        _liturgiaDay = result;
+        _loading = false;
+        _errorMessage = null;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _selectedDate = _dateOnly(date);
+        _liturgiaDay = null;
+        _loading = false;
+        _errorMessage = _showTomorrow
+            ? 'La liturgia de mañana aún no ha sido publicada.'
+            : 'No se pudo cargar la liturgia seleccionada.';
+      });
+    }
+  }
+
+  void _selectToday() {
+    if (!_showTomorrow) return;
+
+    setState(() {
+      _showTomorrow = false;
+    });
+
+    _loadLiturgiaForDate(_dateOnly(DateTime.now()));
+  }
+
+  void _selectTomorrow() {
+    if (_showTomorrow) return;
+
+    setState(() {
+      _showTomorrow = true;
+    });
+
+    _loadLiturgiaForDate(_tomorrow(DateTime.now()));
+  }
+
+  bool get _hasLiturgia => _liturgiaDay != null && _errorMessage == null;
 
   @override
   Widget build(BuildContext context) {
+    final heroButtonText = _showTomorrow
+        ? 'Entrar a la lectura de mañana'
+        : 'Entrar a Hoy en la Iglesia';
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Stack(
@@ -26,8 +116,24 @@ class OracionScreen extends StatelessWidget {
             ),
           ),
           Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withOpacity(0.20),
+                    Colors.black.withOpacity(0.30),
+                    Colors.black.withOpacity(0.52),
+                    Colors.black.withOpacity(0.70),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Positioned.fill(
             child: Container(
-              color: Colors.black.withOpacity(0.34),
+              color: OracionScreen.deepBlue.withOpacity(0.10),
             ),
           ),
           SafeArea(
@@ -36,32 +142,35 @@ class OracionScreen extends StatelessWidget {
               children: [
                 const SizedBox(height: 8),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+                  padding: const EdgeInsets.fromLTRB(24, 10, 24, 0),
                   child: Column(
                     children: [
                       Text(
                         'Oración',
                         style: GoogleFonts.lora(
-                          fontSize: 32,
+                          fontSize: 31,
                           fontWeight: FontWeight.w700,
                           color: Colors.white,
-                          height: 1.1,
+                          height: 1.08,
                         ),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Tu espacio diario con Dios',
+                        _showTomorrow
+                            ? 'Explora desde ahora la liturgia de mañana'
+                            : 'Tu espacio diario con Dios',
                         textAlign: TextAlign.center,
                         style: GoogleFonts.poppins(
                           fontSize: 14,
                           color: Colors.white.withOpacity(0.82),
                           fontWeight: FontWeight.w500,
+                          height: 1.45,
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 20),
                 Expanded(
                   child: ListView(
                     padding: const EdgeInsets.fromLTRB(0, 0, 0, 120),
@@ -69,18 +178,69 @@ class OracionScreen extends StatelessWidget {
                     children: [
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: _HoyEnLaIglesiaHero(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const LecturasScreen(),
+                        child: _DaySwitcher(
+                          showTomorrow: _showTomorrow,
+                          onSelectToday: _selectToday,
+                          onSelectTomorrow: _selectTomorrow,
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 320),
+                          switchInCurve: Curves.easeOut,
+                          switchOutCurve: Curves.easeIn,
+                          transitionBuilder: (child, animation) {
+                            return FadeTransition(
+                              opacity: animation,
+                              child: SlideTransition(
+                                position: Tween<Offset>(
+                                  begin: const Offset(0, 0.04),
+                                  end: Offset.zero,
+                                ).animate(animation),
+                                child: child,
                               ),
                             );
                           },
+                          child: _HoyEnLaIglesiaHeroClean(
+                            key: ValueKey(
+                              '${_selectedDate.toIso8601String()}-${_loading.toString()}-${_errorMessage ?? 'ok'}',
+                            ),
+                            liturgiaDay: _liturgiaDay,
+                            loading: _loading,
+                            errorMessage: _errorMessage,
+                            showTomorrow: _showTomorrow,
+                            buttonText: heroButtonText,
+                            onTap: _hasLiturgia
+                                ? () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => LecturasScreen(
+                                          selectedDate: _selectedDate,
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                : null,
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 28),
+                      const SizedBox(height: 16),
+                      if (_hasLiturgia &&
+                          (_liturgiaDay?.reflexionBreve?.trim().isNotEmpty ??
+                              false))
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: _ReflexionDestacadaCard(
+                            texto: _liturgiaDay!.reflexionBreve!.trim(),
+                          ),
+                        ),
+                      if (_hasLiturgia &&
+                          (_liturgiaDay?.reflexionBreve?.trim().isNotEmpty ??
+                              false))
+                        const SizedBox(height: 24),
                       const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 16),
                         child: _SectionHeader(
@@ -93,24 +253,56 @@ class OracionScreen extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: _ModuloCard(
-                          titulo: 'Evangelio del Día',
-                          subtitulo:
-                              'Lee y medita la Palabra de Dios en una experiencia contemplativa y cercana.',
+                          titulo: _showTomorrow
+                              ? 'Evangelio de Mañana'
+                              : 'Evangelio del Día',
+                          subtitulo: _buildEvangelioSubtitle(
+                            _liturgiaDay,
+                            _loading,
+                            _errorMessage,
+                          ),
                           icon: Icons.menu_book_rounded,
-                          onTap: null,
-                          destinationBuilder: _buildEvangelioScreen,
+                          enabled: _hasLiturgia,
+                          accent: OracionScreen.gold,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => EvangelioScreen(
+                                  selectedDate: _selectedDate,
+                                ),
+                              ),
+                            );
+                          },
+                          destinationBuilder: _unusedBuilder,
                         ),
                       ),
                       const SizedBox(height: 14),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: _ModuloCard(
-                          titulo: 'Santo del Día',
-                          subtitulo:
-                              'Descubre al santo que la Iglesia recuerda hoy y su testimonio de fe.',
+                          titulo: _showTomorrow
+                              ? 'Santo de Mañana'
+                              : 'Santo del Día',
+                          subtitulo: _buildSantoSubtitle(
+                            _liturgiaDay,
+                            _loading,
+                            _errorMessage,
+                          ),
                           icon: Icons.person_rounded,
-                          onTap: null,
-                          destinationBuilder: _buildLecturasScreen,
+                          enabled: _hasLiturgia,
+                          accent: const Color(0xFFE8C76A),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => SantoDelDiaScreen(
+                                  selectedDate: _selectedDate,
+                                ),
+                              ),
+                            );
+                          },
+                          destinationBuilder: _unusedBuilder,
                         ),
                       ),
                       const SizedBox(height: 14),
@@ -121,7 +313,7 @@ class OracionScreen extends StatelessWidget {
                           subtitulo:
                               'Vive una experiencia guiada de oración contemplativa y profunda.',
                           icon: Icons.auto_awesome,
-                          onTap: null,
+                          accent: const Color(0xFFDCC58A),
                           destinationBuilder: _buildRosarioScreen,
                         ),
                       ),
@@ -172,29 +364,214 @@ class OracionScreen extends StatelessWidget {
     );
   }
 
-  static Widget _buildEvangelioScreen(BuildContext context) =>
-      const EvangelioScreen();
+  static String _buildEvangelioSubtitle(
+    LiturgiaDayModel? day,
+    bool loading,
+    String? errorMessage,
+  ) {
+    if (loading) {
+      return 'Estamos preparando el Evangelio para ti...';
+    }
 
-  static Widget _buildLecturasScreen(BuildContext context) =>
-      const LecturasScreen();
+    if (errorMessage != null) {
+      return 'Estará disponible cuando la liturgia haya sido publicada.';
+    }
+
+    final cita = day?.evangelio?.cita.trim() ?? '';
+    if (cita.isNotEmpty) {
+      return 'Lee y medita el Evangelio: $cita';
+    }
+
+    return 'Lee y medita la Palabra de Dios en una experiencia contemplativa y cercana.';
+  }
+
+  static String _buildSantoSubtitle(
+    LiturgiaDayModel? day,
+    bool loading,
+    String? errorMessage,
+  ) {
+    if (loading) {
+      return 'Cargando el santo correspondiente al día...';
+    }
+
+    if (errorMessage != null) {
+      return 'Se mostrará cuando el contenido del día esté disponible.';
+    }
+
+    final nombre = day?.santoDelDia?.nombre.trim() ?? '';
+    if (nombre.isNotEmpty) {
+      return 'La Iglesia recuerda a $nombre.';
+    }
+
+    return 'Descubre el santo y su testimonio de fe.';
+  }
 
   static Widget _buildRosarioScreen(BuildContext context) =>
       const RosarioScreen();
+
+  static Widget _unusedBuilder(BuildContext context) => const SizedBox.shrink();
 }
 
-class _HoyEnLaIglesiaHero extends StatelessWidget {
+class _DaySwitcher extends StatelessWidget {
+  final bool showTomorrow;
+  final VoidCallback onSelectToday;
+  final VoidCallback onSelectTomorrow;
+
+  const _DaySwitcher({
+    required this.showTomorrow,
+    required this.onSelectToday,
+    required this.onSelectTomorrow,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(
+            color: Colors.white.withOpacity(0.08),
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _DayPill(
+              label: 'Hoy',
+              selected: !showTomorrow,
+              onTap: onSelectToday,
+            ),
+            const SizedBox(width: 6),
+            _DayPill(
+              label: 'Mañana',
+              selected: showTomorrow,
+              onTap: onSelectTomorrow,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DayPill extends StatelessWidget {
+  final String label;
+  final bool selected;
   final VoidCallback onTap;
 
-  const _HoyEnLaIglesiaHero({
+  const _DayPill({
+    required this.label,
+    required this.selected,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOut,
+        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 11),
+        decoration: BoxDecoration(
+          color: selected
+              ? OracionScreen.gold.withOpacity(0.18)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(
+            color:
+                selected ? Colors.white.withOpacity(0.10) : Colors.transparent,
+          ),
+        ),
+        child: Text(
+          label,
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontSize: 13.5,
+            fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _HoyEnLaIglesiaHeroClean extends StatelessWidget {
+  final VoidCallback? onTap;
+  final LiturgiaDayModel? liturgiaDay;
+  final bool loading;
+  final String? errorMessage;
+  final bool showTomorrow;
+  final String buttonText;
+
+  const _HoyEnLaIglesiaHeroClean({
+    super.key,
+    required this.onTap,
+    required this.liturgiaDay,
+    required this.loading,
+    required this.errorMessage,
+    required this.showTomorrow,
+    required this.buttonText,
+  });
+
+  String _formatFecha(DateTime date) {
+    const dias = [
+      'lunes',
+      'martes',
+      'miércoles',
+      'jueves',
+      'viernes',
+      'sábado',
+      'domingo',
+    ];
+
+    const meses = [
+      'enero',
+      'febrero',
+      'marzo',
+      'abril',
+      'mayo',
+      'junio',
+      'julio',
+      'agosto',
+      'septiembre',
+      'octubre',
+      'noviembre',
+      'diciembre',
+    ];
+
+    final weekdayIndex = date.weekday == 7 ? 6 : date.weekday - 1;
+    return '${dias[weekdayIndex]}, ${date.day} de ${meses[date.month - 1]} de ${date.year}';
+  }
+
+  String _buildEstadoPrincipal() {
+    if (loading) return 'Cargando liturgia...';
+
+    if (errorMessage != null) {
+      return showTomorrow
+          ? 'La liturgia de mañana aún no ha sido publicada'
+          : 'Contenido no disponible';
+    }
+
+    final tiempo = liturgiaDay?.tiempoLiturgico.trim() ?? '';
+    return tiempo.isNotEmpty ? tiempo : 'Liturgia diaria';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final fecha = liturgiaDay?.fecha ?? DateTime.now();
+    final fechaTexto = _formatFecha(fecha);
+
+    final celebracion = (liturgiaDay?.celebracion.trim().isNotEmpty ?? false)
+        ? liturgiaDay!.celebracion
+        : (showTomorrow ? 'Liturgia de mañana' : 'Hoy en la Iglesia');
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(30),
       child: SizedBox(
-        height: 360,
+        height: 305,
         width: double.infinity,
         child: Stack(
           children: [
@@ -205,141 +582,97 @@ class _HoyEnLaIglesiaHero extends StatelessWidget {
               ),
             ),
             Positioned.fill(
-              child: Container(
+              child: DecoratedBox(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
+                    stops: const [0.0, 0.36, 0.68, 1.0],
                     colors: [
-                      Colors.black.withOpacity(0.10),
-                      Colors.black.withOpacity(0.20),
-                      Colors.black.withOpacity(0.48),
-                      Colors.black.withOpacity(0.78),
+                      Colors.black.withOpacity(0.18),
+                      Colors.black.withOpacity(0.28),
+                      OracionScreen.deepBlue.withOpacity(0.48),
+                      Colors.black.withOpacity(0.82),
                     ],
                   ),
                 ),
               ),
             ),
-            Positioned(
-              top: 16,
-              left: 16,
-              right: 16,
-              child: Center(
-                child: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.30),
-                    borderRadius: BorderRadius.circular(999),
-                    border: Border.all(
-                      color: Colors.white.withOpacity(0.10),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      _SegmentPill(
-                        label: 'Hoy',
-                        selected: true,
-                      ),
-                      SizedBox(width: 6),
-                      _SegmentPill(
-                        label: 'Mañana',
-                        selected: false,
-                      ),
-                    ],
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.08),
                   ),
                 ),
               ),
             ),
             Positioned(
-              left: 22,
-              right: 22,
-              bottom: 24,
+              left: 20,
+              right: 20,
+              top: 20,
+              child: Text(
+                fechaTexto,
+                style: GoogleFonts.poppins(
+                  color: Colors.white.withOpacity(0.86),
+                  fontSize: 13.2,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            Positioned(
+              left: 20,
+              right: 20,
+              bottom: 22,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'sábado, 4 de abril de 2026',
-                    style: GoogleFonts.poppins(
-                      color: Colors.white.withOpacity(0.88),
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'Vigilia Pascual en la Noche Santa',
+                    celebracion,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.lora(
                       color: Colors.white,
-                      fontSize: 30,
-                      height: 1.14,
+                      fontSize: 27,
+                      height: 1.12,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 12),
                   Row(
                     children: [
                       Container(
                         width: 8,
                         height: 8,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.white,
+                          color: errorMessage != null
+                              ? const Color(0xFFE8A7A7)
+                              : (loading
+                                  ? OracionScreen.softGold
+                                  : Colors.white),
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Pascua',
-                        style: GoogleFonts.poppins(
-                          color: Colors.white.withOpacity(0.88),
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
+                      const SizedBox(width: 9),
+                      Expanded(
+                        child: Text(
+                          _buildEstadoPrincipal(),
+                          style: GoogleFonts.poppins(
+                            color: Colors.white.withOpacity(0.90),
+                            fontSize: 13.5,
+                            fontWeight: FontWeight.w600,
+                            height: 1.4,
+                          ),
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 18),
-                  GestureDetector(
+                  _HeroActionButton(
+                    label: buttonText,
+                    enabled: onTap != null,
                     onTap: onTap,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 18,
-                        vertical: 12,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.08),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.10),
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.10),
-                            blurRadius: 14,
-                            offset: const Offset(0, 6),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.menu_book_rounded,
-                            color: OracionScreen.gold,
-                            size: 18,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Entrar a Hoy en la Iglesia',
-                            style: GoogleFonts.poppins(
-                              color: Colors.white,
-                              fontSize: 13.5,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                   ),
                 ],
               ),
@@ -351,31 +684,65 @@ class _HoyEnLaIglesiaHero extends StatelessWidget {
   }
 }
 
-class _SegmentPill extends StatelessWidget {
+class _HeroActionButton extends StatelessWidget {
   final String label;
-  final bool selected;
+  final bool enabled;
+  final VoidCallback? onTap;
 
-  const _SegmentPill({
+  const _HeroActionButton({
     required this.label,
-    required this.selected,
+    required this.enabled,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 10),
-      decoration: BoxDecoration(
-        color: selected
-            ? OracionScreen.gold.withOpacity(0.18)
-            : Colors.transparent,
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        label,
-        style: GoogleFonts.poppins(
-          color: Colors.white,
-          fontSize: 13.5,
-          fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+    return GestureDetector(
+      onTap: enabled ? onTap : null,
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 220),
+        opacity: enabled ? 1 : 0.65,
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 18,
+            vertical: 13,
+          ),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.08),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.10),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.14),
+                blurRadius: 16,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.menu_book_rounded,
+                color: OracionScreen.gold,
+                size: 18,
+              ),
+              const SizedBox(width: 9),
+              Flexible(
+                child: Text(
+                  label,
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 13.6,
+                    fontWeight: FontWeight.w600,
+                    height: 1.35,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -426,6 +793,8 @@ class _ModuloCard extends StatelessWidget {
     required this.icon,
     required this.destinationBuilder,
     this.onTap,
+    this.enabled = true,
+    this.accent = OracionScreen.gold,
   });
 
   final String titulo;
@@ -433,6 +802,8 @@ class _ModuloCard extends StatelessWidget {
   final IconData icon;
   final WidgetBuilder destinationBuilder;
   final VoidCallback? onTap;
+  final bool enabled;
+  final Color accent;
 
   @override
   Widget build(BuildContext context) {
@@ -446,68 +817,129 @@ class _ModuloCard extends StatelessWidget {
           );
         };
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: handleTap,
-        borderRadius: BorderRadius.circular(24),
-        child: Ink(
+    return AnimatedOpacity(
+      duration: const Duration(milliseconds: 220),
+      opacity: enabled ? 1 : 0.72,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: enabled ? handleTap : null,
+          borderRadius: BorderRadius.circular(24),
+          child: Ink(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.07),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.08),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.10),
+                  blurRadius: 18,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Container(
+                  height: 56,
+                  width: 56,
+                  decoration: BoxDecoration(
+                    color: accent.withOpacity(0.14),
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.06),
+                    ),
+                  ),
+                  child: Icon(icon, color: accent),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        titulo,
+                        style: GoogleFonts.lora(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        subtitulo,
+                        style: GoogleFonts.poppins(
+                          fontSize: 13.5,
+                          height: 1.55,
+                          color: Colors.white.withOpacity(0.76),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  enabled
+                      ? Icons.arrow_forward_ios_rounded
+                      : Icons.lock_outline_rounded,
+                  size: 16,
+                  color: Colors.white.withOpacity(0.74),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ReflexionDestacadaCard extends StatelessWidget {
+  final String texto;
+
+  const _ReflexionDestacadaCard({
+    required this.texto,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+        child: Container(
           padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.08),
+            color: Colors.white.withOpacity(0.07),
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
               color: Colors.white.withOpacity(0.08),
             ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.08),
-                blurRadius: 18,
-                offset: const Offset(0, 8),
-              ),
-            ],
           ),
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                height: 54,
-                width: 54,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.08),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Icon(icon, color: OracionScreen.gold),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      titulo,
-                      style: GoogleFonts.lora(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    Text(
-                      subtitulo,
-                      style: GoogleFonts.poppins(
-                        fontSize: 13.5,
-                        height: 1.55,
-                        color: Colors.white.withOpacity(0.76),
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
+              Text(
+                'Reflexión breve',
+                style: GoogleFonts.poppins(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: OracionScreen.softGold,
                 ),
               ),
-              Icon(
-                Icons.arrow_forward_ios_rounded,
-                size: 16,
-                color: Colors.white.withOpacity(0.75),
+              const SizedBox(height: 10),
+              Text(
+                texto,
+                style: GoogleFonts.lora(
+                  fontSize: 17,
+                  height: 1.6,
+                  color: Colors.white.withOpacity(0.94),
+                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ],
           ),
