@@ -1,35 +1,45 @@
-import 'package:escoge/core/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
+
+import 'package:escoge/core/theme/app_spacing.dart';
 import 'profile_stat_card.dart';
 
 class ProfileStatsSection extends StatelessWidget {
-  const ProfileStatsSection({super.key});
+  final int retiros;
+  final int oraciones;
+  final int dias;
+
+  const ProfileStatsSection({
+    super.key,
+    required this.retiros,
+    required this.oraciones,
+    required this.dias,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: const [
+      children: [
         Expanded(
           child: ProfileStatCard(
             icon: Icons.event_available_rounded,
             label: 'Retiros',
-            value: '5',
+            value: retiros.toString(),
           ),
         ),
-        SizedBox(width: AppSpacing.sm),
+        const SizedBox(width: AppSpacing.sm),
         Expanded(
           child: ProfileStatCard(
             icon: Icons.favorite_rounded,
             label: 'Oraciones',
-            value: '120',
+            value: oraciones.toString(),
           ),
         ),
-        SizedBox(width: AppSpacing.sm),
+        const SizedBox(width: AppSpacing.sm),
         Expanded(
           child: ProfileStatCard(
             icon: Icons.calendar_today_rounded,
             label: 'Días',
-            value: '30',
+            value: dias.toString(),
           ),
         ),
       ],

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:escoge/features/auth/data/services/auth_service.dart';
+import 'package:escoge/features/auth/domain/app_roles.dart';
+import 'package:escoge/features/auth/presentation/widgets/role_guard.dart';
 
 import '../widgets/settings_profile_preview_card.dart';
 import '../widgets/settings_section_title.dart';
@@ -198,6 +200,64 @@ class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
                       title: 'Seguridad',
                       subtitle: 'Configura acceso, contraseña y autenticación',
                       onTap: () => _showComingSoon('Seguridad'),
+                    ),
+                    RoleGuard(
+                      minRole: AppRoles.diocesano,
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 14),
+                          SettingsTile(
+                            icon: Icons.build_circle_outlined,
+                            title: 'Herramientas internas',
+                            subtitle:
+                                'Opciones especiales para equipos de servicio',
+                            onTap: () =>
+                                _showComingSoon('Herramientas internas'),
+                          ),
+                        ],
+                      ),
+                    ),
+                    RoleGuard(
+                      minRole: AppRoles.diocesano,
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 14),
+                          SettingsTile(
+                            icon: Icons.event_note_outlined,
+                            title: 'Gestión de retiros',
+                            subtitle: 'Administrar eventos y participantes',
+                            onTap: () => _showComingSoon('Gestión de retiros'),
+                          ),
+                        ],
+                      ),
+                    ),
+                    RoleGuard(
+                      minRole: AppRoles.nacional,
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 14),
+                          SettingsTile(
+                            icon: Icons.public_outlined,
+                            title: 'Panel nacional',
+                            subtitle: 'Vista global de diócesis y actividades',
+                            onTap: () => _showComingSoon('Panel nacional'),
+                          ),
+                        ],
+                      ),
+                    ),
+                    RoleGuard(
+                      minRole: AppRoles.superadmin,
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 14),
+                          SettingsTile(
+                            icon: Icons.admin_panel_settings_outlined,
+                            title: 'Panel superadmin',
+                            subtitle: 'Control total de la plataforma',
+                            onTap: () => _showComingSoon('Panel superadmin'),
+                          ),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 14),
                     SettingsTile(

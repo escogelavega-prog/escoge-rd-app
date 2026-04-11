@@ -18,6 +18,13 @@ class ProfileHeroCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final displayName = userName.trim().isEmpty ? 'Usuario' : userName.trim();
+    final displayEmail =
+        userEmail.trim().isEmpty ? 'usuario@escoge.app' : userEmail.trim();
+    final displayEstado = estadoEspiritual.trim().isEmpty
+        ? 'Caminando con propósito ✨'
+        : estadoEspiritual.trim();
+
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
@@ -75,7 +82,7 @@ class ProfileHeroCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  userName,
+                  displayName,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.lora(
@@ -87,7 +94,7 @@ class ProfileHeroCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  userEmail,
+                  displayEmail,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.poppins(
@@ -111,7 +118,7 @@ class ProfileHeroCard extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    estadoEspiritual,
+                    displayEstado,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.poppins(

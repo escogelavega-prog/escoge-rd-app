@@ -3,27 +3,43 @@ import 'package:escoge/features/auth/domain/app_user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthRepository {
-  final AuthService service;
+  final AuthService _service;
 
-  AuthRepository(this.service);
+  AuthRepository(this._service);
 
-  Stream<User?> authStateChanges() => service.authStateChanges();
+  Stream<User?> authStateChanges() => _service.authStateChanges();
+
+  User? get currentFirebaseUser => _service.currentFirebaseUser;
 
   Future<UserCredential> signIn({
     required String email,
     required String password,
   }) {
-    return service.signIn(email: email, password: password);
+    return _service.signIn(
+      email: email,
+      password: password,
+    );
   }
 
   Future<UserCredential> register({
     required String email,
     required String password,
   }) {
-    return service.register(email: email, password: password);
+    return _service.register(
+      email: email,
+      password: password,
+    );
   }
 
-  Future<void> signOut() => service.signOut();
+  Future<UserCredential> signInWithGoogle() {
+    return _service.signInWithGoogle();
+  }
 
-  Future<AppUserModel?> getCurrentAppUser() => service.getCurrentAppUser();
+  Future<void> signOut() {
+    return _service.signOut();
+  }
+
+  Future<AppUserModel?> getCurrentAppUser() {
+    return _service.getCurrentAppUser();
+  }
 }

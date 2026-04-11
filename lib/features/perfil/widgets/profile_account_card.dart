@@ -7,16 +7,37 @@ class ProfileAccountCard extends StatelessWidget {
     required this.userName,
     required this.userEmail,
     required this.estadoEspiritual,
+    required this.role,
+    required this.onOpenSettings,
+    required this.onLogout,
   });
 
   final String userName;
   final String userEmail;
   final String estadoEspiritual;
+  final String role;
+
+  final VoidCallback onOpenSettings;
+  final VoidCallback onLogout;
 
   static const Color primaryBlue = Color(0xFF0B1E66);
   static const Color textPrimary = Color(0xFF16213E);
   static const Color textSecondary = Color(0xFF6D7693);
   static const Color gold = Color(0xFFD4AF37);
+
+  String _roleLabel(String role) {
+    switch (role) {
+      case 'superadmin':
+        return 'Super Administrador';
+      case 'nacional':
+        return 'Equipo Nacional';
+      case 'diocesano':
+        return 'Equipo Diocesano';
+      case 'joven':
+      default:
+        return 'Joven';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,8 +62,6 @@ class ProfileAccountCard extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-
-        /// CARD PRINCIPAL
         Container(
           padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
@@ -77,10 +96,60 @@ class ProfileAccountCard extends StatelessWidget {
               const SizedBox(height: 16),
               _buildDivider(),
               const SizedBox(height: 16),
+
+              /// 🔥 NUEVO: ROL
+              _buildInfoRow(
+                icon: Icons.verified_user_outlined,
+                title: 'Rol',
+                value: _roleLabel(role),
+              ),
+
+              const SizedBox(height: 16),
+              _buildDivider(),
+              const SizedBox(height: 16),
+
               _buildEstadoRow(
                 icon: Icons.favorite_outline,
                 title: 'Estado espiritual',
                 value: estadoEspiritual,
+              ),
+
+              const SizedBox(height: 18),
+
+              /// 🔥 ACCIONES
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: onOpenSettings,
+                      icon: const Icon(Icons.settings_outlined, size: 18),
+                      label: const Text('Configuración'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: primaryBlue,
+                        side: BorderSide(color: primaryBlue.withOpacity(0.4)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: onLogout,
+                      icon: const Icon(Icons.logout_rounded, size: 18),
+                      label: const Text('Salir'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.redAccent,
+                        side: BorderSide(
+                            color: Colors.redAccent.withOpacity(0.4)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -134,7 +203,6 @@ class ProfileAccountCard extends StatelessWidget {
     );
   }
 
-  /// 👇 FILA ESPECIAL PARA EL ESTADO ESPIRITUAL (ESTO ELEVA TODO)
   Widget _buildEstadoRow({
     required IconData icon,
     required String title,
