@@ -1,12 +1,9 @@
+import 'package:escoge/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ProfileReflectionCard extends StatelessWidget {
   const ProfileReflectionCard({super.key});
-
-  static const Color primaryBlue = Color(0xFF0B1E66);
-  static const Color secondaryBlue = Color(0xFF1736A2);
-  static const Color gold = Color(0xFFD4AF37);
 
   @override
   Widget build(BuildContext context) {
@@ -19,8 +16,8 @@ class ProfileReflectionCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            primaryBlue,
-            secondaryBlue,
+            AppColors.primaryBlue,
+            AppColors.secondaryBlue,
           ],
         ),
         border: Border.all(
@@ -34,56 +31,72 @@ class ProfileReflectionCard extends StatelessWidget {
             offset: const Offset(0, 10),
           ),
           BoxShadow(
-            color: primaryBlue.withValues(alpha: 0.16),
+            color: AppColors.primaryBlue.withValues(alpha: 0.16),
             blurRadius: 28,
             offset: const Offset(0, 12),
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
         children: [
-          Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 7,
-            ),
-            decoration: BoxDecoration(
-              color: gold.withValues(alpha: 0.14),
-              borderRadius: BorderRadius.circular(999),
-              border: Border.all(
-                color: gold.withValues(alpha: 0.16),
-              ),
-            ),
-            child: Text(
-              'Reflexión del día',
-              style: GoogleFonts.poppins(
-                color: gold,
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                height: 1.2,
+          Positioned(
+            top: -24,
+            right: -12,
+            child: Container(
+              width: 92,
+              height: 92,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withValues(alpha: 0.05),
               ),
             ),
           ),
-          const SizedBox(height: 16),
-          Text(
-            '“Permanece firme, confía en el proceso y deja que Dios complete la obra en ti.”',
-            style: GoogleFonts.lora(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              height: 1.5,
-            ),
-          ),
-          const SizedBox(height: 14),
-          Text(
-            'Este espacio puede crecer más adelante con historial espiritual, favoritos, progreso en retiros y configuración de cuenta.',
-            style: GoogleFonts.poppins(
-              color: Colors.white.withValues(alpha: 0.82),
-              fontSize: 12.6,
-              height: 1.6,
-              fontWeight: FontWeight.w400,
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 7,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.gold.withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(999),
+                  border: Border.all(
+                    color: AppColors.gold.withValues(alpha: 0.18),
+                  ),
+                ),
+                child: Text(
+                  'Reflexión del día',
+                  style: GoogleFonts.poppins(
+                    color: AppColors.gold,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    height: 1.2,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                '“Permanece firme, confía en el proceso y deja que Dios complete la obra en ti.”',
+                style: GoogleFonts.lora(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 14),
+              Text(
+                'Este espacio podrá crecer con historial espiritual, favoritos, progreso en retiros y opciones personales más profundas.',
+                style: GoogleFonts.poppins(
+                  color: Colors.white.withValues(alpha: 0.82),
+                  fontSize: 12.6,
+                  height: 1.6,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ],
           ),
         ],
       ),

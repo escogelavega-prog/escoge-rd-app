@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:escoge/features/oracion/data/models/liturgia_day_model.dart';
@@ -35,7 +36,18 @@ class _OracionScreenState extends State<OracionScreen> {
   void initState() {
     super.initState();
     _selectedDate = _dateOnly(DateTime.now());
-    _loadLiturgiaForDate(_selectedDate);
+    _initializeLiturgia();
+  }
+
+  Future<void> _initializeLiturgia() async {
+    await _loadLiturgiaForDate(
+      _selectedDate,
+      useCacheFirst: true,
+    );
+
+    unawaited(
+      _liturgiaService.preloadTodayAndTomorrow(),
+    );
   }
 
   DateTime _dateOnly(DateTime date) {
@@ -46,28 +58,54 @@ class _OracionScreenState extends State<OracionScreen> {
     return _dateOnly(date.add(const Duration(days: 1)));
   }
 
-  Future<void> _loadLiturgiaForDate(DateTime date) async {
+  Future<void> _loadLiturgiaForDate(
+    DateTime date, {
+    bool useCacheFirst = true,
+  }) async {
+    final normalizedDate = _dateOnly(date);
+
+    if (useCacheFirst) {
+      final cached = _liturgiaService.getCachedLiturgiaByDate(normalizedDate);
+
+      if (cached != null) {
+        if (!mounted) return;
+
+        setState(() {
+          _selectedDate = normalizedDate;
+          _liturgiaDay = cached;
+          _loading = false;
+          _errorMessage = null;
+        });
+
+        return;
+      }
+    }
+
     setState(() {
       _loading = true;
       _errorMessage = null;
     });
 
     try {
-      final result = await _liturgiaService.getLiturgiaByDate(date);
+      final result = await _liturgiaService.getLiturgiaByDate(normalizedDate);
 
       if (!mounted) return;
 
       setState(() {
-        _selectedDate = _dateOnly(date);
+        _selectedDate = normalizedDate;
         _liturgiaDay = result;
         _loading = false;
-        _errorMessage = null;
+        _errorMessage = result == null
+            ? (_showTomorrow
+                ? 'La liturgia de mañana aún no ha sido publicada.'
+                : 'No se encontró liturgia para esta fecha.')
+            : null;
       });
     } catch (e) {
       if (!mounted) return;
 
       setState(() {
-        _selectedDate = _dateOnly(date);
+        _selectedDate = normalizedDate;
         _liturgiaDay = null;
         _loading = false;
         _errorMessage = _showTomorrow
@@ -84,7 +122,10 @@ class _OracionScreenState extends State<OracionScreen> {
       _showTomorrow = false;
     });
 
-    _loadLiturgiaForDate(_dateOnly(DateTime.now()));
+    _loadLiturgiaForDate(
+      _dateOnly(DateTime.now()),
+      useCacheFirst: true,
+    );
   }
 
   void _selectTomorrow() {
@@ -94,7 +135,10 @@ class _OracionScreenState extends State<OracionScreen> {
       _showTomorrow = true;
     });
 
-    _loadLiturgiaForDate(_tomorrow(DateTime.now()));
+    _loadLiturgiaForDate(
+      _tomorrow(DateTime.now()),
+      useCacheFirst: true,
+    );
   }
 
   bool get _hasLiturgia => _liturgiaDay != null && _errorMessage == null;

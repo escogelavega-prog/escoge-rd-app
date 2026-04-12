@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:escoge/core/theme/app_spacing.dart';
 import 'profile_stat_card.dart';
 
@@ -18,6 +17,7 @@ class ProfileStatsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
           child: ProfileStatCard(
