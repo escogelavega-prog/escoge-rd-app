@@ -11,6 +11,8 @@ import 'package:google_fonts/google_fonts.dart';
 class PublicHomeScreen extends StatelessWidget {
   const PublicHomeScreen({super.key});
 
+  static const Color gold = Color(0xFFD4AF37);
+
   Widget _quickItem(
     BuildContext context,
     IconData icon,
@@ -19,37 +21,37 @@ class PublicHomeScreen extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: 14),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(22),
           onTap: onTap,
           child: Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(18),
+              color: Colors.white.withValues(alpha: 0.06),
+              borderRadius: BorderRadius.circular(22),
               border: Border.all(
-                color: Colors.white.withOpacity(0.08),
+                color: Colors.white.withValues(alpha: 0.08),
               ),
             ),
             child: Row(
               children: [
                 Container(
-                  width: 46,
-                  height: 46,
+                  width: 52,
+                  height: 52,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFD4AF37).withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(14),
+                    color: gold.withValues(alpha: 0.14),
+                    borderRadius: BorderRadius.circular(16),
                   ),
                   child: Icon(
                     icon,
-                    color: const Color(0xFFD4AF37),
+                    color: gold,
                     size: 24,
                   ),
                 ),
-                const SizedBox(width: 14),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,7 +60,7 @@ class PublicHomeScreen extends StatelessWidget {
                         title,
                         style: GoogleFonts.poppins(
                           color: Colors.white,
-                          fontSize: 15,
+                          fontSize: 15.5,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -68,7 +70,7 @@ class PublicHomeScreen extends StatelessWidget {
                         style: GoogleFonts.poppins(
                           color: Colors.white70,
                           fontSize: 13,
-                          height: 1.4,
+                          height: 1.45,
                         ),
                       ),
                     ],
@@ -87,43 +89,9 @@ class PublicHomeScreen extends StatelessWidget {
     );
   }
 
-  void _openLogin(BuildContext context) {
+  void _push(BuildContext context, Widget screen) {
     Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => const LoginScreen(),
-      ),
-    );
-  }
-
-  void _openRegister(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => const RegisterScreen(),
-      ),
-    );
-  }
-
-  void _openEvangelio(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => const EvangelioScreen(),
-      ),
-    );
-  }
-
-  void _openLecturas(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => const LecturasScreen(),
-      ),
-    );
-  }
-
-  void _openRetiros(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => const RetirosScreen(),
-      ),
+      MaterialPageRoute(builder: (_) => screen),
     );
   }
 
@@ -135,12 +103,12 @@ class PublicHomeScreen extends StatelessWidget {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+                padding: const EdgeInsets.fromLTRB(22, 16, 22, 0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     GestureDetector(
-                      onTap: () => _openLogin(context),
+                      onTap: () => _push(context, const LoginScreen()),
                       child: Text(
                         'Ya tengo cuenta',
                         style: GoogleFonts.poppins(
@@ -156,83 +124,140 @@ class PublicHomeScreen extends StatelessWidget {
               Expanded(
                 child: SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+                  padding: const EdgeInsets.fromLTRB(22, 12, 22, 22),
                   child: Column(
                     children: [
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 18),
                       Container(
-                        padding: const EdgeInsets.all(22),
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(26),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF101935).withOpacity(0.75),
-                          borderRadius: BorderRadius.circular(26),
+                          color:
+                              const Color(0xFF101935).withValues(alpha: 0.76),
+                          borderRadius: BorderRadius.circular(30),
                           border: Border.all(
-                            color: Colors.white.withOpacity(0.08),
+                            color: Colors.white.withValues(alpha: 0.08),
                           ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.14),
+                              blurRadius: 24,
+                              offset: const Offset(0, 12),
+                            ),
+                          ],
                         ),
                         child: Column(
                           children: [
+                            Container(
+                              width: 66,
+                              height: 66,
+                              decoration: BoxDecoration(
+                                color: gold.withValues(alpha: 0.14),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.explore_rounded,
+                                color: gold,
+                                size: 32,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
                             Text(
                               'Explora Escoge RD',
                               textAlign: TextAlign.center,
-                              style: GoogleFonts.poppins(
+                              style: GoogleFonts.lora(
                                 color: Colors.white,
-                                fontSize: 24,
+                                fontSize: 27,
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
-                            const SizedBox(height: 10),
+                            const SizedBox(height: 12),
                             Text(
-                              'Accede a contenido espiritual, conoce retiros y descubre una experiencia más completa al crear tu cuenta.',
+                              'Descubre contenido espiritual, vive la experiencia del Evangelio diario y conoce los próximos retiros disponibles para ti.',
                               textAlign: TextAlign.center,
                               style: GoogleFonts.poppins(
                                 color: Colors.white70,
                                 fontSize: 14,
-                                height: 1.5,
+                                height: 1.6,
                               ),
                             ),
-                            const SizedBox(height: 20),
+                            const SizedBox(height: 26),
                             _quickItem(
                               context,
                               Icons.menu_book_rounded,
                               'Evangelio del día',
                               'Lee y reflexiona con la Palabra.',
-                              onTap: () => _openEvangelio(context),
+                              onTap: () => _push(
+                                context,
+                                const EvangelioScreen(),
+                              ),
                             ),
                             _quickItem(
                               context,
                               Icons.article_rounded,
                               'Lecturas y liturgia',
-                              'Consulta el contenido diario.',
-                              onTap: () => _openLecturas(context),
+                              'Consulta el contenido diario completo.',
+                              onTap: () => _push(
+                                context,
+                                const LecturasScreen(),
+                              ),
                             ),
                             _quickItem(
                               context,
                               Icons.church_rounded,
                               'Retiros públicos',
-                              'Conoce actividades disponibles.',
-                              onTap: () => _openRetiros(context),
+                              'Conoce actividades y próximos encuentros.',
+                              onTap: () => _push(
+                                context,
+                                const RetirosScreen(),
+                              ),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 24),
+                      Container(
+                        padding: const EdgeInsets.all(18),
+                        decoration: BoxDecoration(
+                          color: gold.withValues(alpha: 0.08),
+                          borderRadius: BorderRadius.circular(22),
+                          border: Border.all(
+                            color: gold.withValues(alpha: 0.14),
+                          ),
+                        ),
+                        child: Text(
+                          'Crea una cuenta para desbloquear tu camino espiritual completo dentro de Escoge RD.',
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.poppins(
+                            color: Colors.white.withValues(alpha: 0.90),
+                            fontSize: 13,
+                            height: 1.55,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+                padding: const EdgeInsets.fromLTRB(22, 0, 22, 18),
                 child: Column(
                   children: [
                     OnboardingActionButton(
                       text: 'Crear cuenta',
-                      onTap: () => _openRegister(context),
+                      onTap: () => _push(
+                        context,
+                        const RegisterScreen(),
+                      ),
                     ),
                     const SizedBox(height: 10),
                     OnboardingActionButton(
                       text: 'Iniciar sesión',
                       isPrimary: false,
-                      onTap: () => _openLogin(context),
+                      onTap: () => _push(
+                        context,
+                        const LoginScreen(),
+                      ),
                     ),
                   ],
                 ),

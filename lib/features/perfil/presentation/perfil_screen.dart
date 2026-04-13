@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:escoge/app/session_gate.dart';
 import 'package:escoge/core/theme/app_spacing.dart';
 import 'package:escoge/features/auth/data/services/auth_service.dart';
 import 'package:escoge/features/auth/domain/app_roles.dart';
@@ -84,10 +85,22 @@ class _PerfilScreenState extends State<PerfilScreen> {
 
     try {
       await _authService.signOut();
+
+      if (!mounted) return;
+
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (_) => const SessionGate(),
+        ),
+        (route) => false,
+      );
     } catch (e) {
       if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No se pudo cerrar la sesión: $e')),
+        SnackBar(
+          content: Text('No se pudo cerrar la sesión: $e'),
+        ),
       );
     }
   }

@@ -49,7 +49,7 @@ class ProfileAccountCard extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          'Información de tu perfil y estado dentro de Escoge',
+          'Información de tu perfil y estado actual',
           style: GoogleFonts.poppins(
             color: const Color(0xFF6D7693),
             fontSize: 13,
@@ -82,7 +82,9 @@ class ProfileAccountCard extends StatelessWidget {
           children: [
             Expanded(
               child: OutlinedButton.icon(
-                onPressed: onOpenSettings,
+                onPressed: () {
+                  onOpenSettings();
+                },
                 icon: const Icon(Icons.settings_outlined, size: 18),
                 label: const Text('Configuración'),
                 style: OutlinedButton.styleFrom(
@@ -101,7 +103,9 @@ class ProfileAccountCard extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: OutlinedButton.icon(
-                onPressed: onLogout,
+                onPressed: () {
+                  onLogout();
+                },
                 icon: const Icon(Icons.logout_rounded, size: 18),
                 label: const Text('Salir'),
                 style: OutlinedButton.styleFrom(

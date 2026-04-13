@@ -4,9 +4,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
+  AuthService({
+    FirebaseAuth? auth,
+    FirebaseFirestore? firestore,
+    GoogleSignIn? googleSignIn,
+  })  : _auth = auth ?? FirebaseAuth.instance,
+        _firestore = firestore ?? FirebaseFirestore.instance,
+        _googleSignIn = googleSignIn ?? GoogleSignIn.instance;
+
+  final FirebaseAuth _auth;
+  final FirebaseFirestore _firestore;
+  final GoogleSignIn _googleSignIn;
 
   Stream<User?> authStateChanges() => _auth.authStateChanges();
 
@@ -52,7 +60,7 @@ class AuthService {
     final GoogleSignInAccount googleUser;
     try {
       googleUser = await _googleSignIn.authenticate();
-    } catch (e) {
+    } catch (_) {
       throw Exception('Inicio de sesión con Google cancelado o fallido.');
     }
 
@@ -73,14 +81,29 @@ class AuthService {
   }
 
   Future<void> signOut() async {
-    try {
-      await _googleSignIn.signOut();
-    } catch (_) {
-      // Ignoramos fallo de cierre de Google para no bloquear
-      // el signOut principal de Firebase.
-    }
+    final currentUser = _auth.currentUser;
+    final providerIds =
+        currentUser?.providerData.map((e) => e.providerId).toSet() ?? {};
 
-    await _auth.signOut();
+    try {
+      if (providerIds.contains('google.com')) {
+        try {
+          await _googleSignIn.initialize();
+        } catch (_) {}
+
+        try {
+          await _googleSignIn.signOut();
+        } catch (_) {}
+
+        try {
+          await _googleSignIn.disconnect();
+        } catch (_) {}
+      }
+
+      await _auth.signOut();
+    } catch (e) {
+      throw Exception('No se pudo cerrar la sesión correctamente: $e');
+    }
   }
 
   Future<AppUserModel?> getCurrentAppUser() async {
