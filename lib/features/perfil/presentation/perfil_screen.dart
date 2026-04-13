@@ -5,6 +5,7 @@ import 'package:escoge/app/session_gate.dart';
 import 'package:escoge/core/theme/app_spacing.dart';
 import 'package:escoge/features/auth/data/services/auth_service.dart';
 import 'package:escoge/features/auth/domain/app_roles.dart';
+import 'package:escoge/features/oracion/presentation/admin/liturgia_seed_screen.dart';
 import 'package:escoge/features/perfil/presentation/configuracion_screen.dart';
 import 'package:escoge/features/perfil/widgets/profile_account_card.dart';
 import 'package:escoge/features/perfil/widgets/profile_header.dart';
@@ -26,11 +27,10 @@ class _PerfilScreenState extends State<PerfilScreen> {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) return null;
 
-    final doc = await FirebaseFirestore.instance
-        .collection('usuarios')
-        .doc(currentUser.uid)
-        .get();
+    final userRef =
+        FirebaseFirestore.instance.collection('usuarios').doc(currentUser.uid);
 
+    final doc = await userRef.get();
     final data = doc.data() ?? <String, dynamic>{};
 
     int safeInt(dynamic value) {
@@ -39,20 +39,99 @@ class _PerfilScreenState extends State<PerfilScreen> {
       return 0;
     }
 
+    final nombre = (data['nombre'] ?? '').toString().trim();
+    final email = (data['email'] ?? currentUser.email ?? '').toString().trim();
+    final estadoEspiritual =
+        (data['estadoEspiritual'] ?? 'Caminando con propósito ✨')
+            .toString()
+            .trim();
+    final role = (data['role'] ?? AppRoles.joven).toString().trim();
+    final diocesisNombre = (data['diocesisNombre'] ?? '').toString().trim();
+    final retirosCount = safeInt(data['retirosCount']);
+    var oracionesCount = safeInt(data['oracionesCount']);
+    var diasCamino = safeInt(data['diasCamino']);
+
+    final diasCaminoCalculados = _calcularDiasCamino(
+      _resolverFechaInicio(data, currentUser),
+    );
+
+    // Reconciliación productiva de días de camino:
+    // si no está guardado o está en 0, se calcula y se persiste.
+    if (diasCamino <= 0 && diasCaminoCalculados > 0) {
+      diasCamino = diasCaminoCalculados;
+      await userRef.set(
+        {
+          'diasCamino': diasCamino,
+          'updatedAt': FieldValue.serverTimestamp(),
+        },
+        SetOptions(merge: true),
+      );
+    }
+
+    // Reconciliación productiva de oraciones:
+    // si el contador está en 0, revisa cuántas peticiones reales tiene el usuario
+    // y corrige Firestore automáticamente.
+    if (oracionesCount <= 0) {
+      final peticionesQuery = await FirebaseFirestore.instance
+          .collection('peticiones')
+          .where('userId', isEqualTo: currentUser.uid)
+          .get();
+
+      final totalReal = peticionesQuery.docs.length;
+
+      if (totalReal > 0) {
+        oracionesCount = totalReal;
+
+        await userRef.set(
+          {
+            'oracionesCount': totalReal,
+            'updatedAt': FieldValue.serverTimestamp(),
+          },
+          SetOptions(merge: true),
+        );
+      }
+    }
+
     return {
       'uid': currentUser.uid,
-      'nombre': (data['nombre'] ?? '').toString().trim(),
-      'email': (data['email'] ?? currentUser.email ?? '').toString().trim(),
-      'estadoEspiritual':
-          (data['estadoEspiritual'] ?? 'Caminando con propósito ✨')
-              .toString()
-              .trim(),
-      'role': (data['role'] ?? AppRoles.joven).toString().trim(),
-      'diocesisNombre': (data['diocesisNombre'] ?? '').toString().trim(),
-      'retirosCount': safeInt(data['retirosCount']),
-      'oracionesCount': safeInt(data['oracionesCount']),
-      'diasCamino': safeInt(data['diasCamino']),
+      'nombre': nombre,
+      'email': email,
+      'estadoEspiritual': estadoEspiritual,
+      'role': role,
+      'diocesisNombre': diocesisNombre,
+      'retirosCount': retirosCount,
+      'oracionesCount': oracionesCount,
+      'diasCamino': diasCamino,
     };
+  }
+
+  DateTime? _resolverFechaInicio(
+    Map<String, dynamic> data,
+    User currentUser,
+  ) {
+    final createdAt = data['createdAt'];
+
+    if (createdAt is Timestamp) {
+      return createdAt.toDate();
+    }
+
+    return currentUser.metadata.creationTime;
+  }
+
+  int _calcularDiasCamino(DateTime? fechaInicio) {
+    if (fechaInicio == null) return 0;
+
+    final inicio = DateTime(
+      fechaInicio.year,
+      fechaInicio.month,
+      fechaInicio.day,
+    );
+
+    final ahora = DateTime.now();
+    final hoy = DateTime(ahora.year, ahora.month, ahora.day);
+
+    final diferencia = hoy.difference(inicio).inDays;
+    return diferencia < 0 ? 0 : diferencia + 1;
   }
 
   Future<void> _confirmSignOut() async {
@@ -113,6 +192,16 @@ class _PerfilScreenState extends State<PerfilScreen> {
     );
   }
 
+  void _openLiturgiaSeed(String role) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => LiturgiaSeedScreen(
+          userRole: role,
+        ),
+      ),
+    );
+  }
+
   String _resolveDisplayName(Map<String, dynamic>? data) {
     final name = (data?['nombre'] ?? '').toString().trim();
     return name.isEmpty ? 'Usuario' : name;
@@ -145,6 +234,10 @@ class _PerfilScreenState extends State<PerfilScreen> {
 
   String _roleLabel(String role) {
     return AppRoles.label(role);
+  }
+
+  bool _isSuperAdmin(String role) {
+    return role.trim().toLowerCase() == 'superadmin';
   }
 
   @override
@@ -213,6 +306,8 @@ class _PerfilScreenState extends State<PerfilScreen> {
                         role: role,
                         onOpenSettings: _openConfiguracion,
                         onLogout: _confirmSignOut,
+                        showLiturgiaSeed: _isSuperAdmin(role),
+                        onOpenLiturgiaSeed: () => _openLiturgiaSeed(role),
                       ),
                       const SizedBox(height: AppSpacing.lg),
                       const ProfileReflectionCard(),

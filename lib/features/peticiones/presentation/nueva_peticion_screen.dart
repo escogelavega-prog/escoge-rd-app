@@ -44,12 +44,19 @@ class _NuevaPeticionScreenState extends State<NuevaPeticionScreen> {
     setState(() => _loading = true);
 
     try {
+      final isAnonymous = _tipoVisibilidad == 'anonima';
+
       await _service.crearPeticion(
         userId: user.uid,
-        userName: user.displayName ?? 'Usuario',
+        userName: isAnonymous
+            ? 'Anónimo'
+            : (user.displayName?.trim().isNotEmpty == true
+                ? user.displayName!.trim()
+                : 'Usuario'),
         texto: _textoController.text.trim(),
         categoria: _categoriaSeleccionada,
         tipoVisibilidad: _tipoVisibilidad,
+        isAnonymous: isAnonymous,
       );
 
       if (!mounted) return;
@@ -86,14 +93,14 @@ class _NuevaPeticionScreenState extends State<NuevaPeticionScreen> {
     return Container(
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        color: _deepBlue.withValues(alpha: 0.60),
+        color: _deepBlue.withOpacity(0.60),
         borderRadius: BorderRadius.circular(28),
         border: Border.all(
-          color: _gold.withValues(alpha: 0.28),
+          color: _gold.withOpacity(0.28),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.18),
+            color: Colors.black.withOpacity(0.18),
             blurRadius: 24,
             offset: const Offset(0, 12),
           ),
@@ -122,11 +129,11 @@ class _NuevaPeticionScreenState extends State<NuevaPeticionScreen> {
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
           color: selected
-              ? _gold.withValues(alpha: 0.14)
-              : Colors.white.withValues(alpha: 0.08),
+              ? _gold.withOpacity(0.14)
+              : Colors.white.withOpacity(0.08),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: selected ? _gold : Colors.white.withValues(alpha: 0.14),
+            color: selected ? _gold : Colors.white.withOpacity(0.14),
           ),
         ),
         child: Row(
@@ -154,7 +161,7 @@ class _NuevaPeticionScreenState extends State<NuevaPeticionScreen> {
                   Text(
                     subtitle,
                     style: GoogleFonts.poppins(
-                      color: Colors.white.withValues(alpha: 0.72),
+                      color: Colors.white.withOpacity(0.72),
                       fontSize: 12.8,
                       height: 1.4,
                     ),
@@ -200,9 +207,9 @@ class _NuevaPeticionScreenState extends State<NuevaPeticionScreen> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withValues(alpha: 0.18),
-                    _deepBlue.withValues(alpha: 0.28),
-                    Colors.black.withValues(alpha: 0.48),
+                    Colors.black.withOpacity(0.18),
+                    _deepBlue.withOpacity(0.28),
+                    Colors.black.withOpacity(0.48),
                   ],
                 ),
               ),
@@ -230,7 +237,7 @@ class _NuevaPeticionScreenState extends State<NuevaPeticionScreen> {
                         Text(
                           'Tu comunidad podrá acompañarte espiritualmente en esta petición.',
                           style: GoogleFonts.poppins(
-                            color: Colors.white.withValues(alpha: 0.76),
+                            color: Colors.white.withOpacity(0.76),
                             fontSize: 13.5,
                             height: 1.55,
                           ),
@@ -244,20 +251,20 @@ class _NuevaPeticionScreenState extends State<NuevaPeticionScreen> {
                           decoration: InputDecoration(
                             hintText: 'Escribe aquí tu petición...',
                             hintStyle: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.50),
+                              color: Colors.white.withOpacity(0.50),
                             ),
                             filled: true,
-                            fillColor: Colors.white.withValues(alpha: 0.08),
+                            fillColor: Colors.white.withOpacity(0.08),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(18),
                               borderSide: BorderSide(
-                                color: Colors.white.withValues(alpha: 0.12),
+                                color: Colors.white.withOpacity(0.12),
                               ),
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(18),
                               borderSide: BorderSide(
-                                color: Colors.white.withValues(alpha: 0.12),
+                                color: Colors.white.withOpacity(0.12),
                               ),
                             ),
                             focusedBorder: OutlineInputBorder(
@@ -286,7 +293,7 @@ class _NuevaPeticionScreenState extends State<NuevaPeticionScreen> {
                           style: const TextStyle(color: Colors.white),
                           items: _categorias
                               .map(
-                                (categoria) => DropdownMenuItem(
+                                (categoria) => DropdownMenuItem<String>(
                                   value: categoria,
                                   child: Text(categoria),
                                 ),
@@ -302,10 +309,10 @@ class _NuevaPeticionScreenState extends State<NuevaPeticionScreen> {
                           decoration: InputDecoration(
                             labelText: 'Categoría',
                             labelStyle: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.72),
+                              color: Colors.white.withOpacity(0.72),
                             ),
                             filled: true,
-                            fillColor: Colors.white.withValues(alpha: 0.08),
+                            fillColor: Colors.white.withOpacity(0.08),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(18),
                             ),

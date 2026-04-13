@@ -5,6 +5,7 @@ import 'package:escoge/features/oracion/data/models/santo_model.dart';
 class LiturgiaDayModel {
   final String id;
   final DateTime fecha;
+  final String titulo;
   final String tiempoLiturgico;
   final String colorLiturgico;
   final String celebracion;
@@ -17,6 +18,7 @@ class LiturgiaDayModel {
   const LiturgiaDayModel({
     required this.id,
     required this.fecha,
+    required this.titulo,
     required this.tiempoLiturgico,
     required this.colorLiturgico,
     required this.celebracion,
@@ -37,8 +39,9 @@ class LiturgiaDayModel {
 
     return LiturgiaDayModel(
       id: id,
-      fecha: DateTime.tryParse((map['fecha'] ?? '').toString()) ??
-          DateTime.now(),
+      fecha:
+          DateTime.tryParse((map['fecha'] ?? '').toString()) ?? DateTime.now(),
+      titulo: (map['titulo'] ?? '').toString(),
       tiempoLiturgico: (map['tiempoLiturgico'] ?? '').toString(),
       colorLiturgico: (map['colorLiturgico'] ?? '').toString(),
       celebracion: (map['celebracion'] ?? '').toString(),
@@ -60,6 +63,7 @@ class LiturgiaDayModel {
   Map<String, dynamic> toMap() {
     return {
       'fecha': _dateOnlyString(fecha),
+      'titulo': titulo,
       'tiempoLiturgico': tiempoLiturgico,
       'colorLiturgico': colorLiturgico,
       'celebracion': celebracion,
@@ -74,6 +78,7 @@ class LiturgiaDayModel {
   LiturgiaDayModel copyWith({
     String? id,
     DateTime? fecha,
+    String? titulo,
     String? tiempoLiturgico,
     String? colorLiturgico,
     String? celebracion,
@@ -86,6 +91,7 @@ class LiturgiaDayModel {
     return LiturgiaDayModel(
       id: id ?? this.id,
       fecha: fecha ?? this.fecha,
+      titulo: titulo ?? this.titulo,
       tiempoLiturgico: tiempoLiturgico ?? this.tiempoLiturgico,
       colorLiturgico: colorLiturgico ?? this.colorLiturgico,
       celebracion: celebracion ?? this.celebracion,

@@ -1,32 +1,52 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:escoge/features/peticiones/data/models/peticion_model.dart';
 
-import 'package:escoge/features/peticiones/repositories/peticiones_repository.dart';
-
-class PeticionesService implements PeticionesRepository {
+class PeticionesService {
   PeticionesService({
     FirebaseFirestore? firestore,
   }) : _firestore = firestore ?? FirebaseFirestore.instance;
 
   final FirebaseFirestore _firestore;
 
-  static const String _collection = 'peticiones';
+  static const String _peticionesCollection = 'peticiones';
+  static const String _usuariosCollection = 'usuarios';
 
-  @override
+  Stream<List<PeticionModel>> getPeticionesPublicadas() {
+    return _firestore
+        .collection(_peticionesCollection)
+        .where('status', isEqualTo: 'publicada')
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map(
+                (doc) => PeticionModel.fromMap(
+                  doc.id,
+                  doc.data(),
+                ),
+              )
+              .toList(),
+        );
+  }
+
   Future<void> crearPeticion({
     required String userId,
     required String userName,
     required String texto,
     required String categoria,
     required String tipoVisibilidad,
+    required bool isAnonymous,
   }) async {
-    final isAnonymous = tipoVisibilidad == 'anonima';
+    final peticionRef = _firestore.collection(_peticionesCollection).doc();
+    final userRef = _firestore.collection(_usuariosCollection).doc(userId);
 
-    await _firestore.collection(_collection).add({
+    final batch = _firestore.batch();
+
+    batch.set(peticionRef, {
       'userId': userId,
-      'userName': userName,
+      'userName': userName.trim(),
       'texto': texto.trim(),
-      'categoria': categoria,
+      'categoria': categoria.trim(),
       'tipoVisibilidad': tipoVisibilidad,
       'isAnonymous': isAnonymous,
       'status': 'publicada',
@@ -34,70 +54,70 @@ class PeticionesService implements PeticionesRepository {
       'createdAt': FieldValue.serverTimestamp(),
       'updatedAt': FieldValue.serverTimestamp(),
     });
+
+    batch.set(
+      userRef,
+      {
+        'oracionesCount': FieldValue.increment(1),
+        'updatedAt': FieldValue.serverTimestamp(),
+      },
+      SetOptions(merge: true),
+    );
+
+    await batch.commit();
   }
 
-  @override
-  Stream<List<PeticionModel>> getPeticionesPublicadas() {
-    return _firestore.collection(_collection).snapshots().map((snapshot) {
-      final peticiones = snapshot.docs
-          .map(
-            (doc) => PeticionModel.fromMap(
-              doc.id,
-              doc.data(),
-            ),
-          )
-          .where((peticion) => peticion.status == 'publicada')
-          .toList();
-
-      peticiones.sort((a, b) {
-        final aDate = a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-        final bDate = b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-        return bDate.compareTo(aDate);
-      });
-
-      return peticiones;
-    });
-  }
-
-  @override
   Future<void> unirseAOracion({
     required String peticionId,
     required String userId,
   }) async {
-    final peticionRef = _firestore.collection(_collection).doc(peticionId);
-    final unionRef = peticionRef.collection('unidos').doc(userId);
+    final peticionRef =
+        _firestore.collection(_peticionesCollection).doc(peticionId);
+    final unidoRef = peticionRef.collection('unidos').doc(userId);
 
-    await _firestore.runTransaction((transaction) async {
-      final unionSnapshot = await transaction.get(unionRef);
+    final batch = _firestore.batch();
 
-      if (unionSnapshot.exists) {
-        return;
-      }
-
-      transaction.set(unionRef, {
-        'userId': userId,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
-
-      transaction.update(peticionRef, {
-        'unidosCount': FieldValue.increment(1),
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
+    batch.set(unidoRef, {
+      'userId': userId,
+      'createdAt': FieldValue.serverTimestamp(),
     });
+
+    batch.update(peticionRef, {
+      'unidosCount': FieldValue.increment(1),
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
+
+    await batch.commit();
   }
 
-  @override
   Future<bool> yaSeUnio({
     required String peticionId,
     required String userId,
   }) async {
     final doc = await _firestore
-        .collection(_collection)
+        .collection(_peticionesCollection)
         .doc(peticionId)
         .collection('unidos')
         .doc(userId)
         .get();
 
     return doc.exists;
+  }
+
+  Future<void> repararConteoOracionesUsuario(String userId) async {
+    final query = await _firestore
+        .collection(_peticionesCollection)
+        .where('userId', isEqualTo: userId)
+        .get();
+
+    final total = query.docs.length;
+
+    await _firestore.collection(_usuariosCollection).doc(userId).set(
+      {
+        'oracionesCount': total,
+        'updatedAt': FieldValue.serverTimestamp(),
+      },
+      SetOptions(merge: true),
+    );
   }
 }

@@ -1,4 +1,4 @@
-import 'package:escoge/core/theme/app_colors.dart';
+import 'package:escoge/core/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -11,238 +11,304 @@ class ProfileAccountCard extends StatelessWidget {
     required this.role,
     required this.onOpenSettings,
     required this.onLogout,
+    this.showLiturgiaSeed = false,
+    this.onOpenLiturgiaSeed,
   });
 
   final String userName;
   final String userEmail;
   final String estadoEspiritual;
   final String role;
-
   final VoidCallback onOpenSettings;
   final VoidCallback onLogout;
+  final bool showLiturgiaSeed;
+  final VoidCallback? onOpenLiturgiaSeed;
 
-  String _roleLabel(String role) {
-    switch (role) {
-      case 'superadmin':
-        return 'Super Administrador';
-      case 'nacional':
-        return 'Equipo Nacional';
-      case 'diocesano':
-        return 'Equipo Diocesano';
-      default:
-        return 'Joven';
-    }
-  }
+  static const Color _cardColor = Colors.white;
+  static const Color _borderColor = Color(0xFFE7EAF3);
+  static const Color _titleColor = Color(0xFF111827);
+  static const Color _subtitleColor = Color(0xFF6B7280);
+  static const Color _primaryBlue = Color(0xFF0B1E66);
+  static const Color _secondaryBlue = Color(0xFF1736B6);
+  static const Color _gold = Color(0xFFD4AF37);
+  static const Color _danger = Color(0xFFDC2626);
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Cuenta',
-          style: GoogleFonts.poppins(
-            color: const Color(0xFF16213E),
-            fontWeight: FontWeight.w700,
-            fontSize: 18,
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      decoration: BoxDecoration(
+        color: _cardColor.withOpacity(0.96),
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: _borderColor),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 18,
+            offset: const Offset(0, 10),
           ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          'Información de tu perfil y estado actual',
-          style: GoogleFonts.poppins(
-            color: const Color(0xFF6D7693),
-            fontSize: 13,
-            height: 1.4,
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Cuenta',
+            style: GoogleFonts.poppins(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: _titleColor,
+            ),
           ),
+          const SizedBox(height: 6),
+          Text(
+            'Administra tu perfil, tu sesión y herramientas disponibles según tu nivel de acceso.',
+            style: GoogleFonts.poppins(
+              fontSize: 13,
+              color: _subtitleColor,
+              height: 1.45,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          _ProfileInfoTile(
+            icon: Icons.person_rounded,
+            iconColor: _secondaryBlue,
+            title: 'Nombre',
+            subtitle: userName.isEmpty ? 'No definido' : userName,
+          ),
+          const SizedBox(height: 12),
+          _ProfileInfoTile(
+            icon: Icons.email_rounded,
+            iconColor: _secondaryBlue,
+            title: 'Correo',
+            subtitle: userEmail.isEmpty ? 'No definido' : userEmail,
+          ),
+          const SizedBox(height: 12),
+          _ProfileInfoTile(
+            icon: Icons.auto_awesome_rounded,
+            iconColor: _gold,
+            title: 'Estado espiritual',
+            subtitle: estadoEspiritual.isEmpty
+                ? 'Caminando con propósito ✨'
+                : estadoEspiritual,
+          ),
+          const SizedBox(height: 12),
+          _ProfileInfoTile(
+            icon: Icons.verified_user_rounded,
+            iconColor: _primaryBlue,
+            title: 'Rol del usuario',
+            subtitle: role.isEmpty ? 'usuario' : role,
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          Text(
+            'Acciones',
+            style: GoogleFonts.poppins(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: _titleColor,
+            ),
+          ),
+          const SizedBox(height: 12),
+          _ProfileActionTile(
+            icon: Icons.settings_rounded,
+            iconColor: _primaryBlue,
+            title: 'Configuración',
+            subtitle: 'Ajustes generales de la cuenta',
+            onTap: onOpenSettings,
+          ),
+          if (showLiturgiaSeed && onOpenLiturgiaSeed != null) ...[
+            const SizedBox(height: 12),
+            _ProfileActionTile(
+              icon: Icons.cloud_upload_rounded,
+              iconColor: _gold,
+              title: 'Cargar liturgia',
+              subtitle: 'Herramienta exclusiva de superadmin',
+              onTap: onOpenLiturgiaSeed!,
+              isHighlighted: true,
+            ),
+          ],
+          const SizedBox(height: 12),
+          _ProfileActionTile(
+            icon: Icons.logout_rounded,
+            iconColor: _danger,
+            title: 'Cerrar sesión',
+            subtitle: 'Salir de tu cuenta actual',
+            onTap: onLogout,
+            isDanger: true,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProfileInfoTile extends StatelessWidget {
+  const _ProfileInfoTile({
+    required this.icon,
+    required this.iconColor,
+    required this.title,
+    required this.subtitle,
+  });
+
+  final IconData icon;
+  final Color iconColor;
+  final String title;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: const Color(0xFFE8ECF4),
         ),
-        const SizedBox(height: 14),
-        _buildTile(
-          icon: Icons.badge_outlined,
-          title: 'Nombre visible',
-          value: userName,
-        ),
-        _buildTile(
-          icon: Icons.email_outlined,
-          title: 'Correo electrónico',
-          value: userEmail,
-        ),
-        _buildTile(
-          icon: Icons.verified_user_outlined,
-          title: 'Rol actual',
-          value: _roleLabel(role),
-        ),
-        _buildEstadoTile(
-          icon: Icons.auto_awesome_rounded,
-          title: 'Estado espiritual',
-          value: estadoEspiritual,
-        ),
-        const SizedBox(height: 18),
-        Row(
-          children: [
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: () {
-                  onOpenSettings();
-                },
-                icon: const Icon(Icons.settings_outlined, size: 18),
-                label: const Text('Configuración'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.primaryBlue,
-                  side: BorderSide(
-                    color: AppColors.primaryBlue.withValues(alpha: 0.28),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                  backgroundColor: Colors.white.withValues(alpha: 0.72),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            height: 42,
+            width: 42,
+            decoration: BoxDecoration(
+              color: iconColor.withOpacity(0.10),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(
+              icon,
+              size: 22,
+              color: iconColor,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF6B7280),
                   ),
                 ),
+                const SizedBox(height: 3),
+                Text(
+                  subtitle,
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF111827),
+                    height: 1.35,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProfileActionTile extends StatelessWidget {
+  const _ProfileActionTile({
+    required this.icon,
+    required this.iconColor,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+    this.isDanger = false,
+    this.isHighlighted = false,
+  });
+
+  final IconData icon;
+  final Color iconColor;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+  final bool isDanger;
+  final bool isHighlighted;
+
+  @override
+  Widget build(BuildContext context) {
+    final backgroundColor = isDanger
+        ? const Color(0xFFFEF2F2)
+        : isHighlighted
+            ? const Color(0xFFFFFBEB)
+            : const Color(0xFFF8FAFC);
+
+    final borderColor = isDanger
+        ? const Color(0xFFFECACA)
+        : isHighlighted
+            ? const Color(0xFFFDE68A)
+            : const Color(0xFFE8ECF4);
+
+    final titleColor =
+        isDanger ? const Color(0xFFB91C1C) : const Color(0xFF111827);
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(20),
+      onTap: onTap,
+      child: Ink(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: borderColor),
+        ),
+        child: Row(
+          children: [
+            Container(
+              height: 44,
+              width: 44,
+              decoration: BoxDecoration(
+                color: iconColor.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Icon(
+                icon,
+                size: 22,
+                color: iconColor,
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: OutlinedButton.icon(
-                onPressed: () {
-                  onLogout();
-                },
-                icon: const Icon(Icons.logout_rounded, size: 18),
-                label: const Text('Salir'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.redAccent,
-                  side: BorderSide(
-                    color: Colors.redAccent.withValues(alpha: 0.25),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: titleColor,
+                    ),
                   ),
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                  backgroundColor: Colors.white.withValues(alpha: 0.72),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: GoogleFonts.poppins(
+                      fontSize: 12.5,
+                      color: const Color(0xFF6B7280),
+                      height: 1.35,
+                    ),
                   ),
-                ),
+                ],
               ),
+            ),
+            const SizedBox(width: 10),
+            const Icon(
+              Icons.arrow_forward_ios_rounded,
+              size: 16,
+              color: Color(0xFF9CA3AF),
             ),
           ],
         ),
-      ],
-    );
-  }
-
-  Widget _buildTile({
-    required IconData icon,
-    required String title,
-    required String value,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.72),
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.34),
-        ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: AppColors.primaryBlue.withValues(alpha: 0.08),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(
-              icon,
-              color: AppColors.primaryBlue,
-              size: 20,
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: GoogleFonts.poppins(
-                    color: const Color(0xFF6D7693),
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  value,
-                  style: GoogleFonts.poppins(
-                    color: const Color(0xFF16213E),
-                    fontSize: 14.5,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEstadoTile({
-    required IconData icon,
-    required String title,
-    required String value,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 6),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.72),
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.34),
-        ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: AppColors.gold.withValues(alpha: 0.14),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(
-              icon,
-              color: AppColors.gold,
-              size: 20,
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: GoogleFonts.poppins(
-                    color: const Color(0xFF6D7693),
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  value,
-                  style: GoogleFonts.poppins(
-                    color: AppColors.gold,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }

@@ -1,0 +1,41 @@
+[
+  {
+    "fecha": "2026-04-13",
+    "titulo": "Evangelio del día",
+    "celebracion": "Lunes de la II Semana de Pascua",
+    "colorLiturgico": "blanco",
+    "tiempoLiturgico": "Pascua",
+    "publicado": true,
+    "evangelio": {
+      "titulo": "El que no nazca de nuevo no puede ver el Reino de Dios",
+      "cita": "Jn 3, 1-8",
+      "texto": "Había entre los fariseos un hombre llamado Nicodemo..."
+    },
+    "lecturas": [
+      {
+        "tipo": "primera_lectura",
+        "titulo": "Primera lectura",
+        "cita": "Hch 4, 23-31",
+        "texto": "En aquellos días, puestos en libertad, Pedro y Juan volvieron a los suyos...",
+        "respuesta": ""
+      },
+      {
+        "tipo": "salmo",
+        "titulo": "Salmo responsorial",
+        "cita": "Sal 2",
+        "texto": "¿Por qué se amotinan las naciones y los pueblos planean un fracaso?",
+        "respuesta": "Dichosos los que se refugian en ti, Señor."
+      }
+    ],
+    "santoDelDia": {
+      "nombre": "San Martín I",
+      "subtitulo": "Papa y mártir",
+      "resumen": "Defensor de la fe contra las herejías monotelitas.",
+      "historia": "Fue el último papa mártir reconocido por la Iglesia.",
+      "frase": "La verdad de Cristo no puede negociarse.",
+      "imagenUrl": "",
+      "destacado": true
+    },
+    "reflexionBreve": "Renacer en Cristo significa permitir que el Espíritu transforme completamente nuestro interior."
+  }
+]
