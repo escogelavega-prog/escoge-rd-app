@@ -25,8 +25,8 @@ class OnboardingBackground extends StatelessWidget {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.black.withOpacity(0.50),
-                  const Color(0xFF090E1D).withOpacity(0.90),
+                  Colors.black.withValues(alpha: 0.50),
+                  const Color(0xFF090E1D).withValues(alpha: 0.90),
                 ],
               ),
             ),

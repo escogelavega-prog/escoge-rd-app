@@ -177,10 +177,10 @@ class _LecturasScreenState extends State<LecturasScreen>
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withOpacity(0.24),
-                    Colors.black.withOpacity(0.18),
-                    Colors.black.withOpacity(0.42),
-                    Colors.black.withOpacity(0.70),
+                    Colors.black.withValues(alpha: 0.24),
+                    Colors.black.withValues(alpha: 0.18),
+                    Colors.black.withValues(alpha: 0.42),
+                    Colors.black.withValues(alpha: 0.70),
                   ],
                 ),
               ),
@@ -188,7 +188,7 @@ class _LecturasScreenState extends State<LecturasScreen>
           ),
           Positioned.fill(
             child: Container(
-              color: deepBlue.withOpacity(0.08),
+              color: deepBlue.withValues(alpha: 0.08),
             ),
           ),
           SafeArea(
@@ -233,9 +233,9 @@ class _LecturasScreenState extends State<LecturasScreen>
             height: 190,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(30),
-              color: Colors.white.withOpacity(0.08),
+              color: Colors.white.withValues(alpha: 0.08),
               border: Border.all(
-                color: Colors.white.withOpacity(0.08),
+                color: Colors.white.withValues(alpha: 0.08),
               ),
             ),
           ),
@@ -249,7 +249,7 @@ class _LecturasScreenState extends State<LecturasScreen>
                 width: 82,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(999),
-                  color: Colors.white.withOpacity(0.08),
+                  color: Colors.white.withValues(alpha: 0.08),
                 ),
               ),
               separatorBuilder: (_, __) => const SizedBox(width: 8),
@@ -262,9 +262,9 @@ class _LecturasScreenState extends State<LecturasScreen>
               width: double.infinity,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(28),
-                color: Colors.white.withOpacity(0.07),
+                color: Colors.white.withValues(alpha: 0.07),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.08),
+                  color: Colors.white.withValues(alpha: 0.08),
                 ),
               ),
             ),
@@ -315,9 +315,9 @@ class _LecturasScreenState extends State<LecturasScreen>
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.08),
+                color: Colors.white.withValues(alpha: 0.08),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.08),
+                  color: Colors.white.withValues(alpha: 0.08),
                 ),
               ),
               child: const Icon(
@@ -380,10 +380,10 @@ class _LecturasScreenState extends State<LecturasScreen>
                     end: Alignment.bottomCenter,
                     stops: const [0.0, 0.30, 0.64, 1.0],
                     colors: [
-                      Colors.black.withOpacity(0.12),
-                      Colors.black.withOpacity(0.18),
-                      deepBlue.withOpacity(0.50),
-                      Colors.black.withOpacity(0.82),
+                      Colors.black.withValues(alpha: 0.12),
+                      Colors.black.withValues(alpha: 0.18),
+                      deepBlue.withValues(alpha: 0.50),
+                      Colors.black.withValues(alpha: 0.82),
                     ],
                   ),
                 ),
@@ -394,7 +394,7 @@ class _LecturasScreenState extends State<LecturasScreen>
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(30),
                   border: Border.all(
-                    color: Colors.white.withOpacity(0.10),
+                    color: Colors.white.withValues(alpha: 0.10),
                   ),
                 ),
               ),
@@ -427,7 +427,7 @@ class _LecturasScreenState extends State<LecturasScreen>
               child: Text(
                 tiempo,
                 style: GoogleFonts.poppins(
-                  color: Colors.white.withOpacity(0.86),
+                  color: Colors.white.withValues(alpha: 0.86),
                   fontSize: 13.5,
                   fontWeight: FontWeight.w600,
                 ),
@@ -459,12 +459,12 @@ class _LecturasScreenState extends State<LecturasScreen>
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(999),
                 color: selected
-                    ? gold.withOpacity(0.18)
-                    : Colors.white.withOpacity(0.05),
+                    ? gold.withValues(alpha: 0.18)
+                    : Colors.white.withValues(alpha: 0.05),
                 border: Border.all(
                   color: selected
-                      ? Colors.white.withOpacity(0.10)
-                      : Colors.white.withOpacity(0.05),
+                      ? Colors.white.withValues(alpha: 0.10)
+                      : Colors.white.withValues(alpha: 0.05),
                 ),
               ),
               alignment: Alignment.center,
@@ -522,10 +522,10 @@ class _LecturasScreenState extends State<LecturasScreen>
             width: double.infinity,
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.07),
+              color: Colors.white.withValues(alpha: 0.07),
               borderRadius: BorderRadius.circular(28),
               border: Border.all(
-                color: Colors.white.withOpacity(0.08),
+                color: Colors.white.withValues(alpha: 0.08),
               ),
             ),
             child: Column(
@@ -565,13 +565,13 @@ class _LecturasScreenState extends State<LecturasScreen>
                 Container(
                   width: double.infinity,
                   height: 1,
-                  color: Colors.white.withOpacity(0.08),
+                  color: Colors.white.withValues(alpha: 0.08),
                 ),
                 const SizedBox(height: 20),
                 Text(
                   texto.isNotEmpty ? texto : 'No disponible.',
                   style: GoogleFonts.lora(
-                    color: Colors.white.withOpacity(0.98),
+                    color: Colors.white.withValues(alpha: 0.98),
                     fontSize: 19.2,
                     height: 1.82,
                     letterSpacing: 0.15,
@@ -690,10 +690,10 @@ class _GlassBadge extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.08),
+            color: Colors.white.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(999),
             border: Border.all(
-              color: Colors.white.withOpacity(0.10),
+              color: Colors.white.withValues(alpha: 0.10),
             ),
           ),
           child: Row(
@@ -712,7 +712,7 @@ class _GlassBadge extends StatelessWidget {
                 style: GoogleFonts.poppins(
                   fontSize: 12.2,
                   fontWeight: FontWeight.w600,
-                  color: Colors.white.withOpacity(0.92),
+                  color: Colors.white.withValues(alpha: 0.92),
                 ),
               ),
             ],
@@ -747,10 +747,10 @@ class _MessageCard extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(22),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.08),
+            color: Colors.white.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
-              color: Colors.white.withOpacity(0.08),
+              color: Colors.white.withValues(alpha: 0.08),
             ),
           ),
           child: Column(
@@ -776,7 +776,7 @@ class _MessageCard extends StatelessWidget {
                 message,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.lora(
-                  color: Colors.white.withOpacity(0.88),
+                  color: Colors.white.withValues(alpha: 0.88),
                   fontSize: 17,
                   height: 1.6,
                 ),

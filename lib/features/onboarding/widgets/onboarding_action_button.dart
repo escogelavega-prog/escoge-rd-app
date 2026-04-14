@@ -15,11 +15,12 @@ class OnboardingActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final backgroundColor =
-        isPrimary ? const Color(0xFFD4AF37) : Colors.white.withOpacity(0.08);
+    final backgroundColor = isPrimary
+        ? const Color(0xFFD4AF37)
+        : Colors.white.withValues(alpha: 0.08);
 
     final foregroundColor =
-        isPrimary ? Colors.white : Colors.white.withOpacity(0.92);
+        isPrimary ? Colors.white : Colors.white.withValues(alpha: 0.92);
 
     return SizedBox(
       width: double.infinity,
@@ -34,7 +35,7 @@ class OnboardingActionButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(30),
             side: isPrimary
                 ? BorderSide.none
-                : BorderSide(color: Colors.white.withOpacity(0.10)),
+                : BorderSide(color: Colors.white.withValues(alpha: 0.10)),
           ),
         ),
         child: Text(

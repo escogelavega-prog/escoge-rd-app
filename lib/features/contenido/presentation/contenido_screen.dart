@@ -93,7 +93,7 @@ class _ContenidoHeader extends StatelessWidget {
           'Historia, noticias y recursos del movimiento.',
           style: GoogleFonts.poppins(
             fontSize: 13,
-            color: Colors.white.withOpacity(0.80),
+            color: Colors.white.withValues(alpha: 0.80),
             height: 1.45,
           ),
         ),
@@ -116,7 +116,7 @@ class _ContenidoIntroCard extends StatelessWidget {
             height: 52,
             width: 52,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.12),
+              color: Colors.white.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(18),
             ),
             child: const Icon(
@@ -145,7 +145,7 @@ class _ContenidoIntroCard extends StatelessWidget {
                   style: GoogleFonts.poppins(
                     fontSize: 13.2,
                     height: 1.55,
-                    color: Colors.white.withOpacity(0.82),
+                    color: Colors.white.withValues(alpha: 0.82),
                   ),
                 ),
               ],
@@ -179,7 +179,7 @@ class _ContentCategoryCard extends StatelessWidget {
             height: 54,
             width: 54,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.12),
+              color: Colors.white.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(18),
             ),
             child: Icon(
@@ -207,7 +207,7 @@ class _ContentCategoryCard extends StatelessWidget {
                   style: GoogleFonts.poppins(
                     fontSize: 12.4,
                     height: 1.45,
-                    color: Colors.white.withOpacity(0.76),
+                    color: Colors.white.withValues(alpha: 0.76),
                   ),
                 ),
               ],
@@ -232,7 +232,7 @@ class _FutureCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppCard(
       borderRadius: 30,
-      color: Colors.white.withOpacity(0.92),
+      color: Colors.white.withValues(alpha: 0.92),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -240,7 +240,7 @@ class _FutureCard extends StatelessWidget {
             height: 50,
             width: 50,
             decoration: BoxDecoration(
-              color: ContenidoScreen.gold.withOpacity(0.16),
+              color: ContenidoScreen.gold.withValues(alpha: 0.16),
               borderRadius: BorderRadius.circular(16),
             ),
             child: const Icon(
@@ -306,7 +306,7 @@ class _SectionTitle extends StatelessWidget {
           subtitle,
           style: GoogleFonts.poppins(
             fontSize: 12.5,
-            color: Colors.white.withOpacity(0.75),
+            color: Colors.white.withValues(alpha: 0.75),
             height: 1.45,
           ),
         ),

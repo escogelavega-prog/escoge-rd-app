@@ -17,7 +17,6 @@ class PeticionCard extends StatelessWidget {
   final VoidCallback onUnirse;
 
   static const Color _primaryBlue = Color(0xFF0B1E66);
-  static const Color _secondaryBlue = Color(0xFF1736A2);
   static const Color _gold = Color(0xFFD4AF37);
 
   String _buildFechaLabel() {

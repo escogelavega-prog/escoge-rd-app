@@ -281,22 +281,22 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
       hintText: hint,
       prefixIcon: Icon(icon, color: primaryBlue),
       filled: true,
-      fillColor: surface.withOpacity(0.95),
+      fillColor: surface.withValues(alpha: 0.95),
       labelStyle: GoogleFonts.poppins(
         color: textSecondary,
         fontWeight: FontWeight.w500,
       ),
       hintStyle: GoogleFonts.poppins(
-        color: textSecondary.withOpacity(0.75),
+        color: textSecondary.withValues(alpha: 0.75),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
-        borderSide: BorderSide(color: primaryBlue.withOpacity(0.08)),
+        borderSide: BorderSide(color: primaryBlue.withValues(alpha: 0.08)),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
-        borderSide: BorderSide(color: primaryBlue.withOpacity(0.08)),
+        borderSide: BorderSide(color: primaryBlue.withValues(alpha: 0.08)),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
@@ -390,7 +390,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
             'Antes de continuar, necesitamos algunos datos para personalizar tu experiencia dentro de Escoge RD.',
             style: GoogleFonts.poppins(
               fontSize: 14,
-              color: Colors.white.withOpacity(0.92),
+              color: Colors.white.withValues(alpha: 0.92),
               height: 1.5,
             ),
           ),
@@ -399,9 +399,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.14),
+                color: Colors.white.withValues(alpha: 0.14),
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: Colors.white.withOpacity(0.12)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
               ),
               child: Row(
                 children: [
@@ -433,10 +433,10 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
       decoration: BoxDecoration(
         color: surface,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: gold.withOpacity(0.18)),
+        border: Border.all(color: gold.withValues(alpha: 0.18)),
         boxShadow: [
           BoxShadow(
-            color: primaryBlue.withOpacity(0.06),
+            color: primaryBlue.withValues(alpha: 0.06),
             blurRadius: 18,
             offset: const Offset(0, 8),
           ),
@@ -449,7 +449,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: gold.withOpacity(0.14),
+              color: gold.withValues(alpha: 0.14),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Icon(
@@ -497,12 +497,12 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: surface.withOpacity(0.98),
+        color: surface.withValues(alpha: 0.98),
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: primaryBlue.withOpacity(0.06)),
+        border: Border.all(color: primaryBlue.withValues(alpha: 0.06)),
         boxShadow: [
           BoxShadow(
-            color: primaryBlue.withOpacity(0.07),
+            color: primaryBlue.withValues(alpha: 0.07),
             blurRadius: 22,
             offset: const Offset(0, 10),
           ),
@@ -541,7 +541,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
-            value: _sexoSeleccionado,
+            initialValue: _sexoSeleccionado,
             isExpanded: true,
             decoration: _inputDecoration(
               label: 'Sexo',
@@ -591,9 +591,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                 vertical: 18,
               ),
               decoration: BoxDecoration(
-                color: surface.withOpacity(0.95),
+                color: surface.withValues(alpha: 0.95),
                 borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: primaryBlue.withOpacity(0.08)),
+                border: Border.all(color: primaryBlue.withValues(alpha: 0.08)),
               ),
               child: Row(
                 children: [
@@ -626,9 +626,10 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                 vertical: 18,
               ),
               decoration: BoxDecoration(
-                color: surface.withOpacity(0.95),
+                color: surface.withValues(alpha: 0.95),
                 borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: Colors.orange.withOpacity(0.35)),
+                border:
+                    Border.all(color: Colors.orange.withValues(alpha: 0.35)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -653,7 +654,8 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
             )
           else
             DropdownButtonFormField<String>(
-              value: dropdownValueValido ? _diocesisIdSeleccionada : null,
+              initialValue:
+                  dropdownValueValido ? _diocesisIdSeleccionada : null,
               isExpanded: true,
               icon: Icon(Icons.keyboard_arrow_down_rounded, color: primaryBlue),
               decoration: _inputDecoration(
@@ -720,7 +722,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
           backgroundColor: primaryBlue,
           foregroundColor: Colors.white,
           elevation: 0,
-          disabledBackgroundColor: primaryBlue.withOpacity(0.55),
+          disabledBackgroundColor: primaryBlue.withValues(alpha: 0.55),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(18),
           ),

@@ -24,10 +24,10 @@ class OnboardingIntroScreen extends StatelessWidget {
                       vertical: 10,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.08),
+                      color: Colors.white.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(30),
                       border: Border.all(
-                        color: Colors.white.withOpacity(0.10),
+                        color: Colors.white.withValues(alpha: 0.10),
                       ),
                     ),
                   ),
@@ -79,7 +79,8 @@ class OnboardingIntroScreen extends StatelessWidget {
                         width: 86,
                         height: 86,
                         decoration: BoxDecoration(
-                          color: const Color(0xFFD4AF37).withOpacity(0.14),
+                          color:
+                              const Color(0xFFD4AF37).withValues(alpha: 0.14),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(

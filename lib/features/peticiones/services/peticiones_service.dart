@@ -38,11 +38,8 @@ class PeticionesService {
     required bool isAnonymous,
   }) async {
     final peticionRef = _firestore.collection(_peticionesCollection).doc();
-    final userRef = _firestore.collection(_usuariosCollection).doc(userId);
 
-    final batch = _firestore.batch();
-
-    batch.set(peticionRef, {
+    await peticionRef.set({
       'userId': userId,
       'userName': userName.trim(),
       'texto': texto.trim(),
@@ -54,17 +51,6 @@ class PeticionesService {
       'createdAt': FieldValue.serverTimestamp(),
       'updatedAt': FieldValue.serverTimestamp(),
     });
-
-    batch.set(
-      userRef,
-      {
-        'oracionesCount': FieldValue.increment(1),
-        'updatedAt': FieldValue.serverTimestamp(),
-      },
-      SetOptions(merge: true),
-    );
-
-    await batch.commit();
   }
 
   Future<void> unirseAOracion({
@@ -74,20 +60,53 @@ class PeticionesService {
     final peticionRef =
         _firestore.collection(_peticionesCollection).doc(peticionId);
     final unidoRef = peticionRef.collection('unidos').doc(userId);
+    final userRef = _firestore.collection(_usuariosCollection).doc(userId);
 
-    final batch = _firestore.batch();
+    await _firestore.runTransaction((transaction) async {
+      final unidoSnap = await transaction.get(unidoRef);
 
-    batch.set(unidoRef, {
-      'userId': userId,
-      'createdAt': FieldValue.serverTimestamp(),
+      if (unidoSnap.exists) {
+        return;
+      }
+
+      final userSnap = await transaction.get(userRef);
+      final userData = userSnap.data() ?? <String, dynamic>{};
+
+      final hoy = _soloFecha(DateTime.now());
+
+      final ultimaOracionRaw = userData['ultimaOracionFecha'];
+      final ultimaOracionFecha = ultimaOracionRaw is Timestamp
+          ? _soloFecha(ultimaOracionRaw.toDate())
+          : null;
+
+      final rachaActual = _safeInt(userData['rachaOracionDias']);
+      final nuevaRacha = _calcularNuevaRacha(
+        hoy: hoy,
+        ultimaOracionFecha: ultimaOracionFecha,
+        rachaActual: rachaActual,
+      );
+
+      transaction.set(unidoRef, {
+        'userId': userId,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      transaction.update(peticionRef, {
+        'unidosCount': FieldValue.increment(1),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+
+      transaction.set(
+        userRef,
+        {
+          'oracionesCount': FieldValue.increment(1),
+          'rachaOracionDias': nuevaRacha,
+          'ultimaOracionFecha': Timestamp.fromDate(hoy),
+          'updatedAt': FieldValue.serverTimestamp(),
+        },
+        SetOptions(merge: true),
+      );
     });
-
-    batch.update(peticionRef, {
-      'unidosCount': FieldValue.increment(1),
-      'updatedAt': FieldValue.serverTimestamp(),
-    });
-
-    await batch.commit();
   }
 
   Future<bool> yaSeUnio({
@@ -105,19 +124,76 @@ class PeticionesService {
   }
 
   Future<void> repararConteoOracionesUsuario(String userId) async {
-    final query = await _firestore
+    final peticionesSnapshot = await _firestore
         .collection(_peticionesCollection)
-        .where('userId', isEqualTo: userId)
+        .where('status', isEqualTo: 'publicada')
         .get();
 
-    final total = query.docs.length;
+    int totalUniones = 0;
+    DateTime? ultimaFechaDetectada;
+
+    for (final peticionDoc in peticionesSnapshot.docs) {
+      final unidoDoc =
+          await peticionDoc.reference.collection('unidos').doc(userId).get();
+
+      if (unidoDoc.exists) {
+        totalUniones++;
+
+        final data = unidoDoc.data();
+        final createdAt = data?['createdAt'];
+
+        if (createdAt is Timestamp) {
+          final fecha = _soloFecha(createdAt.toDate());
+
+          if (ultimaFechaDetectada == null ||
+              fecha.isAfter(ultimaFechaDetectada)) {
+            ultimaFechaDetectada = fecha;
+          }
+        }
+      }
+    }
 
     await _firestore.collection(_usuariosCollection).doc(userId).set(
       {
-        'oracionesCount': total,
+        'oracionesCount': totalUniones,
+        if (ultimaFechaDetectada != null)
+          'ultimaOracionFecha': Timestamp.fromDate(ultimaFechaDetectada),
         'updatedAt': FieldValue.serverTimestamp(),
       },
       SetOptions(merge: true),
     );
+  }
+
+  int _calcularNuevaRacha({
+    required DateTime hoy,
+    required DateTime? ultimaOracionFecha,
+    required int rachaActual,
+  }) {
+    if (ultimaOracionFecha == null) {
+      return 1;
+    }
+
+    final diferencia = hoy.difference(ultimaOracionFecha).inDays;
+
+    if (diferencia <= 0) {
+      return rachaActual > 0 ? rachaActual : 1;
+    }
+
+    if (diferencia == 1) {
+      final base = rachaActual > 0 ? rachaActual : 1;
+      return base + 1;
+    }
+
+    return 1;
+  }
+
+  DateTime _soloFecha(DateTime fecha) {
+    return DateTime(fecha.year, fecha.month, fecha.day);
+  }
+
+  int _safeInt(dynamic value) {
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return 0;
   }
 }

@@ -2,7 +2,6 @@ import 'package:escoge/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-
 class AppHeader extends StatelessWidget {
   final String title;
   final String? subtitle;
@@ -34,17 +33,16 @@ class AppHeader extends StatelessWidget {
       width: double.infinity,
       padding: padding,
       decoration: BoxDecoration(
-        gradient:
-            useGradient
-                ? const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    AppColors.primaryBlue,
-                    AppColors.secondaryBlue,
-                  ],
-                )
-                : null,
+        gradient: useGradient
+            ? const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  AppColors.primaryBlue,
+                  AppColors.secondaryBlue,
+                ],
+              )
+            : null,
         color: useGradient ? null : AppColors.primaryBlue,
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(bottomRadius),
@@ -52,7 +50,7 @@ class AppHeader extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.14),
+            color: Colors.black.withValues(alpha: 0.14),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -135,7 +133,7 @@ class _HeaderText extends StatelessWidget {
             style: GoogleFonts.poppins(
               fontSize: 13.5,
               fontWeight: FontWeight.w400,
-              color: Colors.white.withOpacity(0.88),
+              color: Colors.white.withValues(alpha: 0.88),
               height: 1.45,
             ),
           ),

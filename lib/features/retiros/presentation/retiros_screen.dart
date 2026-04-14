@@ -77,7 +77,7 @@ class RetirosScreen extends StatelessWidget {
                         'Explora las experiencias disponibles según tu perfil y acceso.',
                         style: GoogleFonts.poppins(
                           fontSize: 12.5,
-                          color: Colors.white.withOpacity(0.75),
+                          color: Colors.white.withValues(alpha: 0.75),
                         ),
                       ),
                     ),
@@ -138,7 +138,7 @@ class _Header extends StatelessWidget {
           'Vista actual: ${_friendlyRole(roleLabel)}',
           style: GoogleFonts.poppins(
             fontSize: 12.5,
-            color: Colors.white.withOpacity(0.72),
+            color: Colors.white.withValues(alpha: 0.72),
           ),
         ),
       ],
@@ -159,7 +159,7 @@ class _HeroRetirosCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
             decoration: BoxDecoration(
-              color: RetirosScreen.gold.withOpacity(0.18),
+              color: RetirosScreen.gold.withValues(alpha: 0.18),
               borderRadius: BorderRadius.circular(999),
             ),
             child: Text(
@@ -185,7 +185,7 @@ class _HeroRetirosCard extends StatelessWidget {
           Text(
             'Encuentros espirituales, fines de semana y experiencias profundas dentro del camino Escoge.',
             style: GoogleFonts.poppins(
-              color: Colors.white.withOpacity(0.85),
+              color: Colors.white.withValues(alpha: 0.85),
               fontSize: 13.5,
               height: 1.6,
             ),
@@ -291,7 +291,7 @@ class _RetiroCard extends StatelessWidget {
           Text(
             retiro.descripcion,
             style: GoogleFonts.poppins(
-              color: Colors.white.withOpacity(0.8),
+              color: Colors.white.withValues(alpha: 0.8),
               fontSize: 13,
               height: 1.5,
             ),
@@ -323,7 +323,7 @@ class _MetaChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.12),
+        color: Colors.white.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(999),
       ),
       child: Row(
@@ -381,7 +381,7 @@ class _MessageCard extends StatelessWidget {
           Text(
             subtitle,
             style: GoogleFonts.poppins(
-              color: Colors.white.withOpacity(0.7),
+              color: Colors.white.withValues(alpha: 0.7),
               fontSize: 12,
             ),
           ),

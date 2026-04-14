@@ -13,7 +13,7 @@ class AppBackgrounds {
 class AppOverlay {
   AppOverlay._();
 
-  static Color dark(double opacity) => Colors.black.withOpacity(opacity);
+  static Color dark(double opacity) => Colors.black.withValues(alpha: opacity);
 
   static const double light = 0.08;
   static const double soft = 0.16;

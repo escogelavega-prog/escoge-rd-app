@@ -32,10 +32,10 @@ class OnboardingPageScaffold extends StatelessWidget {
                         vertical: 9,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.08),
+                        color: Colors.white.withValues(alpha: 0.08),
                         borderRadius: BorderRadius.circular(24),
                         border: Border.all(
-                          color: Colors.white.withOpacity(0.10),
+                          color: Colors.white.withValues(alpha: 0.10),
                         ),
                       ),
                       child: Text(

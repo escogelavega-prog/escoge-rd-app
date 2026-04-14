@@ -6,15 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="3eeb037b-8e40-4a77-b998-394a272a0f9d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.flutter-plugins-dependencies" beforeDir="false" afterPath="$PROJECT_DIR$/.flutter-plugins-dependencies" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins2.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/home/presentation/home_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/home/presentation/home_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/oracion/data/models/evangelio_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/oracion/data/models/evangelio_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/oracion/presentation/evangelio_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/oracion/presentation/evangelio_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/oracion/presentation/lecturas_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/oracion/presentation/lecturas_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/oracion/presentation/oracion_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/oracion/presentation/oracion_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/oracion/services/evangelio_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/oracion/services/evangelio_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/oracion/services/lecturas_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/oracion/services/lecturas_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/oracion/services/liturgia_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/oracion/services/liturgia_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/escoge.iml" beforeDir="false" afterPath="$PROJECT_DIR$/escoge.iml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,25 +52,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Flutter.main.dart.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "main",
-    "io.flutter.project.isFirstOpen": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/Users/andermedina/Development/App/escoge",
-    "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle",
-    "show.migrate.to.gradle.popup": "false"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Flutter.main.dart.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;io.flutter.project.isFirstOpen&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/andermedina/Development/App/escoge&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.project.gradle&quot;,
+    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
   }
-}]]></component>
+}</component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="3eeb037b-8e40-4a77-b998-394a272a0f9d" name="Changes" comment="" />

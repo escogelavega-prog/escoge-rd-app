@@ -79,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Positioned.fill(
             child: Container(
-              color: Colors.black.withOpacity(0.35),
+              color: Colors.black.withValues(alpha: 0.35),
             ),
           ),
           SafeArea(
@@ -370,10 +370,10 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Container(
               padding: const EdgeInsets.all(22),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.08),
+                color: Colors.white.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.08),
+                  color: Colors.white.withValues(alpha: 0.08),
                 ),
               ),
               child: Column(
@@ -399,7 +399,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     _errorMessage ?? 'Ocurrió un error inesperado.',
                     textAlign: TextAlign.center,
                     style: GoogleFonts.lora(
-                      color: Colors.white.withOpacity(0.88),
+                      color: Colors.white.withValues(alpha: 0.88),
                       fontSize: 17,
                       height: 1.6,
                     ),
@@ -449,10 +449,10 @@ class _HomeScreenState extends State<HomeScreen> {
           width: double.infinity,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.08),
+            color: Colors.white.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(22),
             border: Border.all(
-              color: Colors.white.withOpacity(0.06),
+              color: Colors.white.withValues(alpha: 0.06),
             ),
           ),
           child: child,
@@ -482,9 +482,9 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          color: Colors.white.withOpacity(0.06),
+          color: Colors.white.withValues(alpha: 0.06),
           border: Border.all(
-            color: Colors.white.withOpacity(0.06),
+            color: Colors.white.withValues(alpha: 0.06),
           ),
         ),
         child: Row(
@@ -517,9 +517,9 @@ class _HomeScreenState extends State<HomeScreen> {
         height: 70,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(18),
-          color: Colors.white.withOpacity(0.06),
+          color: Colors.white.withValues(alpha: 0.06),
           border: Border.all(
-            color: Colors.white.withOpacity(0.06),
+            color: Colors.white.withValues(alpha: 0.06),
           ),
         ),
         child: Column(

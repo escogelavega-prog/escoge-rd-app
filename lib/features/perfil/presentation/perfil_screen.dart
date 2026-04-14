@@ -23,86 +23,201 @@ class PerfilScreen extends StatefulWidget {
 class _PerfilScreenState extends State<PerfilScreen> {
   final AuthService _authService = AuthService();
 
-  Future<Map<String, dynamic>?> _loadUserData() async {
+  bool _isReconciling = false;
+  bool _didInitialReconciliation = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _reconciliarDatosUsuario();
+    });
+  }
+
+  Future<void> _reconciliarDatosUsuario() async {
+    if (_isReconciling || _didInitialReconciliation) return;
+
     final currentUser = FirebaseAuth.instance.currentUser;
-    if (currentUser == null) return null;
+    if (currentUser == null) return;
 
-    final userRef =
-        FirebaseFirestore.instance.collection('usuarios').doc(currentUser.uid);
+    _isReconciling = true;
 
-    final doc = await userRef.get();
-    final data = doc.data() ?? <String, dynamic>{};
+    try {
+      final userRef = FirebaseFirestore.instance
+          .collection('usuarios')
+          .doc(currentUser.uid);
 
-    int safeInt(dynamic value) {
-      if (value is int) return value;
-      if (value is num) return value.toInt();
-      return 0;
+      final doc = await userRef.get();
+      final data = doc.data() ?? <String, dynamic>{};
+
+      await _reconciliarDiasCamino(
+        userRef: userRef,
+        data: data,
+        currentUser: currentUser,
+      );
+
+      await _reconciliarOraciones(
+        userRef: userRef,
+        data: data,
+        currentUser: currentUser,
+      );
+
+      await _reconciliarRachaOracion(
+        userRef: userRef,
+        data: data,
+      );
+
+      await _reconciliarRetiros(
+        userRef: userRef,
+        data: data,
+        currentUser: currentUser,
+      );
+
+      _didInitialReconciliation = true;
+    } catch (_) {
+      // No rompemos la UI si alguna reconciliación falla.
+    } finally {
+      _isReconciling = false;
     }
+  }
 
-    final nombre = (data['nombre'] ?? '').toString().trim();
-    final email = (data['email'] ?? currentUser.email ?? '').toString().trim();
-    final estadoEspiritual =
-        (data['estadoEspiritual'] ?? 'Caminando con propósito ✨')
-            .toString()
-            .trim();
-    final role = (data['role'] ?? AppRoles.joven).toString().trim();
-    final diocesisNombre = (data['diocesisNombre'] ?? '').toString().trim();
-    final retirosCount = safeInt(data['retirosCount']);
-    var oracionesCount = safeInt(data['oracionesCount']);
-    var diasCamino = safeInt(data['diasCamino']);
-
+  Future<void> _reconciliarDiasCamino({
+    required DocumentReference<Map<String, dynamic>> userRef,
+    required Map<String, dynamic> data,
+    required User currentUser,
+  }) async {
+    final diasCaminoActual = _safeInt(data['diasCamino']);
     final diasCaminoCalculados = _calcularDiasCamino(
       _resolverFechaInicio(data, currentUser),
     );
 
-    // Reconciliación productiva de días de camino:
-    // si no está guardado o está en 0, se calcula y se persiste.
-    if (diasCamino <= 0 && diasCaminoCalculados > 0) {
-      diasCamino = diasCaminoCalculados;
+    if (diasCaminoActual <= 0 && diasCaminoCalculados > 0) {
       await userRef.set(
         {
-          'diasCamino': diasCamino,
+          'diasCamino': diasCaminoCalculados,
           'updatedAt': FieldValue.serverTimestamp(),
         },
         SetOptions(merge: true),
       );
     }
+  }
 
-    // Reconciliación productiva de oraciones:
-    // si el contador está en 0, revisa cuántas peticiones reales tiene el usuario
-    // y corrige Firestore automáticamente.
-    if (oracionesCount <= 0) {
-      final peticionesQuery = await FirebaseFirestore.instance
-          .collection('peticiones')
-          .where('userId', isEqualTo: currentUser.uid)
+  Future<void> _reconciliarOraciones({
+    required DocumentReference<Map<String, dynamic>> userRef,
+    required Map<String, dynamic> data,
+    required User currentUser,
+  }) async {
+    final oracionesCountActual = _safeInt(data['oracionesCount']);
+
+    if (oracionesCountActual > 0) return;
+
+    final peticionesSnapshot =
+        await FirebaseFirestore.instance.collection('peticiones').get();
+
+    int totalOraciones = 0;
+
+    for (final peticionDoc in peticionesSnapshot.docs) {
+      final unionDoc = await peticionDoc.reference
+          .collection('unidos')
+          .doc(currentUser.uid)
           .get();
 
-      final totalReal = peticionesQuery.docs.length;
-
-      if (totalReal > 0) {
-        oracionesCount = totalReal;
-
-        await userRef.set(
-          {
-            'oracionesCount': totalReal,
-            'updatedAt': FieldValue.serverTimestamp(),
-          },
-          SetOptions(merge: true),
-        );
+      if (unionDoc.exists) {
+        totalOraciones++;
       }
     }
 
-    return {
-      'uid': currentUser.uid,
-      'nombre': nombre,
-      'email': email,
-      'estadoEspiritual': estadoEspiritual,
-      'role': role,
-      'diocesisNombre': diocesisNombre,
-      'retirosCount': retirosCount,
-      'oracionesCount': oracionesCount,
-      'diasCamino': diasCamino,
-    };
+    if (totalOraciones > 0) {
+      await userRef.set(
+        {
+          'oracionesCount': totalOraciones,
+          'updatedAt': FieldValue.serverTimestamp(),
+        },
+        SetOptions(merge: true),
+      );
+    }
+  }
+
+  Future<void> _reconciliarRachaOracion({
+    required DocumentReference<Map<String, dynamic>> userRef,
+    required Map<String, dynamic> data,
+  }) async {
+    final rachaActual = _safeInt(data['rachaOracionDias']);
+    final ultimaFecha = _resolverUltimaOracionFecha(data);
+
+    if (rachaActual <= 0) return;
+
+    if (ultimaFecha == null) {
+      await userRef.set(
+        {
+          'rachaOracionDias': 0,
+          'updatedAt': FieldValue.serverTimestamp(),
+        },
+        SetOptions(merge: true),
+      );
+      return;
+    }
+
+    final ultima = DateTime(
+      ultimaFecha.year,
+      ultimaFecha.month,
+      ultimaFecha.day,
+    );
+
+    final ahora = DateTime.now();
+    final hoy = DateTime(ahora.year, ahora.month, ahora.day);
+
+    final diferencia = hoy.difference(ultima).inDays;
+
+    if (diferencia > 1) {
+      await userRef.set(
+        {
+          'rachaOracionDias': 0,
+          'updatedAt': FieldValue.serverTimestamp(),
+        },
+        SetOptions(merge: true),
+      );
+    }
+  }
+
+  Future<void> _reconciliarRetiros({
+    required DocumentReference<Map<String, dynamic>> userRef,
+    required Map<String, dynamic> data,
+    required User currentUser,
+  }) async {
+    final retirosCountActual = _safeInt(data['retirosCount']);
+
+    if (retirosCountActual > 0) return;
+
+    final retirosSnapshot =
+        await FirebaseFirestore.instance.collection('retiros').get();
+
+    int totalRetiros = 0;
+
+    for (final retiroDoc in retirosSnapshot.docs) {
+      final inscripciones = await retiroDoc.reference
+          .collection('inscripciones')
+          .where('userId', isEqualTo: currentUser.uid)
+          .get();
+
+      totalRetiros += inscripciones.docs.length;
+    }
+
+    if (totalRetiros > 0) {
+      await userRef.set(
+        {
+          'retirosCount': totalRetiros,
+          'updatedAt': FieldValue.serverTimestamp(),
+        },
+        SetOptions(merge: true),
+      );
+    }
+  }
+
+  int _safeInt(dynamic value) {
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return 0;
   }
 
   DateTime? _resolverFechaInicio(
@@ -116,6 +231,16 @@ class _PerfilScreenState extends State<PerfilScreen> {
     }
 
     return currentUser.metadata.creationTime;
+  }
+
+  DateTime? _resolverUltimaOracionFecha(Map<String, dynamic> data) {
+    final raw = data['ultimaOracionFecha'];
+
+    if (raw is Timestamp) {
+      return raw.toDate();
+    }
+
+    return null;
   }
 
   int _calcularDiasCamino(DateTime? fechaInicio) {
@@ -132,6 +257,30 @@ class _PerfilScreenState extends State<PerfilScreen> {
 
     final diferencia = hoy.difference(inicio).inDays;
     return diferencia < 0 ? 0 : diferencia + 1;
+  }
+
+  int _resolveRachaVisible(Map<String, dynamic>? data) {
+    final racha = _resolveCount(data, 'rachaOracionDias');
+    final ultimaFecha = _resolverUltimaOracionFecha(data ?? {});
+
+    if (racha <= 0 || ultimaFecha == null) return 0;
+
+    final ultima = DateTime(
+      ultimaFecha.year,
+      ultimaFecha.month,
+      ultimaFecha.day,
+    );
+
+    final ahora = DateTime.now();
+    final hoy = DateTime(ahora.year, ahora.month, ahora.day);
+
+    final diferencia = hoy.difference(ultima).inDays;
+
+    if (diferencia > 1) {
+      return 0;
+    }
+
+    return racha;
   }
 
   Future<void> _confirmSignOut() async {
@@ -242,6 +391,21 @@ class _PerfilScreenState extends State<PerfilScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser == null) {
+      return const Scaffold(
+        body: Center(
+          child: Text('No hay sesión activa.'),
+        ),
+      );
+    }
+
+    final userStream = FirebaseFirestore.instance
+        .collection('usuarios')
+        .doc(currentUser.uid)
+        .snapshots();
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Stack(
@@ -255,8 +419,8 @@ class _PerfilScreenState extends State<PerfilScreen> {
           ),
           SafeArea(
             bottom: false,
-            child: FutureBuilder<Map<String, dynamic>?>(
-              future: _loadUserData(),
+            child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+              stream: userStream,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
@@ -264,7 +428,24 @@ class _PerfilScreenState extends State<PerfilScreen> {
                   );
                 }
 
-                final userData = snapshot.data;
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppSpacing.lg),
+                      child: Text(
+                        'No se pudo cargar el perfil.',
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  );
+                }
+
+                final userData = snapshot.data?.data() ?? <String, dynamic>{};
+
                 final userName = _resolveDisplayName(userData);
                 final userEmail = _resolveDisplayEmail(userData);
                 final estadoEspiritual = _resolveSpiritualState(userData);
@@ -296,7 +477,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
                       ProfileStatsSection(
                         retiros: _resolveCount(userData, 'retirosCount'),
                         oraciones: _resolveCount(userData, 'oracionesCount'),
-                        dias: _resolveCount(userData, 'diasCamino'),
+                        racha: _resolveRachaVisible(userData),
                       ),
                       const SizedBox(height: AppSpacing.xl),
                       ProfileAccountCard(

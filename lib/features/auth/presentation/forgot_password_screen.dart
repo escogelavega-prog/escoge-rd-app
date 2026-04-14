@@ -62,14 +62,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       labelStyle: GoogleFonts.poppins(color: Colors.white70),
       prefixIcon: const Icon(Icons.mail_rounded, color: Color(0xFFD4AF37)),
       filled: true,
-      fillColor: Colors.white.withOpacity(0.05),
+      fillColor: Colors.white.withValues(alpha: 0.05),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
-        borderSide: BorderSide(color: Colors.white.withOpacity(0.10)),
+        borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.10)),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
-        borderSide: BorderSide(color: Colors.white.withOpacity(0.10)),
+        borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.10)),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),

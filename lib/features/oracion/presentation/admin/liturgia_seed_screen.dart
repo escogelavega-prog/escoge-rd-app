@@ -75,7 +75,7 @@ class _LiturgiaSeedAccessDeniedView extends StatelessWidget {
                 height: 74,
                 width: 74,
                 decoration: BoxDecoration(
-                  color: _gold.withOpacity(0.12),
+                  color: _gold.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(22),
                 ),
                 child: const Icon(
@@ -215,6 +215,7 @@ class _LiturgiaSeedAdminViewState extends State<_LiturgiaSeedAdminView> {
               'El archivo seleccionado está vacío o no pudo leerse.';
         });
 
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: _danger,
@@ -516,6 +517,7 @@ class _LiturgiaSeedAdminViewState extends State<_LiturgiaSeedAdminView> {
                   const SizedBox(height: 16),
                   SwitchListTile.adaptive(
                     value: _overwrite,
+                    // ignore: deprecated_member_use
                     activeColor: _gold,
                     contentPadding: EdgeInsets.zero,
                     title: Text(
@@ -555,7 +557,7 @@ class _LiturgiaSeedAdminViewState extends State<_LiturgiaSeedAdminView> {
                       style: OutlinedButton.styleFrom(
                         foregroundColor: _primaryBlue,
                         side: BorderSide(
-                          color: _primaryBlue.withOpacity(0.22),
+                          color: _primaryBlue.withValues(alpha: 0.22),
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
@@ -593,7 +595,7 @@ class _LiturgiaSeedAdminViewState extends State<_LiturgiaSeedAdminView> {
                           style: OutlinedButton.styleFrom(
                             foregroundColor: _primaryBlue,
                             side: BorderSide(
-                              color: _primaryBlue.withOpacity(0.22),
+                              color: _primaryBlue.withValues(alpha: 0.22),
                             ),
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
@@ -631,7 +633,7 @@ class _LiturgiaSeedAdminViewState extends State<_LiturgiaSeedAdminView> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: _primaryBlue,
                             disabledBackgroundColor:
-                                _primaryBlue.withOpacity(0.55),
+                                _primaryBlue.withValues(alpha: 0.55),
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
@@ -684,10 +686,10 @@ class _LiturgiaSeedAdminViewState extends State<_LiturgiaSeedAdminView> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: _statusColor().withOpacity(0.08),
+                      color: _statusColor().withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: _statusColor().withOpacity(0.18),
+                        color: _statusColor().withValues(alpha: 0.18),
                       ),
                     ),
                     child: Row(
@@ -959,10 +961,10 @@ class _MiniTag extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.08),
+        color: color.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(999),
         border: Border.all(
-          color: color.withOpacity(0.18),
+          color: color.withValues(alpha: 0.18),
         ),
       ),
       child: Text(
@@ -1023,10 +1025,10 @@ class _WarningBox extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.06),
+        color: color.withValues(alpha: 0.06),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: color.withOpacity(0.18),
+          color: color.withValues(alpha: 0.18),
         ),
       ),
       child: Row(
@@ -1081,7 +1083,7 @@ class _HeroAdminCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(26),
         boxShadow: [
           BoxShadow(
-            color: primaryBlue.withOpacity(0.18),
+            color: primaryBlue.withValues(alpha: 0.18),
             blurRadius: 22,
             offset: const Offset(0, 10),
           ),
@@ -1093,10 +1095,10 @@ class _HeroAdminCard extends StatelessWidget {
             height: 58,
             width: 58,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.14),
+              color: Colors.white.withValues(alpha: 0.14),
               borderRadius: BorderRadius.circular(18),
               border: Border.all(
-                color: Colors.white.withOpacity(0.18),
+                color: Colors.white.withValues(alpha: 0.18),
               ),
             ),
             child: Icon(
@@ -1123,7 +1125,7 @@ class _HeroAdminCard extends StatelessWidget {
                   'Ahora puedes seleccionar un archivo JSON desde el dispositivo, validarlo y cargarlo con control total.',
                   style: GoogleFonts.poppins(
                     fontSize: 12.5,
-                    color: Colors.white.withOpacity(0.88),
+                    color: Colors.white.withValues(alpha: 0.88),
                     height: 1.45,
                   ),
                 ),
@@ -1182,10 +1184,10 @@ class _MetricCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.08),
+        color: color.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: color.withOpacity(0.16),
+          color: color.withValues(alpha: 0.16),
         ),
       ),
       child: Column(

@@ -5,13 +5,13 @@ import 'profile_stat_card.dart';
 class ProfileStatsSection extends StatelessWidget {
   final int retiros;
   final int oraciones;
-  final int dias;
+  final int racha;
 
   const ProfileStatsSection({
     super.key,
     required this.retiros,
     required this.oraciones,
-    required this.dias,
+    required this.racha,
   });
 
   @override
@@ -37,9 +37,9 @@ class ProfileStatsSection extends StatelessWidget {
         const SizedBox(width: AppSpacing.sm),
         Expanded(
           child: ProfileStatCard(
-            icon: Icons.calendar_today_rounded,
-            label: 'Días',
-            value: dias.toString(),
+            icon: Icons.local_fire_department_rounded,
+            label: 'Racha',
+            value: racha.toString(),
           ),
         ),
       ],

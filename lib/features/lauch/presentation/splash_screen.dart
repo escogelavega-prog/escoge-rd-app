@@ -34,7 +34,7 @@ class _SplashScreenState extends State<SplashScreen> {
             fit: BoxFit.cover,
           ),
           Container(
-            color: Colors.black.withOpacity(0.58),
+            color: Colors.black.withValues(alpha: 0.58),
           ),
           SafeArea(
             child: Center(

@@ -78,7 +78,7 @@ class AppHeader extends StatelessWidget {
                     subtitle!,
                     textAlign: TextAlign.center,
                     style: textTheme.bodyMedium?.copyWith(
-                      color: Colors.white.withOpacity(0.82),
+                      color: Colors.white.withValues(alpha: 0.82),
                       height: 1.3,
                     ),
                   ),

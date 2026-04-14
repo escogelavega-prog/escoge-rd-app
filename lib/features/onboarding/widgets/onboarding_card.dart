@@ -22,10 +22,10 @@ class OnboardingCard extends StatelessWidget {
             vertical: 24,
           ),
           decoration: BoxDecoration(
-            color: const Color(0xFF101935).withOpacity(0.68),
+            color: const Color(0xFF101935).withValues(alpha: 0.68),
             borderRadius: BorderRadius.circular(30),
             border: Border.all(
-              color: Colors.white.withOpacity(0.08),
+              color: Colors.white.withValues(alpha: 0.08),
               width: 1,
             ),
           ),

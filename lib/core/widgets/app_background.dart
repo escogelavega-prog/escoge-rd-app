@@ -41,9 +41,9 @@ class AppBackground extends StatelessWidget {
               end: end,
               colors: gradientColors ??
                   [
-                    Colors.black.withOpacity(overlayOpacity * 0.55),
-                    Colors.black.withOpacity(overlayOpacity),
-                    Colors.black.withOpacity(overlayOpacity * 1.15),
+                    Colors.black.withValues(alpha: overlayOpacity * 0.55),
+                    Colors.black.withValues(alpha: overlayOpacity),
+                    Colors.black.withValues(alpha: overlayOpacity * 1.15),
                   ],
             ),
           ),

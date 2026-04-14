@@ -39,12 +39,12 @@ class ProfileAccountCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
-        color: _cardColor.withOpacity(0.96),
+        color: _cardColor.withValues(alpha: 0.96),
         borderRadius: BorderRadius.circular(28),
         border: Border.all(color: _borderColor),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 18,
             offset: const Offset(0, 10),
           ),
@@ -174,7 +174,7 @@ class _ProfileInfoTile extends StatelessWidget {
             height: 42,
             width: 42,
             decoration: BoxDecoration(
-              color: iconColor.withOpacity(0.10),
+              color: iconColor.withValues(alpha: 0.10),
               borderRadius: BorderRadius.circular(14),
             ),
             child: Icon(
@@ -267,7 +267,7 @@ class _ProfileActionTile extends StatelessWidget {
               height: 44,
               width: 44,
               decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.12),
+                color: iconColor.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(

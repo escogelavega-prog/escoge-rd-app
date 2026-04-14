@@ -34,6 +34,7 @@ class LiturgiaService implements LiturgiaRepository {
   }
 
   /// Precarga hoy y mañana para que la navegación se sienta más fluida.
+  @override
   Future<void> preloadTodayAndTomorrow() async {
     final today = _dateOnly(DateTime.now());
     final tomorrow = _dateOnly(today.add(const Duration(days: 1)));
@@ -61,18 +62,21 @@ class LiturgiaService implements LiturgiaRepository {
   }
 
   /// Devuelve el dato desde memoria si existe; si no, null.
+  @override
   LiturgiaDayModel? getCachedLiturgiaByDate(DateTime date) {
     final docId = _buildDocId(date);
     return _memoryCache[docId];
   }
 
   /// Permite invalidar una fecha específica.
+  @override
   void clearCacheForDate(DateTime date) {
     final docId = _buildDocId(date);
     _memoryCache.remove(docId);
   }
 
   /// Limpia todo el cache.
+  @override
   void clearAllCache() {
     _memoryCache.clear();
   }

@@ -23,7 +23,6 @@ class _NuevaPeticionScreenState extends State<NuevaPeticionScreen> {
 
   static const Color _gold = Color(0xFFD4AF37);
   static const Color _deepBlue = Color(0xFF0B1E66);
-  static const Color _secondaryBlue = Color(0xFF1736A2);
 
   final List<String> _categorias = const [
     'Salud',
@@ -91,22 +90,33 @@ class _NuevaPeticionScreenState extends State<NuevaPeticionScreen> {
 
   Widget _buildGlassCard({required Widget child}) {
     return Container(
-      padding: const EdgeInsets.all(22),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: _deepBlue.withOpacity(0.60),
-        borderRadius: BorderRadius.circular(28),
+        color: _deepBlue.withValues(alpha: 0.60),
+        borderRadius: BorderRadius.circular(30),
         border: Border.all(
-          color: _gold.withOpacity(0.28),
+          color: _gold.withValues(alpha: 0.26),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.18),
-            blurRadius: 24,
-            offset: const Offset(0, 12),
+            color: Colors.black.withValues(alpha: 0.20),
+            blurRadius: 28,
+            offset: const Offset(0, 14),
           ),
         ],
       ),
       child: child,
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Text(
+      title,
+      style: GoogleFonts.poppins(
+        color: Colors.white,
+        fontWeight: FontWeight.w700,
+        fontSize: 15.5,
+      ),
     );
   }
 
@@ -129,11 +139,11 @@ class _NuevaPeticionScreenState extends State<NuevaPeticionScreen> {
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
           color: selected
-              ? _gold.withOpacity(0.14)
-              : Colors.white.withOpacity(0.08),
+              ? _gold.withValues(alpha: 0.14)
+              : Colors.white.withValues(alpha: 0.07),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: selected ? _gold : Colors.white.withOpacity(0.14),
+            color: selected ? _gold : Colors.white.withValues(alpha: 0.12),
           ),
         ),
         child: Row(
@@ -161,15 +171,56 @@ class _NuevaPeticionScreenState extends State<NuevaPeticionScreen> {
                   Text(
                     subtitle,
                     style: GoogleFonts.poppins(
-                      color: Colors.white.withOpacity(0.72),
-                      fontSize: 12.8,
-                      height: 1.4,
+                      color: Colors.white.withValues(alpha: 0.72),
+                      fontSize: 12.6,
+                      height: 1.45,
                     ),
                   ),
                 ],
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  InputDecoration _inputDecoration({
+    required String hint,
+    String? label,
+  }) {
+    return InputDecoration(
+      hintText: hint,
+      labelText: label,
+      hintStyle: TextStyle(
+        color: Colors.white.withValues(alpha: 0.48),
+      ),
+      labelStyle: TextStyle(
+        color: Colors.white.withValues(alpha: 0.72),
+      ),
+      filled: true,
+      fillColor: Colors.white.withValues(alpha: 0.07),
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 18,
+        vertical: 18,
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
+        borderSide: BorderSide(
+          color: Colors.white.withValues(alpha: 0.10),
+        ),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
+        borderSide: BorderSide(
+          color: Colors.white.withValues(alpha: 0.10),
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
+        borderSide: const BorderSide(
+          color: _gold,
+          width: 1.2,
         ),
       ),
     );
@@ -182,6 +233,7 @@ class _NuevaPeticionScreenState extends State<NuevaPeticionScreen> {
       appBar: AppBar(
         backgroundColor: _deepBlue,
         elevation: 0,
+        centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
           'Nueva petición',
@@ -207,9 +259,9 @@ class _NuevaPeticionScreenState extends State<NuevaPeticionScreen> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withOpacity(0.18),
-                    _deepBlue.withOpacity(0.28),
-                    Colors.black.withOpacity(0.48),
+                    Colors.black.withValues(alpha: 0.18),
+                    _deepBlue.withValues(alpha: 0.28),
+                    Colors.black.withValues(alpha: 0.50),
                   ],
                 ),
               ),
@@ -219,7 +271,7 @@ class _NuevaPeticionScreenState extends State<NuevaPeticionScreen> {
             child: Form(
               key: _formKey,
               child: ListView(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
                 children: [
                   _buildGlassCard(
                     child: Column(
@@ -229,50 +281,29 @@ class _NuevaPeticionScreenState extends State<NuevaPeticionScreen> {
                           'Comparte tu intención',
                           style: GoogleFonts.lora(
                             color: Colors.white,
-                            fontSize: 26,
+                            fontSize: 28,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
                         const SizedBox(height: 10),
                         Text(
-                          'Tu comunidad podrá acompañarte espiritualmente en esta petición.',
+                          'Tu comunidad podrá acompañarte espiritualmente en esta petición y unirse en oración contigo.',
                           style: GoogleFonts.poppins(
-                            color: Colors.white.withOpacity(0.76),
+                            color: Colors.white.withValues(alpha: 0.76),
                             fontSize: 13.5,
                             height: 1.55,
                           ),
                         ),
-                        const SizedBox(height: 26),
+                        const SizedBox(height: 28),
+                        _buildSectionTitle('Tu petición'),
+                        const SizedBox(height: 14),
                         TextFormField(
                           controller: _textoController,
                           maxLines: 6,
                           maxLength: 400,
                           style: const TextStyle(color: Colors.white),
-                          decoration: InputDecoration(
-                            hintText: 'Escribe aquí tu petición...',
-                            hintStyle: TextStyle(
-                              color: Colors.white.withOpacity(0.50),
-                            ),
-                            filled: true,
-                            fillColor: Colors.white.withOpacity(0.08),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(18),
-                              borderSide: BorderSide(
-                                color: Colors.white.withOpacity(0.12),
-                              ),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(18),
-                              borderSide: BorderSide(
-                                color: Colors.white.withOpacity(0.12),
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(18),
-                              borderSide: const BorderSide(
-                                color: _gold,
-                              ),
-                            ),
+                          decoration: _inputDecoration(
+                            hint: 'Escribe aquí tu petición...',
                           ),
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
@@ -287,8 +318,10 @@ class _NuevaPeticionScreenState extends State<NuevaPeticionScreen> {
                           },
                         ),
                         const SizedBox(height: 22),
+                        _buildSectionTitle('Categoría'),
+                        const SizedBox(height: 14),
                         DropdownButtonFormField<String>(
-                          value: _categoriaSeleccionada,
+                          initialValue: _categoriaSeleccionada,
                           dropdownColor: _deepBlue,
                           style: const TextStyle(color: Colors.white),
                           items: _categorias
@@ -306,27 +339,13 @@ class _NuevaPeticionScreenState extends State<NuevaPeticionScreen> {
                               _categoriaSeleccionada = value;
                             });
                           },
-                          decoration: InputDecoration(
-                            labelText: 'Categoría',
-                            labelStyle: TextStyle(
-                              color: Colors.white.withOpacity(0.72),
-                            ),
-                            filled: true,
-                            fillColor: Colors.white.withOpacity(0.08),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(18),
-                            ),
+                          decoration: _inputDecoration(
+                            hint: '',
+                            label: 'Selecciona una categoría',
                           ),
                         ),
                         const SizedBox(height: 28),
-                        Text(
-                          'Visibilidad',
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 15.5,
-                          ),
-                        ),
+                        _buildSectionTitle('Visibilidad'),
                         const SizedBox(height: 14),
                         _buildVisibilidadOption(
                           value: 'publica',
@@ -337,9 +356,9 @@ class _NuevaPeticionScreenState extends State<NuevaPeticionScreen> {
                           value: 'anonima',
                           title: 'Anónima',
                           subtitle:
-                              'La comunidad verá tu intención, pero no tu identidad.',
+                              'La comunidad verá tu intención sin tu identidad.',
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 24),
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
@@ -347,10 +366,13 @@ class _NuevaPeticionScreenState extends State<NuevaPeticionScreen> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: _gold,
                               foregroundColor: _deepBlue,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 17,
+                              ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(18),
                               ),
+                              elevation: 8,
                             ),
                             child: _loading
                                 ? SizedBox(
@@ -365,7 +387,7 @@ class _NuevaPeticionScreenState extends State<NuevaPeticionScreen> {
                                     'Publicar petición',
                                     style: GoogleFonts.poppins(
                                       fontWeight: FontWeight.w700,
-                                      fontSize: 15,
+                                      fontSize: 15.2,
                                     ),
                                   ),
                           ),

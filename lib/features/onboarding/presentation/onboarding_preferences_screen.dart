@@ -100,12 +100,12 @@ class _OnboardingPreferencesScreenState
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.06),
+        color: Colors.white.withValues(alpha: 0.06),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.white.withOpacity(0.08)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
       ),
       child: DropdownButtonFormField<String>(
-        value: value,
+        initialValue: value,
         dropdownColor: const Color(0xFF11182F),
         decoration: InputDecoration(
           border: InputBorder.none,
