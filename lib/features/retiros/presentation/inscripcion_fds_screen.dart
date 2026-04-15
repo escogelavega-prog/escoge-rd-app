@@ -1,3 +1,5 @@
+import 'package:escoge/core/theme/app_backgrounds.dart';
+import 'package:escoge/core/widgets/app_background.dart';
 import 'package:escoge/features/retiros/data/services/diocesis_service.dart';
 import 'package:escoge/features/retiros/data/services/inscripcion_retiro_service.dart';
 import 'package:escoge/features/retiros/domain/inscripcion_fds_model.dart';
@@ -22,6 +24,10 @@ class InscripcionFDSScreen extends StatefulWidget {
 }
 
 class _InscripcionFDSScreenState extends State<InscripcionFDSScreen> {
+  static const Color _gold = Color(0xFFD4AF37);
+  static const Color _softGold = Color(0xFFE8C76A);
+  static const Color _deepBlue = Color(0xFF0B1E66);
+
   final _service = InscripcionRetiroService();
   final _diocesisService = DiocesisService();
 
@@ -96,10 +102,13 @@ class _InscripcionFDSScreenState extends State<InscripcionFDSScreen> {
       builder: (context) {
         return Container(
           height: MediaQuery.of(context).size.height * 0.72,
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(
-              top: Radius.circular(28),
+          decoration: BoxDecoration(
+            color: const Color(0xFF0C1C60),
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(30),
+            ),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.08),
             ),
           ),
           child: Column(
@@ -109,7 +118,7 @@ class _InscripcionFDSScreenState extends State<InscripcionFDSScreen> {
                 width: 52,
                 height: 5,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFD8DFEC),
+                  color: Colors.white.withValues(alpha: 0.18),
                   borderRadius: BorderRadius.circular(999),
                 ),
               ),
@@ -124,7 +133,7 @@ class _InscripcionFDSScreenState extends State<InscripcionFDSScreen> {
                         style: GoogleFonts.poppins(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
-                          color: const Color(0xFF1736B6),
+                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -132,7 +141,10 @@ class _InscripcionFDSScreenState extends State<InscripcionFDSScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              const Divider(height: 1),
+              Divider(
+                height: 1,
+                color: Colors.white.withValues(alpha: 0.08),
+              ),
               Expanded(
                 child: ListView.separated(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
@@ -156,13 +168,13 @@ class _InscripcionFDSScreenState extends State<InscripcionFDSScreen> {
                         ),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? const Color(0xFF1736B6).withValues(alpha: 0.08)
-                              : const Color(0xFFF8FAFF),
+                              ? _gold.withValues(alpha: 0.14)
+                              : Colors.white.withValues(alpha: 0.06),
                           borderRadius: BorderRadius.circular(18),
                           border: Border.all(
                             color: isSelected
-                                ? const Color(0xFF1736B6)
-                                : const Color(0xFFE3E8F2),
+                                ? _gold
+                                : Colors.white.withValues(alpha: 0.08),
                           ),
                         ),
                         child: Row(
@@ -175,14 +187,14 @@ class _InscripcionFDSScreenState extends State<InscripcionFDSScreen> {
                                   fontWeight: isSelected
                                       ? FontWeight.w700
                                       : FontWeight.w500,
-                                  color: const Color(0xFF1F2A44),
+                                  color: Colors.white,
                                 ),
                               ),
                             ),
                             if (isSelected)
                               const Icon(
                                 Icons.check_circle_rounded,
-                                color: Color(0xFF1736B6),
+                                color: _gold,
                               ),
                           ],
                         ),
@@ -211,6 +223,19 @@ class _InscripcionFDSScreenState extends State<InscripcionFDSScreen> {
       initialDate: _fechaEvento,
       firstDate: DateTime(2024),
       lastDate: DateTime(2035),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: _deepBlue,
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: Colors.black87,
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (picked != null) {
@@ -357,6 +382,50 @@ class _InscripcionFDSScreenState extends State<InscripcionFDSScreen> {
         backgroundColor: Colors.red.shade700,
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+      ),
+    );
+  }
+
+  InputDecoration _inputDecoration({
+    required String label,
+    String hint = 'Escribe aquí',
+  }) {
+    return InputDecoration(
+      labelText: label,
+      hintText: hint,
+      labelStyle: TextStyle(
+        color: Colors.white.withValues(alpha: 0.78),
+      ),
+      hintStyle: TextStyle(
+        color: Colors.white.withValues(alpha: 0.42),
+      ),
+      filled: true,
+      fillColor: Colors.white.withValues(alpha: 0.07),
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 16,
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
+        borderSide: BorderSide(
+          color: Colors.white.withValues(alpha: 0.08),
+        ),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
+        borderSide: BorderSide(
+          color: Colors.white.withValues(alpha: 0.08),
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
+        borderSide: const BorderSide(
+          color: _gold,
+          width: 1.2,
+        ),
       ),
     );
   }
@@ -373,30 +442,21 @@ class _InscripcionFDSScreenState extends State<InscripcionFDSScreen> {
         controller: controller,
         keyboardType: keyboardType,
         maxLines: maxLines,
-        decoration: InputDecoration(
-          labelText: label,
-          hintText: 'Escribe aquí',
-          filled: true,
-          fillColor: const Color(0xFFF8FAFF),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 16,
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(color: Color(0xFFE3E8F2)),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(color: Color(0xFFE3E8F2)),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(
-              color: Color(0xFF1736B6),
-              width: 1.4,
-            ),
-          ),
+        style: const TextStyle(color: Colors.white),
+        decoration: _inputDecoration(label: label),
+      ),
+    );
+  }
+
+  Widget _sectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: Text(
+        title,
+        style: GoogleFonts.poppins(
+          fontSize: 15.5,
+          fontWeight: FontWeight.w700,
+          color: _softGold,
         ),
       ),
     );
@@ -411,14 +471,16 @@ class _InscripcionFDSScreenState extends State<InscripcionFDSScreen> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: InkWell(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
         onTap: _seleccionarDiocesis,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           decoration: BoxDecoration(
-            color: const Color(0xFFF8FAFF),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFE3E8F2)),
+            color: Colors.white.withValues(alpha: 0.07),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.08),
+            ),
           ),
           child: Row(
             children: [
@@ -430,14 +492,14 @@ class _InscripcionFDSScreenState extends State<InscripcionFDSScreen> {
                   style: GoogleFonts.poppins(
                     fontSize: 14.5,
                     color: hasValue
-                        ? const Color(0xFF1F2A44)
-                        : const Color(0xFF6E7A96),
+                        ? Colors.white
+                        : Colors.white.withValues(alpha: 0.55),
                   ),
                 ),
               ),
               const Icon(
                 Icons.keyboard_arrow_down_rounded,
-                color: Color(0xFF1736B6),
+                color: _gold,
               ),
             ],
           ),
@@ -454,27 +516,29 @@ class _InscripcionFDSScreenState extends State<InscripcionFDSScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFF),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE3E8F2)),
+        color: Colors.white.withValues(alpha: 0.07),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.08),
+        ),
       ),
       child: ListTile(
         title: Text(
           title,
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.w600,
-            color: const Color(0xFF1F2A44),
+            color: Colors.white,
           ),
         ),
         subtitle: Text(
           subtitle,
           style: GoogleFonts.poppins(
-            color: const Color(0xFF6E7A96),
+            color: Colors.white.withValues(alpha: 0.66),
           ),
         ),
         trailing: const Icon(
           Icons.calendar_today_rounded,
-          color: Color(0xFF1736B6),
+          color: _gold,
         ),
         onTap: onTap,
       ),
@@ -491,151 +555,315 @@ class _InscripcionFDSScreenState extends State<InscripcionFDSScreen> {
   @override
   Widget build(BuildContext context) {
     if (_cargandoDiocesis) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(
-            color: Color(0xFF1736B6),
+      return Scaffold(
+        backgroundColor: Colors.transparent,
+        body: AppBackground(
+          background: AppBackgrounds.home,
+          overlayOpacity: 0.24,
+          child: const Center(
+            child: CircularProgressIndicator(
+              color: _gold,
+            ),
           ),
         ),
       );
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F7FC),
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: const Color(0xFF1736B6),
-        foregroundColor: Colors.white,
-        centerTitle: true,
-        title: Text(
-          'Inscripción FDS',
-          style: GoogleFonts.poppins(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
-          ),
-        ),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                widget.retiroNombre,
-                style: GoogleFonts.poppins(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFF1F2A44),
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Completa este formulario para solicitar tu participación.',
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  color: const Color(0xFF6E7A96),
-                  height: 1.5,
-                ),
-              ),
-              const SizedBox(height: 20),
-              Container(
-                padding: const EdgeInsets.all(18),
+      backgroundColor: Colors.transparent,
+      body: AppBackground(
+        background: AppBackgrounds.home,
+        overlayOpacity: 0.24,
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Color(0x12000000),
-                      blurRadius: 16,
-                      offset: Offset(0, 6),
-                    ),
-                  ],
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black.withValues(alpha: 0.14),
+                      _deepBlue.withValues(alpha: 0.18),
+                      Colors.black.withValues(alpha: 0.40),
+                      Colors.black.withValues(alpha: 0.58),
+                    ],
+                  ),
                 ),
-                child: Column(
-                  children: [
-                    _diocesisSelector(),
-                    _campo(
-                      label: 'Número de fin de semana',
-                      controller: _numeroFinDeSemanaCtrl,
-                      keyboardType: TextInputType.number,
-                    ),
-                    _dateTile(
-                      title: 'Fecha del evento',
-                      subtitle: _formatDate(_fechaEvento),
-                      onTap: _seleccionarFechaEvento,
-                    ),
-                    _campo(
-                      label: 'Nombres',
-                      controller: _nombresCtrl,
-                    ),
-                    _campo(
-                      label: 'Apellidos',
-                      controller: _apellidosCtrl,
-                    ),
-                    _campo(
-                      label: 'Teléfono',
-                      controller: _telefonoCtrl,
-                      keyboardType: TextInputType.phone,
-                    ),
-                    _campo(
-                      label: 'Nombre completo del invitador',
-                      controller: _invitadorNombreCtrl,
-                    ),
-                    _campo(
-                      label: 'Teléfono del invitador',
-                      controller: _invitadorTelefonoCtrl,
-                      keyboardType: TextInputType.phone,
-                    ),
-                    _campo(
-                      label: '¿Por qué quiere vivir esta experiencia?',
-                      controller: _porqueQuiereVivirCtrl,
-                      maxLines: 4,
-                    ),
-                    _campo(
-                      label: '¿Qué espera encontrar en este fin de semana?',
-                      controller: _queEsperaEncontrarCtrl,
-                      maxLines: 4,
-                    ),
-                    const SizedBox(height: 8),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 54,
-                      child: ElevatedButton(
-                        onPressed: _guardando ? null : _guardar,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF1736B6),
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        child: _guardando
-                            ? const SizedBox(
-                                height: 18,
-                                width: 18,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2.2,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : Text(
-                                'Enviar inscripción',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w700,
+              ),
+            ),
+            SafeArea(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    child: Row(
+                      children: [
+                        Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () => Navigator.of(context).pop(),
+                            borderRadius: BorderRadius.circular(18),
+                            child: Ink(
+                              width: 46,
+                              height: 46,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.08),
+                                borderRadius: BorderRadius.circular(18),
+                                border: Border.all(
+                                  color: Colors.white.withValues(alpha: 0.08),
                                 ),
                               ),
+                              child: const Icon(
+                                Icons.arrow_back_rounded,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Text(
+                            'Inscripción FDS',
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.07),
+                              borderRadius: BorderRadius.circular(28),
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.08),
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.12),
+                                  blurRadius: 18,
+                                  offset: const Offset(0, 8),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Wrap(
+                                  spacing: 10,
+                                  runSpacing: 10,
+                                  children: [
+                                    _TopChip(
+                                      icon: Icons.event_available_rounded,
+                                      label: 'Formulario FDS',
+                                    ),
+                                    _TopChip(
+                                      icon: Icons.church_rounded,
+                                      label: widget.diocesis,
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  widget.retiroNombre,
+                                  style: GoogleFonts.lora(
+                                    fontSize: 26,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white,
+                                    height: 1.2,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                  'Completa este formulario para solicitar tu participación en la experiencia.',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 13.5,
+                                    color: Colors.white.withValues(alpha: 0.76),
+                                    height: 1.55,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(18),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.07),
+                              borderRadius: BorderRadius.circular(28),
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.08),
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.12),
+                                  blurRadius: 18,
+                                  offset: const Offset(0, 8),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _sectionTitle('Información general'),
+                                _diocesisSelector(),
+                                _campo(
+                                  label: 'Número de fin de semana',
+                                  controller: _numeroFinDeSemanaCtrl,
+                                  keyboardType: TextInputType.number,
+                                ),
+                                _dateTile(
+                                  title: 'Fecha del evento',
+                                  subtitle: _formatDate(_fechaEvento),
+                                  onTap: _seleccionarFechaEvento,
+                                ),
+                                _campo(
+                                  label: 'Nombres',
+                                  controller: _nombresCtrl,
+                                ),
+                                _campo(
+                                  label: 'Apellidos',
+                                  controller: _apellidosCtrl,
+                                ),
+                                _campo(
+                                  label: 'Teléfono',
+                                  controller: _telefonoCtrl,
+                                  keyboardType: TextInputType.phone,
+                                ),
+                                const SizedBox(height: 8),
+                                _sectionTitle('Invitador'),
+                                _campo(
+                                  label: 'Nombre completo del invitador',
+                                  controller: _invitadorNombreCtrl,
+                                ),
+                                _campo(
+                                  label: 'Teléfono del invitador',
+                                  controller: _invitadorTelefonoCtrl,
+                                  keyboardType: TextInputType.phone,
+                                ),
+                                const SizedBox(height: 8),
+                                _sectionTitle('Experiencia espiritual'),
+                                _campo(
+                                  label:
+                                      '¿Por qué quiere vivir esta experiencia?',
+                                  controller: _porqueQuiereVivirCtrl,
+                                  maxLines: 4,
+                                ),
+                                _campo(
+                                  label:
+                                      '¿Qué espera encontrar en este fin de semana?',
+                                  controller: _queEsperaEncontrarCtrl,
+                                  maxLines: 4,
+                                ),
+                                const SizedBox(height: 10),
+                                SizedBox(
+                                  width: double.infinity,
+                                  height: 54,
+                                  child: ElevatedButton(
+                                    onPressed: _guardando ? null : _guardar,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: _gold,
+                                      foregroundColor: _deepBlue,
+                                      elevation: 0,
+                                      disabledBackgroundColor:
+                                          _gold.withValues(alpha: 0.45),
+                                      disabledForegroundColor: _deepBlue,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(18),
+                                      ),
+                                    ),
+                                    child: _guardando
+                                        ? const SizedBox(
+                                            height: 18,
+                                            width: 18,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2.2,
+                                              color: _deepBlue,
+                                            ),
+                                          )
+                                        : Text(
+                                            'Enviar inscripción',
+                                            style: GoogleFonts.poppins(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
+      ),
+    );
+  }
+}
+
+class _TopChip extends StatelessWidget {
+  final IconData icon;
+  final String label;
+
+  const _TopChip({
+    required this.icon,
+    required this.label,
+  });
+
+  static const Color _gold = Color(0xFFD4AF37);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 10,
+        vertical: 7,
+      ),
+      decoration: BoxDecoration(
+        color: _gold.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.08),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 14,
+            color: _gold,
+          ),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontSize: 11.5,
+              fontWeight: FontWeight.w700,
+              color: _gold,
+            ),
+          ),
+        ],
       ),
     );
   }

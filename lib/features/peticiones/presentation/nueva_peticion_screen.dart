@@ -88,103 +88,6 @@ class _NuevaPeticionScreenState extends State<NuevaPeticionScreen> {
     super.dispose();
   }
 
-  Widget _buildGlassCard({required Widget child}) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: _deepBlue.withValues(alpha: 0.60),
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(
-          color: _gold.withValues(alpha: 0.26),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.20),
-            blurRadius: 28,
-            offset: const Offset(0, 14),
-          ),
-        ],
-      ),
-      child: child,
-    );
-  }
-
-  Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: GoogleFonts.poppins(
-        color: Colors.white,
-        fontWeight: FontWeight.w700,
-        fontSize: 15.5,
-      ),
-    );
-  }
-
-  Widget _buildVisibilidadOption({
-    required String value,
-    required String title,
-    required String subtitle,
-  }) {
-    final selected = _tipoVisibilidad == value;
-
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _tipoVisibilidad = value;
-        });
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 220),
-        margin: const EdgeInsets.only(bottom: 14),
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          color: selected
-              ? _gold.withValues(alpha: 0.14)
-              : Colors.white.withValues(alpha: 0.07),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: selected ? _gold : Colors.white.withValues(alpha: 0.12),
-          ),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              selected
-                  ? Icons.radio_button_checked_rounded
-                  : Icons.radio_button_off_rounded,
-              color: selected ? _gold : Colors.white70,
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 14.5,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: GoogleFonts.poppins(
-                      color: Colors.white.withValues(alpha: 0.72),
-                      fontSize: 12.6,
-                      height: 1.45,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   InputDecoration _inputDecoration({
     required String hint,
     String? label,
@@ -193,16 +96,16 @@ class _NuevaPeticionScreenState extends State<NuevaPeticionScreen> {
       hintText: hint,
       labelText: label,
       hintStyle: TextStyle(
-        color: Colors.white.withValues(alpha: 0.48),
+        color: Colors.white.withValues(alpha: 0.46),
       ),
       labelStyle: TextStyle(
-        color: Colors.white.withValues(alpha: 0.72),
+        color: Colors.white.withValues(alpha: 0.68),
       ),
       filled: true,
-      fillColor: Colors.white.withValues(alpha: 0.07),
+      fillColor: Colors.white.withValues(alpha: 0.06),
       contentPadding: const EdgeInsets.symmetric(
-        horizontal: 18,
-        vertical: 18,
+        horizontal: 16,
+        vertical: 16,
       ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
@@ -226,23 +129,89 @@ class _NuevaPeticionScreenState extends State<NuevaPeticionScreen> {
     );
   }
 
+  Widget _buildSectionTitle(String title) {
+    return Text(
+      title,
+      style: GoogleFonts.poppins(
+        color: Colors.white,
+        fontWeight: FontWeight.w700,
+        fontSize: 14.8,
+      ),
+    );
+  }
+
+  Widget _buildVisibilidadOption({
+    required String value,
+    required String title,
+    required String subtitle,
+  }) {
+    final selected = _tipoVisibilidad == value;
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _tipoVisibilidad = value;
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 220),
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: selected
+              ? _gold.withValues(alpha: 0.14)
+              : Colors.white.withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: selected
+                ? _gold.withValues(alpha: 0.65)
+                : Colors.white.withValues(alpha: 0.10),
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              selected
+                  ? Icons.radio_button_checked_rounded
+                  : Icons.radio_button_off_rounded,
+              color: selected ? _gold : Colors.white70,
+              size: 20,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    subtitle,
+                    style: GoogleFonts.poppins(
+                      color: Colors.white.withValues(alpha: 0.68),
+                      fontSize: 12.2,
+                      height: 1.4,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        backgroundColor: _deepBlue,
-        elevation: 0,
-        centerTitle: true,
-        iconTheme: const IconThemeData(color: Colors.white),
-        title: Text(
-          'Nueva petición',
-          style: GoogleFonts.lora(
-            color: Colors.white,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ),
       body: Stack(
         children: [
           Positioned.fill(
@@ -259,9 +228,10 @@ class _NuevaPeticionScreenState extends State<NuevaPeticionScreen> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withValues(alpha: 0.18),
-                    _deepBlue.withValues(alpha: 0.28),
+                    Colors.black.withValues(alpha: 0.22),
+                    _deepBlue.withValues(alpha: 0.20),
                     Colors.black.withValues(alpha: 0.50),
+                    Colors.black.withValues(alpha: 0.70),
                   ],
                 ),
               ),
@@ -271,128 +241,145 @@ class _NuevaPeticionScreenState extends State<NuevaPeticionScreen> {
             child: Form(
               key: _formKey,
               child: ListView(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
                 children: [
-                  _buildGlassCard(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Comparte tu intención',
-                          style: GoogleFonts.lora(
-                            color: Colors.white,
-                            fontSize: 28,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          'Tu comunidad podrá acompañarte espiritualmente en esta petición y unirse en oración contigo.',
-                          style: GoogleFonts.poppins(
-                            color: Colors.white.withValues(alpha: 0.76),
-                            fontSize: 13.5,
-                            height: 1.55,
-                          ),
-                        ),
-                        const SizedBox(height: 28),
-                        _buildSectionTitle('Tu petición'),
-                        const SizedBox(height: 14),
-                        TextFormField(
-                          controller: _textoController,
-                          maxLines: 6,
-                          maxLength: 400,
-                          style: const TextStyle(color: Colors.white),
-                          decoration: _inputDecoration(
-                            hint: 'Escribe aquí tu petición...',
-                          ),
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'Debes escribir una petición.';
-                            }
-
-                            if (value.trim().length < 10) {
-                              return 'La petición es demasiado corta.';
-                            }
-
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 22),
-                        _buildSectionTitle('Categoría'),
-                        const SizedBox(height: 14),
-                        DropdownButtonFormField<String>(
-                          initialValue: _categoriaSeleccionada,
-                          dropdownColor: _deepBlue,
-                          style: const TextStyle(color: Colors.white),
-                          items: _categorias
-                              .map(
-                                (categoria) => DropdownMenuItem<String>(
-                                  value: categoria,
-                                  child: Text(categoria),
-                                ),
-                              )
-                              .toList(),
-                          onChanged: (value) {
-                            if (value == null) return;
-
-                            setState(() {
-                              _categoriaSeleccionada = value;
-                            });
-                          },
-                          decoration: _inputDecoration(
-                            hint: '',
-                            label: 'Selecciona una categoría',
-                          ),
-                        ),
-                        const SizedBox(height: 28),
-                        _buildSectionTitle('Visibilidad'),
-                        const SizedBox(height: 14),
-                        _buildVisibilidadOption(
-                          value: 'publica',
-                          title: 'Pública',
-                          subtitle: 'Tu nombre aparecerá junto a la petición.',
-                        ),
-                        _buildVisibilidadOption(
-                          value: 'anonima',
-                          title: 'Anónima',
-                          subtitle:
-                              'La comunidad verá tu intención sin tu identidad.',
-                        ),
-                        const SizedBox(height: 24),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: _loading ? null : _publicarPeticion,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: _gold,
-                              foregroundColor: _deepBlue,
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 17,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(18),
-                              ),
-                              elevation: 8,
+                  Row(
+                    children: [
+                      InkWell(
+                        borderRadius: BorderRadius.circular(16),
+                        onTap: () => Navigator.of(context).pop(),
+                        child: Container(
+                          width: 42,
+                          height: 42,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.06),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.08),
                             ),
-                            child: _loading
-                                ? SizedBox(
-                                    height: 22,
-                                    width: 22,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2.4,
-                                      color: _deepBlue,
-                                    ),
-                                  )
-                                : Text(
-                                    'Publicar petición',
-                                    style: GoogleFonts.poppins(
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 15.2,
-                                    ),
-                                  ),
+                          ),
+                          child: const Icon(
+                            Icons.arrow_back_rounded,
+                            color: Colors.white,
                           ),
                         ),
-                      ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    'Nueva petición',
+                    style: GoogleFonts.lora(
+                      color: Colors.white,
+                      fontSize: 32,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Comparte tu intención con la comunidad para que otros puedan acompañarte en oración.',
+                    style: GoogleFonts.poppins(
+                      color: Colors.white.withValues(alpha: 0.76),
+                      fontSize: 13.4,
+                      height: 1.55,
+                    ),
+                  ),
+                  const SizedBox(height: 28),
+                  _buildSectionTitle('Tu petición'),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _textoController,
+                    maxLines: 6,
+                    maxLength: 400,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: _inputDecoration(
+                      hint: 'Escribe aquí tu petición...',
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Debes escribir una petición.';
+                      }
+
+                      if (value.trim().length < 10) {
+                        return 'La petición es demasiado corta.';
+                      }
+
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  _buildSectionTitle('Categoría'),
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<String>(
+                    initialValue: _categoriaSeleccionada,
+                    dropdownColor: _deepBlue,
+                    style: const TextStyle(color: Colors.white),
+                    items: _categorias
+                        .map(
+                          (categoria) => DropdownMenuItem<String>(
+                            value: categoria,
+                            child: Text(categoria),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (value) {
+                      if (value == null) return;
+
+                      setState(() {
+                        _categoriaSeleccionada = value;
+                      });
+                    },
+                    decoration: _inputDecoration(
+                      hint: '',
+                      label: 'Selecciona una categoría',
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  _buildSectionTitle('Visibilidad'),
+                  const SizedBox(height: 12),
+                  _buildVisibilidadOption(
+                    value: 'publica',
+                    title: 'Pública',
+                    subtitle: 'Tu nombre aparecerá junto a la petición.',
+                  ),
+                  _buildVisibilidadOption(
+                    value: 'anonima',
+                    title: 'Anónima',
+                    subtitle:
+                        'La comunidad verá tu intención sin tu identidad.',
+                  ),
+                  const SizedBox(height: 26),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _loading ? null : _publicarPeticion,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _gold,
+                        foregroundColor: _deepBlue,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 16,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: _loading
+                          ? SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.2,
+                                color: _deepBlue,
+                              ),
+                            )
+                          : Text(
+                              'Publicar petición',
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14.6,
+                              ),
+                            ),
                     ),
                   ),
                 ],

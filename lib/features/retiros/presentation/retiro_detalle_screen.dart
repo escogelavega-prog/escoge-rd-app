@@ -1,4 +1,6 @@
+import 'package:escoge/core/theme/app_backgrounds.dart';
 import 'package:escoge/core/theme/app_colors.dart';
+import 'package:escoge/core/widgets/app_background.dart';
 import 'package:escoge/core/widgets/premium_menu_card.dart';
 import 'package:escoge/features/retiros/domain/retiro_item.dart';
 import 'package:escoge/features/retiros/presentation/inscripcion_fds_screen.dart'
@@ -21,6 +23,10 @@ class RetiroDetalleScreen extends StatefulWidget {
 }
 
 class _RetiroDetalleScreenState extends State<RetiroDetalleScreen> {
+  static const Color _gold = Color(0xFFD4AF37);
+  static const Color _softGold = Color(0xFFE8C76A);
+  static const Color _deepBlue = Color(0xFF0B1E66);
+
   bool _inscripcionEnviada = false;
   bool _abriendoInscripcion = false;
 
@@ -70,7 +76,7 @@ class _RetiroDetalleScreenState extends State<RetiroDetalleScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Tu inscripción fue enviada correctamente.'),
-            backgroundColor: AppColors.primaryBlue,
+            backgroundColor: _deepBlue,
             behavior: SnackBarBehavior.floating,
             margin: const EdgeInsets.all(16),
             shape: RoundedRectangleBorder(
@@ -109,92 +115,162 @@ class _RetiroDetalleScreenState extends State<RetiroDetalleScreen> {
     final bottomPadding = MediaQuery.of(context).padding.bottom;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.background,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        titleSpacing: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded),
-          color: AppColors.textPrimary,
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          'Detalle del retiro',
-          style: GoogleFonts.poppins(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
-          ),
-        ),
-      ),
+      backgroundColor: Colors.transparent,
       bottomNavigationBar: _BottomInscripcionBar(
         yaInscrito: _inscripcionEnviada,
         cargando: _abriendoInscripcion,
         onTap: _openInscripcion,
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(12, 10, 12, 130 + bottomPadding),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      body: AppBackground(
+        background: AppBackgrounds.home,
+        overlayOpacity: 0.26,
+        child: Stack(
           children: [
-            _RetiroHeroCard(retiro: retiro),
-            const SizedBox(height: 14),
-            if (_inscripcionEnviada) ...[
-              const _InscripcionExitosaBanner(),
-              const SizedBox(height: 12),
-            ],
-            _SectionCard(
-              title: 'Descripción',
-              child: _DescripcionContent(descripcion: retiro.descripcion),
-            ),
-            const SizedBox(height: 12),
-            _SectionCard(
-              title: 'Información general',
-              child: _InfoGeneralContent(retiro: retiro),
-            ),
-            const SizedBox(height: 12),
-            _SectionCard(
-              title: 'Recomendaciones',
-              child: _RecomendacionesContent(
-                recomendaciones: retiro.recomendaciones,
-              ),
-            ),
-            const SizedBox(height: 12),
-            _SectionCard(
-              title: 'Participación',
-              child: _InscripcionSectionInline(
-                yaInscrito: _inscripcionEnviada,
-                cargando: _abriendoInscripcion,
-                onTap: _openInscripcion,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF5F8FF),
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(
-                  color: AppColors.primaryBlue.withValues(alpha: 0.08),
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black.withValues(alpha: 0.14),
+                      _deepBlue.withValues(alpha: 0.18),
+                      Colors.black.withValues(alpha: 0.42),
+                      Colors.black.withValues(alpha: 0.64),
+                    ],
+                  ),
                 ),
               ),
-              child: Text(
-                'Este retiro puede marcar un antes y un después en tu vida espiritual.',
-                style: GoogleFonts.lora(
-                  fontSize: 15,
-                  fontStyle: FontStyle.italic,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.primaryBlue,
-                  height: 1.5,
+            ),
+            SafeArea(
+              bottom: false,
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                padding: EdgeInsets.fromLTRB(16, 10, 16, 130 + bottomPadding),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _DetalleTopBar(
+                      onBack: () => Navigator.pop(context),
+                    ),
+                    const SizedBox(height: 18),
+                    _RetiroHeroCard(retiro: retiro),
+                    const SizedBox(height: 16),
+                    if (_inscripcionEnviada) ...[
+                      const _InscripcionExitosaBanner(),
+                      const SizedBox(height: 14),
+                    ],
+                    _SectionCard(
+                      title: 'Descripción',
+                      child:
+                          _DescripcionContent(descripcion: retiro.descripcion),
+                    ),
+                    const SizedBox(height: 14),
+                    _SectionCard(
+                      title: 'Información general',
+                      child: _InfoGeneralContent(retiro: retiro),
+                    ),
+                    const SizedBox(height: 14),
+                    _SectionCard(
+                      title: 'Recomendaciones',
+                      child: _RecomendacionesContent(
+                        recomendaciones: retiro.recomendaciones,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    _SectionCard(
+                      title: 'Participación',
+                      child: _InscripcionSectionInline(
+                        yaInscrito: _inscripcionEnviada,
+                        cargando: _abriendoInscripcion,
+                        onTap: _openInscripcion,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(18),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.07),
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.08),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.10),
+                            blurRadius: 18,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: Text(
+                        'Este retiro puede marcar un antes y un después en tu vida espiritual.',
+                        style: GoogleFonts.lora(
+                          fontSize: 16,
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.w600,
+                          color: _softGold,
+                          height: 1.6,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _DetalleTopBar extends StatelessWidget {
+  final VoidCallback onBack;
+
+  const _DetalleTopBar({
+    required this.onBack,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onBack,
+            borderRadius: BorderRadius.circular(18),
+            child: Ink(
+              width: 46,
+              height: 46,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.08),
+                ),
+              ),
+              child: const Icon(
+                Icons.arrow_back_rounded,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Text(
+            'Detalle del retiro',
+            style: GoogleFonts.poppins(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -206,27 +282,35 @@ class _InscripcionExitosaBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFF2F8FF),
-        borderRadius: BorderRadius.circular(18),
+        color: Colors.white.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(22),
         border: Border.all(
-          color: AppColors.primaryBlue.withValues(alpha: 0.10),
+          color: RetiroDetalleScreenStateColors.gold.withValues(alpha: 0.20),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 14,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
       child: Row(
         children: [
           Container(
-            height: 42,
-            width: 42,
+            height: 46,
+            width: 46,
             decoration: BoxDecoration(
-              color: AppColors.primaryBlue.withValues(alpha: 0.10),
+              color:
+                  RetiroDetalleScreenStateColors.gold.withValues(alpha: 0.14),
               shape: BoxShape.circle,
             ),
             child: const Icon(
               Icons.check_circle_rounded,
-              color: AppColors.primaryBlue,
-              size: 24,
+              color: RetiroDetalleScreenStateColors.gold,
+              size: 26,
             ),
           ),
           const SizedBox(width: 12),
@@ -235,8 +319,8 @@ class _InscripcionExitosaBanner extends StatelessWidget {
               'Tu solicitud ya fue enviada. El equipo organizador podrá contactarte pronto.',
               style: GoogleFonts.poppins(
                 fontSize: 13.2,
-                color: AppColors.textSecondary,
-                height: 1.45,
+                color: Colors.white.withValues(alpha: 0.84),
+                height: 1.5,
               ),
             ),
           ),
@@ -249,25 +333,27 @@ class _InscripcionExitosaBanner extends StatelessWidget {
 class _RetiroHeroCard extends StatelessWidget {
   final RetiroItem retiro;
 
-  const _RetiroHeroCard({required this.retiro});
+  const _RetiroHeroCard({
+    required this.retiro,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 210,
+      height: 270,
       width: double.infinity,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(30),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
+            color: Colors.black.withValues(alpha: 0.18),
+            blurRadius: 24,
+            offset: const Offset(0, 12),
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(30),
         child: Stack(
           children: [
             Positioned.fill(
@@ -275,7 +361,8 @@ class _RetiroHeroCard extends StatelessWidget {
                 retiro.imagePath,
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => Container(
-                  color: AppColors.primaryBlue.withValues(alpha: 0.18),
+                  color: RetiroDetalleScreenStateColors.deepBlue
+                      .withValues(alpha: 0.30),
                 ),
               ),
             ),
@@ -285,65 +372,82 @@ class _RetiroHeroCard extends StatelessWidget {
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
+                    stops: const [0.0, 0.35, 0.70, 1.0],
                     colors: [
-                      AppColors.primaryBlue.withValues(alpha: 0.14),
-                      AppColors.primaryBlue.withValues(alpha: 0.88),
+                      Colors.black.withValues(alpha: 0.16),
+                      RetiroDetalleScreenStateColors.deepBlue
+                          .withValues(alpha: 0.34),
+                      RetiroDetalleScreenStateColors.deepBlue
+                          .withValues(alpha: 0.62),
+                      Colors.black.withValues(alpha: 0.84),
                     ],
                   ),
                 ),
               ),
             ),
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.08),
+                  ),
+                ),
+              ),
+            ),
             Positioned(
-              top: 14,
-              left: 14,
+              top: 18,
+              left: 18,
               child: Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 12,
                   vertical: 7,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.95),
+                  color: Colors.white.withValues(alpha: 0.92),
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
                   retiro.categoria,
                   style: GoogleFonts.poppins(
-                    fontSize: 12,
+                    fontSize: 11.8,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.primaryBlue,
+                    color: RetiroDetalleScreenStateColors.deepBlue,
                   ),
                 ),
               ),
             ),
             Positioned(
-              left: 16,
-              right: 16,
-              bottom: 16,
+              left: 18,
+              right: 18,
+              bottom: 18,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     retiro.titulo,
-                    style: GoogleFonts.poppins(
+                    style: GoogleFonts.lora(
                       color: Colors.white,
-                      fontSize: 27,
-                      fontWeight: FontWeight.w800,
-                      height: 1.05,
+                      fontSize: 30,
+                      fontWeight: FontWeight.w700,
+                      height: 1.1,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 10),
                   Wrap(
                     spacing: 10,
-                    runSpacing: 6,
+                    runSpacing: 8,
                     children: [
-                      _HeroMetaChip(
-                        icon: Icons.location_on_rounded,
-                        text: retiro.ciudad,
-                      ),
-                      _HeroMetaChip(
-                        icon: Icons.calendar_today_rounded,
-                        text: retiro.fecha,
-                      ),
+                      if (retiro.ciudad.trim().isNotEmpty)
+                        _HeroMetaChip(
+                          icon: Icons.location_on_rounded,
+                          text: retiro.ciudad,
+                        ),
+                      if (retiro.fecha.trim().isNotEmpty)
+                        _HeroMetaChip(
+                          icon: Icons.calendar_today_rounded,
+                          text: retiro.fecha,
+                        ),
                     ],
                   ),
                 ],
@@ -370,10 +474,10 @@ class _HeroMetaChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.16),
+        color: Colors.white.withValues(alpha: 0.14),
         borderRadius: BorderRadius.circular(999),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.20),
+          color: Colors.white.withValues(alpha: 0.18),
         ),
       ),
       child: Row(
@@ -382,7 +486,7 @@ class _HeroMetaChip extends StatelessWidget {
           Icon(
             icon,
             size: 14,
-            color: Colors.white,
+            color: RetiroDetalleScreenStateColors.softGold,
           ),
           const SizedBox(width: 6),
           Text(
@@ -412,16 +516,18 @@ class _SectionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: Colors.black.withValues(alpha: 0.03)),
+        color: Colors.white.withValues(alpha: 0.07),
+        borderRadius: BorderRadius.circular(26),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.08),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 14,
-            offset: const Offset(0, 6),
+            color: Colors.black.withValues(alpha: 0.10),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -433,7 +539,7 @@ class _SectionCard extends StatelessWidget {
             style: GoogleFonts.poppins(
               fontSize: 17,
               fontWeight: FontWeight.w700,
-              color: AppColors.primaryBlue,
+              color: RetiroDetalleScreenStateColors.softGold,
             ),
           ),
           const SizedBox(height: 12),
@@ -447,7 +553,9 @@ class _SectionCard extends StatelessWidget {
 class _DescripcionContent extends StatelessWidget {
   final String descripcion;
 
-  const _DescripcionContent({required this.descripcion});
+  const _DescripcionContent({
+    required this.descripcion,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -456,7 +564,7 @@ class _DescripcionContent extends StatelessWidget {
       style: GoogleFonts.poppins(
         fontSize: 14,
         height: 1.7,
-        color: AppColors.textSecondary,
+        color: Colors.white.withValues(alpha: 0.82),
       ),
     );
   }
@@ -465,35 +573,44 @@ class _DescripcionContent extends StatelessWidget {
 class _InfoGeneralContent extends StatelessWidget {
   final RetiroItem retiro;
 
-  const _InfoGeneralContent({required this.retiro});
+  const _InfoGeneralContent({
+    required this.retiro,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _InfoRow(
-          icon: Icons.calendar_month_rounded,
-          label: 'Fecha',
-          text: retiro.fecha,
-        ),
-        const SizedBox(height: 12),
-        _InfoRow(
-          icon: Icons.location_on_rounded,
-          label: 'Ciudad',
-          text: retiro.ciudad,
-        ),
-        const SizedBox(height: 12),
-        _InfoRow(
-          icon: Icons.home_work_outlined,
-          label: 'Lugar',
-          text: retiro.lugar,
-        ),
-        const SizedBox(height: 12),
-        _InfoRow(
-          icon: Icons.church_rounded,
-          label: 'Diócesis',
-          text: retiro.diocesis,
-        ),
+        if (retiro.fecha.trim().isNotEmpty) ...[
+          _InfoRow(
+            icon: Icons.calendar_month_rounded,
+            label: 'Fecha',
+            text: retiro.fecha,
+          ),
+          const SizedBox(height: 12),
+        ],
+        if (retiro.ciudad.trim().isNotEmpty) ...[
+          _InfoRow(
+            icon: Icons.location_on_rounded,
+            label: 'Ciudad',
+            text: retiro.ciudad,
+          ),
+          const SizedBox(height: 12),
+        ],
+        if (retiro.lugar.trim().isNotEmpty) ...[
+          _InfoRow(
+            icon: Icons.home_work_outlined,
+            label: 'Lugar',
+            text: retiro.lugar,
+          ),
+          const SizedBox(height: 12),
+        ],
+        if (retiro.diocesis.trim().isNotEmpty)
+          _InfoRow(
+            icon: Icons.church_rounded,
+            label: 'Diócesis',
+            text: retiro.diocesis,
+          ),
       ],
     );
   }
@@ -516,16 +633,16 @@ class _InfoRow extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          height: 44,
-          width: 44,
+          height: 46,
+          width: 46,
           decoration: BoxDecoration(
-            color: const Color(0xFFF0F4FC),
-            borderRadius: BorderRadius.circular(14),
+            color: RetiroDetalleScreenStateColors.gold.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(16),
           ),
           child: Icon(
             icon,
             size: 22,
-            color: AppColors.primaryBlue,
+            color: RetiroDetalleScreenStateColors.softGold,
           ),
         ),
         const SizedBox(width: 14),
@@ -538,17 +655,17 @@ class _InfoRow extends StatelessWidget {
                 style: GoogleFonts.poppins(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.primaryBlue,
+                  color: RetiroDetalleScreenStateColors.softGold,
                 ),
               ),
-              const SizedBox(height: 3),
+              const SizedBox(height: 4),
               Text(
                 text,
                 style: GoogleFonts.poppins(
                   fontSize: 14,
-                  color: AppColors.textSecondary,
+                  color: Colors.white.withValues(alpha: 0.82),
                   fontWeight: FontWeight.w500,
-                  height: 1.4,
+                  height: 1.45,
                 ),
               ),
             ],
@@ -562,7 +679,9 @@ class _InfoRow extends StatelessWidget {
 class _RecomendacionesContent extends StatelessWidget {
   final List<String> recomendaciones;
 
-  const _RecomendacionesContent({required this.recomendaciones});
+  const _RecomendacionesContent({
+    required this.recomendaciones,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -571,8 +690,8 @@ class _RecomendacionesContent extends StatelessWidget {
         'No hay recomendaciones disponibles por el momento.',
         style: GoogleFonts.poppins(
           fontSize: 13.8,
-          height: 1.5,
-          color: AppColors.textSecondary,
+          height: 1.55,
+          color: Colors.white.withValues(alpha: 0.78),
         ),
       );
     }
@@ -592,7 +711,7 @@ class _RecomendacionesContent extends StatelessWidget {
                   const Icon(
                     Icons.check_circle_outline_rounded,
                     size: 22,
-                    color: AppColors.primaryBlue,
+                    color: RetiroDetalleScreenStateColors.softGold,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -600,8 +719,8 @@ class _RecomendacionesContent extends StatelessWidget {
                       entry.value,
                       style: GoogleFonts.poppins(
                         fontSize: 13.8,
-                        height: 1.5,
-                        color: AppColors.textSecondary,
+                        height: 1.55,
+                        color: Colors.white.withValues(alpha: 0.80),
                       ),
                     ),
                   ),
@@ -628,9 +747,8 @@ class _InscripcionSectionInline extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PremiumMenuCard(
-      icon: yaInscrito
-          ? Icons.verified_rounded
-          : Icons.app_registration_rounded,
+      icon:
+          yaInscrito ? Icons.verified_rounded : Icons.app_registration_rounded,
       title: yaInscrito
           ? 'Solicitud enviada'
           : cargando
@@ -663,11 +781,16 @@ class _BottomInscripcionBar extends StatelessWidget {
     return Container(
       padding: EdgeInsets.fromLTRB(16, 12, 16, 12 + bottom),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xFF09174F).withValues(alpha: 0.96),
+        border: Border(
+          top: BorderSide(
+            color: Colors.white.withValues(alpha: 0.08),
+          ),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 16,
+            color: Colors.black.withValues(alpha: 0.18),
+            blurRadius: 18,
             offset: const Offset(0, -4),
           ),
         ],
@@ -685,7 +808,7 @@ class _BottomInscripcionBar extends StatelessWidget {
                   style: GoogleFonts.poppins(
                     fontSize: 13.5,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
+                    color: Colors.white,
                   ),
                 ),
               ),
@@ -698,12 +821,13 @@ class _BottomInscripcionBar extends StatelessWidget {
             child: ElevatedButton(
               onPressed: cargando ? null : onTap,
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryBlue,
-                foregroundColor: Colors.white,
+                backgroundColor: RetiroDetalleScreenStateColors.gold,
+                foregroundColor: RetiroDetalleScreenStateColors.deepBlue,
                 elevation: 0,
                 disabledBackgroundColor:
-                    AppColors.primaryBlue.withValues(alpha: 0.45),
-                disabledForegroundColor: Colors.white,
+                    RetiroDetalleScreenStateColors.gold.withValues(alpha: 0.45),
+                disabledForegroundColor:
+                    RetiroDetalleScreenStateColors.deepBlue,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
@@ -714,7 +838,7 @@ class _BottomInscripcionBar extends StatelessWidget {
                       width: 20,
                       child: CircularProgressIndicator(
                         strokeWidth: 2.2,
-                        color: Colors.white,
+                        color: RetiroDetalleScreenStateColors.deepBlue,
                       ),
                     )
                   : Text(
@@ -731,4 +855,10 @@ class _BottomInscripcionBar extends StatelessWidget {
       ),
     );
   }
+}
+
+class RetiroDetalleScreenStateColors {
+  static const Color gold = Color(0xFFD4AF37);
+  static const Color softGold = Color(0xFFE8C76A);
+  static const Color deepBlue = Color(0xFF0B1E66);
 }

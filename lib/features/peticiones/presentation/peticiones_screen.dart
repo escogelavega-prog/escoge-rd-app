@@ -18,7 +18,6 @@ class _PeticionesScreenState extends State<PeticionesScreen> {
 
   static const Color _gold = Color(0xFFD4AF37);
   static const Color _deepBlue = Color(0xFF0B1E66);
-  static const Color _secondaryBlue = Color(0xFF1736A2);
 
   Future<void> _openNuevaPeticion() async {
     await Navigator.of(context).push(
@@ -61,14 +60,15 @@ class _PeticionesScreenState extends State<PeticionesScreen> {
   Widget _buildHeader() {
     return Column(
       children: [
+        const SizedBox(height: 2),
         Container(
-          width: 64,
-          height: 64,
+          width: 74,
+          height: 74,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: _gold.withValues(alpha: 0.16),
+            color: _gold.withValues(alpha: 0.10),
             border: Border.all(
-              color: _gold.withValues(alpha: 0.28),
+              color: _gold.withValues(alpha: 0.16),
             ),
           ),
           child: const Icon(
@@ -77,26 +77,29 @@ class _PeticionesScreenState extends State<PeticionesScreen> {
             size: 32,
           ),
         ),
-        const SizedBox(height: 18),
+        const SizedBox(height: 16),
         Text(
           'Peticiones',
           textAlign: TextAlign.center,
           style: GoogleFonts.lora(
             color: Colors.white,
-            fontSize: 34,
+            fontSize: 33,
             fontWeight: FontWeight.w700,
-            height: 1.05,
+            height: 1.02,
           ),
         ),
         const SizedBox(height: 10),
-        Text(
-          'Unidos en oración como comunidad.\nComparte tus intenciones o únete en oración.',
-          textAlign: TextAlign.center,
-          style: GoogleFonts.poppins(
-            color: Colors.white.withValues(alpha: 0.82),
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            height: 1.55,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30),
+          child: Text(
+            'Unidos en oración como comunidad.\nComparte tus intenciones o únete\nen oración.',
+            textAlign: TextAlign.center,
+            style: GoogleFonts.poppins(
+              color: Colors.white.withValues(alpha: 0.78),
+              fontSize: 13.3,
+              fontWeight: FontWeight.w500,
+              height: 1.55,
+            ),
           ),
         ),
       ],
@@ -106,35 +109,35 @@ class _PeticionesScreenState extends State<PeticionesScreen> {
   Widget _buildEmptyState() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(26),
+      padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        color: _deepBlue.withValues(alpha: 0.62),
-        borderRadius: BorderRadius.circular(28),
+        color: Colors.black.withValues(alpha: 0.18),
+        borderRadius: BorderRadius.circular(26),
         border: Border.all(
-          color: _gold.withValues(alpha: 0.35),
+          color: Colors.white.withValues(alpha: 0.08),
         ),
       ),
       child: Column(
         children: [
           Container(
-            width: 74,
-            height: 74,
+            width: 66,
+            height: 66,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: _gold.withValues(alpha: 0.14),
+              color: _gold.withValues(alpha: 0.12),
             ),
             child: const Icon(
               Icons.favorite_border_rounded,
               color: _gold,
-              size: 34,
+              size: 30,
             ),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 14),
           Text(
             'Aún no hay peticiones',
             style: GoogleFonts.poppins(
               color: Colors.white,
-              fontSize: 17,
+              fontSize: 16,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -143,25 +146,25 @@ class _PeticionesScreenState extends State<PeticionesScreen> {
             'Sé el primero en compartir una intención con la comunidad.',
             textAlign: TextAlign.center,
             style: GoogleFonts.poppins(
-              color: Colors.white.withValues(alpha: 0.76),
-              fontSize: 13.2,
+              color: Colors.white.withValues(alpha: 0.72),
+              fontSize: 12.8,
               height: 1.5,
             ),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 14),
           ElevatedButton.icon(
             onPressed: _openNuevaPeticion,
-            icon: const Icon(Icons.add_rounded),
+            icon: const Icon(Icons.add_rounded, size: 17),
             label: const Text('Nueva petición'),
             style: ElevatedButton.styleFrom(
               backgroundColor: _gold,
               foregroundColor: _deepBlue,
               padding: const EdgeInsets.symmetric(
-                horizontal: 18,
-                vertical: 14,
+                horizontal: 16,
+                vertical: 12,
               ),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(15),
               ),
             ),
           ),
@@ -173,10 +176,10 @@ class _PeticionesScreenState extends State<PeticionesScreen> {
   Widget _buildErrorState(Object? error) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(22),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: _deepBlue.withValues(alpha: 0.62),
-        borderRadius: BorderRadius.circular(24),
+        color: Colors.black.withValues(alpha: 0.18),
+        borderRadius: BorderRadius.circular(22),
         border: Border.all(
           color: Colors.redAccent.withValues(alpha: 0.35),
         ),
@@ -189,16 +192,16 @@ class _PeticionesScreenState extends State<PeticionesScreen> {
             style: GoogleFonts.poppins(
               color: Colors.redAccent,
               fontWeight: FontWeight.w700,
-              fontSize: 14,
+              fontSize: 13.5,
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           Text(
             error?.toString() ?? 'Error desconocido',
             style: GoogleFonts.poppins(
-              color: Colors.white.withValues(alpha: 0.78),
-              fontSize: 12.5,
-              height: 1.45,
+              color: Colors.white.withValues(alpha: 0.76),
+              fontSize: 12.2,
+              height: 1.4,
             ),
           ),
         ],
@@ -243,12 +246,52 @@ class _PeticionesScreenState extends State<PeticionesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _openNuevaPeticion,
-        backgroundColor: _gold,
-        foregroundColor: _deepBlue,
-        icon: const Icon(Icons.add_rounded),
-        label: const Text('Nueva petición'),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(right: 8, bottom: 14),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(16),
+            onTap: _openNuevaPeticion,
+            child: Ink(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 10,
+              ),
+              decoration: BoxDecoration(
+                color: _gold,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.10),
+                    blurRadius: 12,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.add_rounded,
+                    size: 17,
+                    color: _deepBlue,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Nueva petición',
+                    style: GoogleFonts.poppins(
+                      color: _deepBlue,
+                      fontSize: 12.8,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
       body: Stack(
         children: [
@@ -266,10 +309,10 @@ class _PeticionesScreenState extends State<PeticionesScreen> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withValues(alpha: 0.14),
-                    _deepBlue.withValues(alpha: 0.22),
-                    Colors.black.withValues(alpha: 0.40),
-                    Colors.black.withValues(alpha: 0.56),
+                    Colors.black.withValues(alpha: 0.24),
+                    _deepBlue.withValues(alpha: 0.16),
+                    Colors.black.withValues(alpha: 0.48),
+                    Colors.black.withValues(alpha: 0.68),
                   ],
                 ),
               ),
@@ -283,10 +326,10 @@ class _PeticionesScreenState extends State<PeticionesScreen> {
 
                 return ListView(
                   physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.fromLTRB(20, 22, 20, 110),
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
                   children: [
                     _buildHeader(),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 24),
                     if (snapshot.connectionState == ConnectionState.waiting)
                       const Padding(
                         padding: EdgeInsets.only(top: 60),

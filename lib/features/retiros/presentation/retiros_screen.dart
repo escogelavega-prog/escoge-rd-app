@@ -1,4 +1,3 @@
-
 import 'package:escoge/core/theme/app_backgrounds.dart';
 import 'package:escoge/core/widgets/app_background.dart';
 import 'package:escoge/core/widgets/app_card.dart';
