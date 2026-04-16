@@ -1,17 +1,18 @@
+import 'dart:ui';
+
+import 'package:escoge/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import 'rosario_rezo_screen.dart';
 
 class RosarioIntroScreen extends StatelessWidget {
-  const RosarioIntroScreen({super.key, required this.tipoMisterio});
+  const RosarioIntroScreen({
+    super.key,
+    required this.tipoMisterio,
+  });
 
   final String tipoMisterio;
-
-  static const Color softBackground = Color(0xFFF4F6FB);
-  static const Color primaryBlue = Color(0xFF0B1E66);
-  static const Color secondaryBlue = Color(0xFF1A3DAB);
-  static const Color gold = Color(0xFFD4AF37);
-  static const Color textSecondary = Color(0xFF6D7693);
 
   String get tituloMisterio {
     switch (tipoMisterio) {
@@ -70,70 +71,84 @@ class RosarioIntroScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: softBackground,
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [primaryBlue, secondaryBlue],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+      backgroundColor: AppColors.darkBackground,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              'assets/backgrounds/lecturas.png',
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
-        child: SafeArea(
-          bottom: false,
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 10, 16, 18),
-                child: Row(
-                  children: [
-                    InkWell(
-                      onTap: () => Navigator.pop(context),
-                      borderRadius: BorderRadius.circular(18),
-                      child: Container(
-                        width: 46,
-                        height: 46,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.10),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.14),
-                          ),
-                        ),
-                        child: const Icon(
-                          Icons.arrow_back_ios_new_rounded,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        'Guía del Rosario',
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.lora(
-                          fontSize: 30,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 58),
+          Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withValues(alpha: 0.22),
+                    Colors.black.withValues(alpha: 0.30),
+                    Colors.black.withValues(alpha: 0.52),
+                    Colors.black.withValues(alpha: 0.74),
                   ],
                 ),
               ),
-              Expanded(
-                child: Container(
-                  width: double.infinity,
-                  decoration: const BoxDecoration(
-                    color: softBackground,
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(28),
-                    ),
+            ),
+          ),
+          Positioned.fill(
+            child: Container(
+              color: AppColors.primaryBlue.withValues(alpha: 0.10),
+            ),
+          ),
+          SafeArea(
+            bottom: false,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppColors.white.withValues(alpha: 0.08),
+                            border: Border.all(
+                              color: AppColors.white.withValues(alpha: 0.08),
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.arrow_back_ios_new,
+                            color: AppColors.white,
+                            size: 18,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Guía del Rosario',
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.lora(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.white,
+                            height: 1.2,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 46),
+                    ],
                   ),
+                ),
+                const SizedBox(height: 14),
+                Expanded(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(16, 18, 16, 120),
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 96),
+                    physics: const BouncingScrollPhysics(),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -142,91 +157,60 @@ class RosarioIntroScreen extends StatelessWidget {
                           dias: diasCorrespondientes,
                           descripcion: descripcion,
                         ),
-                        const SizedBox(height: 22),
+                        const SizedBox(height: 18),
                         Text(
                           '¿Cómo te vamos a guiar?',
                           style: GoogleFonts.poppins(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w800,
-                            color: primaryBlue,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.white,
                           ),
                         ),
-                        const SizedBox(height: 14),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Esta experiencia está pensada para ayudarte a rezar con claridad y calma.',
+                          style: GoogleFonts.poppins(
+                            fontSize: 12.8,
+                            height: 1.5,
+                            color: AppColors.white.withValues(alpha: 0.72),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
                         const _GuideStepCard(
                           number: '1',
                           title: 'Te mostraremos el misterio',
                           subtitle:
                               'Verás el título, una imagen y una breve meditación para concentrarte.',
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 10),
                         const _GuideStepCard(
                           number: '2',
                           title: 'Irás oración por oración',
                           subtitle:
                               'La app te indicará cuándo corresponde Padre Nuestro, Ave María, Gloria y Jaculatoria.',
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 10),
                         const _GuideStepCard(
                           number: '3',
                           title: 'Avanzarás paso a paso',
                           subtitle:
                               'Solo toca “Siguiente” y la app te irá guiando durante todo el rosario.',
                         ),
-                        const SizedBox(height: 24),
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(18),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(24),
-                            border: Border.all(color: const Color(0xFFE2E8F5)),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.05),
-                                blurRadius: 18,
-                                offset: const Offset(0, 8),
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: 42,
-                                height: 42,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFFFF8E8),
-                                  borderRadius: BorderRadius.circular(14),
-                                ),
-                                child: const Icon(
-                                  Icons.auto_awesome_rounded,
-                                  color: gold,
-                                  size: 22,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  'No necesitas memorizar todo. Esta experiencia está pensada para acompañarte con calma y claridad.',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 14.5,
-                                    height: 1.6,
-                                    color: textSecondary,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                        const SizedBox(height: 14),
+                        const _SupportCard(
+                          text:
+                              'No necesitas memorizar todo. Esta experiencia está pensada para acompañarte con calma y claridad.',
                         ),
-                        const SizedBox(height: 26),
+                        const SizedBox(height: 18),
                         SizedBox(
                           width: double.infinity,
                           height: 56,
                           child: ElevatedButton(
                             onPressed: () => _openRosario(context),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: gold,
-                              foregroundColor: const Color(0xFF1A2340),
+                              backgroundColor: AppColors.accentBlue,
+                              foregroundColor: AppColors.white,
                               elevation: 0,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20),
@@ -235,21 +219,28 @@ class RosarioIntroScreen extends StatelessWidget {
                             child: Text(
                               'Comenzar Rosario',
                               style: GoogleFonts.poppins(
-                                fontSize: 16,
+                                fontSize: 15.5,
                                 fontWeight: FontWeight.w800,
+                                color: AppColors.white,
                               ),
                             ),
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 10),
                         SizedBox(
                           width: double.infinity,
                           height: 54,
                           child: OutlinedButton(
                             onPressed: () => Navigator.pop(context),
                             style: OutlinedButton.styleFrom(
-                              foregroundColor: primaryBlue,
-                              side: const BorderSide(color: gold),
+                              backgroundColor: AppColors.white.withValues(
+                                alpha: 0.06,
+                              ),
+                              foregroundColor: AppColors.white,
+                              side: BorderSide(
+                                color: AppColors.white.withValues(alpha: 0.75),
+                                width: 1.2,
+                              ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),
@@ -257,8 +248,9 @@ class RosarioIntroScreen extends StatelessWidget {
                             child: Text(
                               'Elegir otro misterio',
                               style: GoogleFonts.poppins(
-                                fontSize: 15,
+                                fontSize: 14.5,
                                 fontWeight: FontWeight.w700,
+                                color: AppColors.white,
                               ),
                             ),
                           ),
@@ -267,10 +259,10 @@ class RosarioIntroScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -289,64 +281,99 @@ class _HeroIntroCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF0B1E66), Color(0xFF1A3DAB)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(28),
+      child: SizedBox(
+        height: 220,
+        width: double.infinity,
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Image.asset(
+                'assets/images/hoy_la_iglesia.png',
+                fit: BoxFit.cover,
+              ),
+            ),
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    stops: const [0.0, 0.34, 0.68, 1.0],
+                    colors: [
+                      Colors.black.withValues(alpha: 0.14),
+                      Colors.black.withValues(alpha: 0.22),
+                      AppColors.primaryBlue.withValues(alpha: 0.50),
+                      Colors.black.withValues(alpha: 0.84),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(28),
+                  border: Border.all(
+                    color: AppColors.white.withValues(alpha: 0.08),
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              left: 18,
+              right: 18,
+              top: 16,
+              child: Text(
+                'Vas a rezar',
+                style: GoogleFonts.poppins(
+                  color: AppColors.goldSoft,
+                  fontSize: 12.6,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            Positioned(
+              left: 18,
+              right: 18,
+              bottom: 16,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    titulo,
+                    style: GoogleFonts.lora(
+                      color: AppColors.white,
+                      fontSize: 26,
+                      fontWeight: FontWeight.w700,
+                      height: 1.08,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Corresponde a: $dias',
+                    style: GoogleFonts.poppins(
+                      color: AppColors.white.withValues(alpha: 0.88),
+                      fontSize: 13.4,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    descripcion,
+                    style: GoogleFonts.poppins(
+                      color: AppColors.white.withValues(alpha: 0.90),
+                      fontSize: 13.2,
+                      height: 1.45,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-        borderRadius: BorderRadius.circular(30),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.12),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Vas a rezar',
-            style: GoogleFonts.poppins(
-              color: const Color(0xFFFFE8A3),
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            titulo,
-            style: GoogleFonts.lora(
-              color: Colors.white,
-              fontSize: 28,
-              fontWeight: FontWeight.w700,
-              height: 1.1,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Corresponde a: $dias',
-            style: GoogleFonts.poppins(
-              color: Colors.white.withValues(alpha: 0.88),
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            descripcion,
-            style: GoogleFonts.poppins(
-              color: Colors.white.withValues(alpha: 0.90),
-              fontSize: 14.5,
-              height: 1.5,
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -365,67 +392,141 @@ class _GuideStepCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFE2E8F5)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 14,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 38,
-            height: 38,
-            decoration: BoxDecoration(
-              color: const Color(0xFFFFF8E8),
-              borderRadius: BorderRadius.circular(14),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(22),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.white.withValues(alpha: 0.07),
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(
+              color: AppColors.white.withValues(alpha: 0.08),
             ),
-            alignment: Alignment.center,
-            child: Text(
-              number,
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                fontWeight: FontWeight.w800,
-                color: const Color(0xFF0B1E66),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.10),
+                blurRadius: 16,
+                offset: const Offset(0, 8),
               ),
-            ),
+            ],
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: GoogleFonts.poppins(
-                    fontSize: 15.5,
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFF0B1E66),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: AppColors.gold.withValues(alpha: 0.16),
+                  borderRadius: BorderRadius.circular(13),
+                  border: Border.all(
+                    color: AppColors.white.withValues(alpha: 0.06),
                   ),
                 ),
-                const SizedBox(height: 6),
-                Text(
-                  subtitle,
+                alignment: Alignment.center,
+                child: Text(
+                  number,
                   style: GoogleFonts.poppins(
-                    fontSize: 14,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.gold,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: GoogleFonts.poppins(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      subtitle,
+                      style: GoogleFonts.poppins(
+                        fontSize: 13.2,
+                        height: 1.5,
+                        color: AppColors.white.withValues(alpha: 0.74),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SupportCard extends StatelessWidget {
+  final String text;
+
+  const _SupportCard({
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(22),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.white.withValues(alpha: 0.07),
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(
+              color: AppColors.white.withValues(alpha: 0.08),
+            ),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: AppColors.gold.withValues(alpha: 0.16),
+                  borderRadius: BorderRadius.circular(13),
+                  border: Border.all(
+                    color: AppColors.white.withValues(alpha: 0.06),
+                  ),
+                ),
+                child: const Icon(
+                  Icons.auto_awesome_rounded,
+                  color: AppColors.gold,
+                  size: 21,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  text,
+                  style: GoogleFonts.poppins(
+                    fontSize: 13.8,
                     height: 1.55,
-                    color: const Color(0xFF6D7693),
+                    color: AppColors.white.withValues(alpha: 0.76),
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

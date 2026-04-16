@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:escoge/core/theme/app_colors.dart';
+
 class CustomBottomNav extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
@@ -10,13 +12,6 @@ class CustomBottomNav extends StatelessWidget {
     required this.currentIndex,
     required this.onTap,
   });
-
-  static const Color _shellBackground = Color(0xFF09102B);
-  static const Color _navBackground = Color(0xFF1E234B);
-  static const Color _navBorder = Color(0xFF4B509B);
-  static const Color _activePill = Color(0xFF50547E);
-  static const Color _activeGold = Color(0xFFD4AF37);
-  static const Color _inactive = Color(0xFFE8EAF6);
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +28,7 @@ class CustomBottomNav extends StatelessWidget {
     );
 
     return Container(
-      color: _shellBackground,
+      color: AppColors.navShell,
       padding: const EdgeInsets.fromLTRB(14, 6, 14, 12),
       child: SafeArea(
         top: false,
@@ -59,7 +54,7 @@ class CustomBottomNav extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             SizedBox(
-              width: 76,
+              width: 78,
               child: _GlassNavCapsule(
                 active: currentIndex == 4,
                 child: _NavButton(
@@ -85,10 +80,6 @@ class _GlassNavCapsule extends StatelessWidget {
     this.active = false,
   });
 
-  static const Color _navBackground = Color(0xFF1E234B);
-  static const Color _navBorder = Color(0xFF4B509B);
-  static const Color _activePill = Color(0xFF50547E);
-
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
@@ -96,17 +87,19 @@ class _GlassNavCapsule extends StatelessWidget {
       height: 68,
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
       decoration: BoxDecoration(
-        color: (active ? _activePill : _navBackground).withValues(alpha: 0.78),
+        color:
+            (active ? AppColors.navBackgroundActive : AppColors.navBackground)
+                .withValues(alpha: 0.94),
         borderRadius: BorderRadius.circular(999),
         border: Border.all(
-          color: _navBorder.withValues(alpha: 0.55),
-          width: 1.1,
+          color: AppColors.navBorder.withValues(alpha: 0.60),
+          width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.16),
-            blurRadius: 12,
-            offset: const Offset(0, 5),
+            color: Colors.black.withValues(alpha: 0.24),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -126,10 +119,6 @@ class _NavButton extends StatelessWidget {
     required this.onTap,
   });
 
-  static const Color _activePill = Color(0xFF50547E);
-  static const Color _activeGold = Color(0xFFD4AF37);
-  static const Color _inactive = Color(0xFFE8EAF6);
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -145,7 +134,7 @@ class _NavButton extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           color: isActive
-              ? _activePill.withValues(alpha: 0.55)
+              ? AppColors.gold.withValues(alpha: 0.10)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(999),
         ),
@@ -158,14 +147,14 @@ class _NavButton extends StatelessWidget {
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
                 color: isActive
-                    ? _activeGold.withValues(alpha: 0.14)
+                    ? AppColors.gold.withValues(alpha: 0.12)
                     : Colors.transparent,
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 item.icon,
                 size: 20,
-                color: isActive ? _activeGold : _inactive,
+                color: isActive ? AppColors.gold : AppColors.darkTextSecondary,
               ),
             ),
             const SizedBox(height: 3),
@@ -176,7 +165,7 @@ class _NavButton extends StatelessWidget {
               style: GoogleFonts.poppins(
                 fontSize: 10,
                 fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                color: isActive ? _activeGold : _inactive,
+                color: isActive ? AppColors.gold : AppColors.darkTextSecondary,
                 height: 1.0,
               ),
             ),

@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:escoge/core/theme/app_colors.dart';
 import 'package:escoge/features/oracion/data/models/evangelio_model.dart';
 import 'package:escoge/features/oracion/data/models/liturgia_day_model.dart';
 import 'package:escoge/features/oracion/services/liturgia_service.dart';
@@ -19,10 +20,6 @@ class EvangelioScreen extends StatefulWidget {
 }
 
 class _EvangelioScreenState extends State<EvangelioScreen> {
-  static const Color gold = Color(0xFFD4AF37);
-  static const Color softGold = Color(0xFFE8C76A);
-  static const Color deepBlue = Color(0xFF0B1E66);
-
   final LiturgiaService _liturgiaService = LiturgiaService();
 
   LiturgiaDayModel? _liturgiaDay;
@@ -55,7 +52,7 @@ class _EvangelioScreenState extends State<EvangelioScreen> {
         _loading = false;
         _errorMessage = null;
       });
-    } catch (e) {
+    } catch (_) {
       if (!mounted) return;
 
       setState(() {
@@ -105,9 +102,9 @@ class _EvangelioScreenState extends State<EvangelioScreen> {
       case 'rosa':
         return const Color(0xFFD98AA8);
       case 'dorado':
-        return const Color(0xFFD4AF37);
+        return AppColors.gold;
       default:
-        return softGold;
+        return AppColors.goldSoft;
     }
   }
 
@@ -150,7 +147,7 @@ class _EvangelioScreenState extends State<EvangelioScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.darkBackground,
       body: Stack(
         children: [
           Positioned.fill(
@@ -168,8 +165,8 @@ class _EvangelioScreenState extends State<EvangelioScreen> {
                   colors: [
                     Colors.black.withValues(alpha: 0.28),
                     Colors.black.withValues(alpha: 0.22),
-                    Colors.black.withValues(alpha: 0.42),
-                    Colors.black.withValues(alpha: 0.68),
+                    Colors.black.withValues(alpha: 0.46),
+                    Colors.black.withValues(alpha: 0.74),
                   ],
                 ),
               ),
@@ -177,7 +174,7 @@ class _EvangelioScreenState extends State<EvangelioScreen> {
           ),
           Positioned.fill(
             child: Container(
-              color: deepBlue.withValues(alpha: 0.10),
+              color: AppColors.primaryBlue.withValues(alpha: 0.10),
             ),
           ),
           SafeArea(
@@ -233,9 +230,9 @@ class _EvangelioScreenState extends State<EvangelioScreen> {
       height: 220,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30),
-        color: Colors.white.withValues(alpha: 0.08),
+        color: AppColors.white.withValues(alpha: 0.08),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.08),
+          color: AppColors.white.withValues(alpha: 0.08),
         ),
       ),
     );
@@ -247,9 +244,9 @@ class _EvangelioScreenState extends State<EvangelioScreen> {
       height: height,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
-        color: Colors.white.withValues(alpha: 0.07),
+        color: AppColors.white.withValues(alpha: 0.07),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.08),
+          color: AppColors.white.withValues(alpha: 0.08),
         ),
       ),
     );
@@ -298,14 +295,14 @@ class _EvangelioScreenState extends State<EvangelioScreen> {
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withValues(alpha: 0.08),
+                color: AppColors.white.withValues(alpha: 0.08),
                 border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.08),
+                  color: AppColors.white.withValues(alpha: 0.08),
                 ),
               ),
               child: const Icon(
                 Icons.arrow_back_ios_new,
-                color: Colors.white,
+                color: AppColors.white,
                 size: 18,
               ),
             ),
@@ -318,7 +315,7 @@ class _EvangelioScreenState extends State<EvangelioScreen> {
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
               style: GoogleFonts.lora(
-                color: Colors.white,
+                color: AppColors.white,
                 fontSize: 24,
                 height: 1.2,
                 fontWeight: FontWeight.w600,
@@ -362,7 +359,7 @@ class _EvangelioScreenState extends State<EvangelioScreen> {
                 Text(
                   _getEvangelioTexto(),
                   style: GoogleFonts.lora(
-                    color: Colors.white.withValues(alpha: 0.98),
+                    color: AppColors.darkTextPrimary.withValues(alpha: 0.98),
                     fontSize: 19.2,
                     height: 1.85,
                     letterSpacing: 0.15,
@@ -373,7 +370,7 @@ class _EvangelioScreenState extends State<EvangelioScreen> {
                 Text(
                   'Palabra del Señor',
                   style: GoogleFonts.poppins(
-                    color: softGold,
+                    color: AppColors.goldSoft,
                     fontSize: 14.2,
                     fontWeight: FontWeight.w700,
                   ),
@@ -429,7 +426,7 @@ class _HeroEvangelioCard extends StatelessWidget {
                     colors: [
                       Colors.black.withValues(alpha: 0.16),
                       Colors.black.withValues(alpha: 0.24),
-                      _EvangelioScreenState.deepBlue.withValues(alpha: 0.52),
+                      AppColors.primaryBlue.withValues(alpha: 0.52),
                       Colors.black.withValues(alpha: 0.84),
                     ],
                   ),
@@ -441,7 +438,7 @@ class _HeroEvangelioCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(30),
                   border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.08),
+                    color: AppColors.white.withValues(alpha: 0.08),
                   ),
                 ),
               ),
@@ -477,7 +474,7 @@ class _HeroEvangelioCard extends StatelessWidget {
                   Text(
                     tiempoLiturgico,
                     style: GoogleFonts.poppins(
-                      color: Colors.white.withValues(alpha: 0.82),
+                      color: AppColors.white.withValues(alpha: 0.82),
                       fontSize: 13.6,
                       fontWeight: FontWeight.w600,
                     ),
@@ -489,8 +486,7 @@ class _HeroEvangelioCard extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.lora(
-                        color: _EvangelioScreenState.softGold
-                            .withValues(alpha: 0.98),
+                        color: AppColors.goldSoft.withValues(alpha: 0.98),
                         fontSize: 22,
                         height: 1.15,
                         fontWeight: FontWeight.w700,
@@ -529,10 +525,10 @@ class _GlassBadge extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.08),
+            color: AppColors.white.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(999),
             border: Border.all(
-              color: Colors.white.withValues(alpha: 0.10),
+              color: AppColors.white.withValues(alpha: 0.10),
             ),
           ),
           child: Row(
@@ -542,8 +538,8 @@ class _GlassBadge extends StatelessWidget {
                 icon,
                 size: isDot ? 11 : 14,
                 color: isDot
-                    ? (dotColor ?? _EvangelioScreenState.softGold)
-                    : _EvangelioScreenState.softGold,
+                    ? (dotColor ?? AppColors.goldSoft)
+                    : AppColors.goldSoft,
               ),
               const SizedBox(width: 8),
               Text(
@@ -551,7 +547,7 @@ class _GlassBadge extends StatelessWidget {
                 style: GoogleFonts.poppins(
                   fontSize: 12.2,
                   fontWeight: FontWeight.w600,
-                  color: Colors.white.withValues(alpha: 0.92),
+                  color: AppColors.white.withValues(alpha: 0.92),
                 ),
               ),
             ],
@@ -573,12 +569,12 @@ class _ListenButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(999),
         gradient: LinearGradient(
           colors: [
-            _EvangelioScreenState.gold.withValues(alpha: 0.18),
-            Colors.white.withValues(alpha: 0.06),
+            AppColors.gold.withValues(alpha: 0.18),
+            AppColors.white.withValues(alpha: 0.06),
           ],
         ),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.10),
+          color: AppColors.white.withValues(alpha: 0.10),
         ),
       ),
       child: Row(
@@ -586,14 +582,14 @@ class _ListenButton extends StatelessWidget {
         children: [
           const Icon(
             Icons.graphic_eq_rounded,
-            color: _EvangelioScreenState.gold,
+            color: AppColors.gold,
             size: 18,
           ),
           const SizedBox(width: 8),
           Text(
             'Escuchar el Evangelio',
             style: GoogleFonts.poppins(
-              color: Colors.white,
+              color: AppColors.white,
               fontSize: 13.5,
               fontWeight: FontWeight.w600,
             ),
@@ -621,10 +617,10 @@ class _ContentCard extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.07),
+            color: AppColors.white.withValues(alpha: 0.07),
             borderRadius: BorderRadius.circular(26),
             border: Border.all(
-              color: Colors.white.withValues(alpha: 0.08),
+              color: AppColors.white.withValues(alpha: 0.08),
             ),
           ),
           child: child,
@@ -658,10 +654,10 @@ class _MessageCard extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(22),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.08),
+            color: AppColors.white.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
-              color: Colors.white.withValues(alpha: 0.08),
+              color: AppColors.white.withValues(alpha: 0.08),
             ),
           ),
           child: Column(
@@ -669,7 +665,7 @@ class _MessageCard extends StatelessWidget {
             children: [
               Icon(
                 icon,
-                color: _EvangelioScreenState.softGold,
+                color: AppColors.goldSoft,
                 size: 34,
               ),
               const SizedBox(height: 14),
@@ -677,7 +673,7 @@ class _MessageCard extends StatelessWidget {
                 title,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.lora(
-                  color: Colors.white,
+                  color: AppColors.white,
                   fontSize: 24,
                   fontWeight: FontWeight.w600,
                 ),
@@ -687,7 +683,7 @@ class _MessageCard extends StatelessWidget {
                 message,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.lora(
-                  color: Colors.white.withValues(alpha: 0.88),
+                  color: AppColors.white.withValues(alpha: 0.88),
                   fontSize: 17,
                   height: 1.6,
                 ),
@@ -696,7 +692,7 @@ class _MessageCard extends StatelessWidget {
               ElevatedButton(
                 onPressed: onTap,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _EvangelioScreenState.gold,
+                  backgroundColor: AppColors.gold,
                   foregroundColor: Colors.black87,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 18,

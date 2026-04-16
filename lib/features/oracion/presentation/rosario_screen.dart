@@ -1,14 +1,12 @@
+import 'dart:ui';
+
+import 'package:escoge/core/theme/app_colors.dart';
 import 'package:escoge/features/oracion/presentation/rosario_intro_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class RosarioScreen extends StatelessWidget {
   const RosarioScreen({super.key});
-
-  static const Color softBackground = Color(0xFFF4F6FB);
-  static const Color primaryBlue = Color(0xFF0B1E66);
-  static const Color secondaryBlue = Color(0xFF1A3DAB);
-  static const Color gold = Color(0xFFD4AF37);
 
   String getMisterioDelDia(DateTime date) {
     switch (date.weekday) {
@@ -72,145 +70,163 @@ class RosarioScreen extends StatelessWidget {
     final misterioDelDia = getMisterioDelDia(DateTime.now());
 
     return Scaffold(
-      backgroundColor: softBackground,
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          SliverToBoxAdapter(
-            child: Container(
-              width: double.infinity,
-              decoration: const BoxDecoration(
+      backgroundColor: AppColors.darkBackground,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              'assets/backgrounds/lecturas.png',
+              fit: BoxFit.cover,
+            ),
+          ),
+          Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [primaryBlue, secondaryBlue],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.vertical(
-                  bottom: Radius.circular(34),
-                ),
-              ),
-              child: SafeArea(
-                bottom: false,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(18, 14, 18, 26),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          InkWell(
-                            onTap: () => Navigator.pop(context),
-                            borderRadius: BorderRadius.circular(16),
-                            child: Container(
-                              width: 46,
-                              height: 46,
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.10),
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                  color: Colors.white.withValues(alpha: 0.14),
-                                ),
-                              ),
-                              child: const Icon(
-                                Icons.arrow_back_ios_new_rounded,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              'Santo Rosario',
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.lora(
-                                fontSize: 30,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 58),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        'Una guía espiritual para acompañarte paso a paso, incluso si hoy vas a rezarlo por primera vez.',
-                        style: GoogleFonts.poppins(
-                          color: Colors.white.withValues(alpha: 0.88),
-                          fontSize: 14.5,
-                          height: 1.45,
-                        ),
-                      ),
-                    ],
-                  ),
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withValues(alpha: 0.22),
+                    Colors.black.withValues(alpha: 0.30),
+                    Colors.black.withValues(alpha: 0.52),
+                    Colors.black.withValues(alpha: 0.74),
+                  ],
                 ),
               ),
             ),
           ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _RosarioDelDiaCard(
-                    titulo: getTituloMisterio(misterioDelDia),
-                    diaTexto: getDiaTexto(misterioDelDia),
-                    onTap: () => _openRosario(context, misterioDelDia),
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Elige un misterio',
-                    style: GoogleFonts.poppins(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
-                      color: primaryBlue,
+          Positioned.fill(
+            child: Container(
+              color: AppColors.primaryBlue.withValues(alpha: 0.10),
+            ),
+          ),
+          SafeArea(
+            bottom: false,
+            child: CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+                    child: Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () => Navigator.pop(context),
+                          child: Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: AppColors.white.withValues(alpha: 0.08),
+                              border: Border.all(
+                                color: AppColors.white.withValues(alpha: 0.08),
+                              ),
+                            ),
+                            child: const Icon(
+                              Icons.arrow_back_ios_new,
+                              color: AppColors.white,
+                              size: 18,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'Santo Rosario',
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.lora(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.white,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 46),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'También puedes escoger manualmente el rosario que deseas rezar.',
-                    style: GoogleFonts.poppins(
-                      fontSize: 14.5,
-                      color: const Color(0xFF6D7693),
-                      height: 1.45,
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 14, 24, 0),
+                    child: Text(
+                      'Una guía espiritual para acompañarte paso a paso, incluso si hoy vas a rezarlo por primera vez.',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                        fontSize: 13.2,
+                        color: AppColors.white.withValues(alpha: 0.82),
+                        fontWeight: FontWeight.w500,
+                        height: 1.5,
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 18),
-                  _RosarioOptionCard(
-                    title: 'Misterios Gozosos',
-                    subtitle: 'Lunes y sábado',
-                    icon: Icons.wb_sunny_outlined,
-                    highlighted: misterioDelDia == 'gozosos',
-                    onTap: () => _openRosario(context, 'gozosos'),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 14, 16, 96),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _RosarioDelDiaCard(
+                          titulo: getTituloMisterio(misterioDelDia),
+                          diaTexto: getDiaTexto(misterioDelDia),
+                          onTap: () => _openRosario(context, misterioDelDia),
+                        ),
+                        const SizedBox(height: 18),
+                        Text(
+                          'Elige un misterio',
+                          style: GoogleFonts.poppins(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'También puedes escoger manualmente el rosario que deseas rezar.',
+                          style: GoogleFonts.poppins(
+                            fontSize: 12.8,
+                            height: 1.5,
+                            color: AppColors.white.withValues(alpha: 0.72),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        _RosarioOptionCard(
+                          title: 'Misterios Gozosos',
+                          subtitle: 'Lunes y sábado',
+                          icon: Icons.wb_sunny_outlined,
+                          highlighted: misterioDelDia == 'gozosos',
+                          onTap: () => _openRosario(context, 'gozosos'),
+                        ),
+                        const SizedBox(height: 10),
+                        _RosarioOptionCard(
+                          title: 'Misterios Dolorosos',
+                          subtitle: 'Martes y viernes',
+                          icon: Icons.favorite_border_rounded,
+                          highlighted: misterioDelDia == 'dolorosos',
+                          onTap: () => _openRosario(context, 'dolorosos'),
+                        ),
+                        const SizedBox(height: 10),
+                        _RosarioOptionCard(
+                          title: 'Misterios Gloriosos',
+                          subtitle: 'Miércoles y domingo',
+                          icon: Icons.auto_awesome_rounded,
+                          highlighted: misterioDelDia == 'gloriosos',
+                          onTap: () => _openRosario(context, 'gloriosos'),
+                        ),
+                        const SizedBox(height: 10),
+                        _RosarioOptionCard(
+                          title: 'Misterios Luminosos',
+                          subtitle: 'Jueves',
+                          icon: Icons.light_mode_outlined,
+                          highlighted: misterioDelDia == 'luminosos',
+                          onTap: () => _openRosario(context, 'luminosos'),
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 14),
-                  _RosarioOptionCard(
-                    title: 'Misterios Dolorosos',
-                    subtitle: 'Martes y viernes',
-                    icon: Icons.favorite_border_rounded,
-                    highlighted: misterioDelDia == 'dolorosos',
-                    onTap: () => _openRosario(context, 'dolorosos'),
-                  ),
-                  const SizedBox(height: 14),
-                  _RosarioOptionCard(
-                    title: 'Misterios Gloriosos',
-                    subtitle: 'Miércoles y domingo',
-                    icon: Icons.auto_awesome_rounded,
-                    highlighted: misterioDelDia == 'gloriosos',
-                    onTap: () => _openRosario(context, 'gloriosos'),
-                  ),
-                  const SizedBox(height: 14),
-                  _RosarioOptionCard(
-                    title: 'Misterios Luminosos',
-                    subtitle: 'Jueves',
-                    icon: Icons.light_mode_outlined,
-                    highlighted: misterioDelDia == 'luminosos',
-                    onTap: () => _openRosario(context, 'luminosos'),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
@@ -232,77 +248,127 @@ class _RosarioDelDiaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF0B1E66), Color(0xFF1A3DAB)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(30),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.12),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Rosario del día',
-            style: GoogleFonts.poppins(
-              color: const Color(0xFFFFE8A3),
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(28),
+      child: SizedBox(
+        height: 220,
+        width: double.infinity,
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Image.asset(
+                'assets/images/hoy_la_iglesia.png',
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            titulo,
-            style: GoogleFonts.lora(
-              color: Colors.white,
-              fontSize: 28,
-              fontWeight: FontWeight.w700,
-              height: 1.1,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Hoy corresponde: $diaTexto',
-            style: GoogleFonts.poppins(
-              color: Colors.white.withValues(alpha: 0.88),
-              fontSize: 14,
-              height: 1.4,
-            ),
-          ),
-          const SizedBox(height: 18),
-          SizedBox(
-            height: 52,
-            child: ElevatedButton(
-              onPressed: onTap,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFD4AF37),
-                foregroundColor: const Color(0xFF1A2340),
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18),
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black.withValues(alpha: 0.14),
+                      Colors.black.withValues(alpha: 0.22),
+                      AppColors.primaryBlue.withValues(alpha: 0.50),
+                      Colors.black.withValues(alpha: 0.84),
+                    ],
+                  ),
                 ),
               ),
+            ),
+            Positioned(
+              left: 18,
+              right: 18,
+              top: 16,
               child: Text(
-                'Comenzar ahora',
+                'Rosario del día',
                 style: GoogleFonts.poppins(
-                  fontSize: 15,
+                  color: AppColors.goldSoft,
+                  fontSize: 12.6,
                   fontWeight: FontWeight.w700,
                 ),
               ),
             ),
-          ),
-        ],
+            Positioned(
+              left: 18,
+              right: 18,
+              bottom: 16,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    titulo,
+                    style: GoogleFonts.lora(
+                      color: AppColors.white,
+                      fontSize: 26,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Hoy corresponde: $diaTexto',
+                    style: GoogleFonts.poppins(
+                      color: AppColors.white.withValues(alpha: 0.88),
+                      fontSize: 13.2,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  _HeroActionButton(
+                    label: 'Comenzar ahora',
+                    onTap: onTap,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HeroActionButton extends StatelessWidget {
+  final String label;
+  final VoidCallback? onTap;
+
+  const _HeroActionButton({
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 11,
+        ),
+        decoration: BoxDecoration(
+          color: AppColors.white.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.auto_awesome,
+              color: AppColors.gold,
+              size: 16,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: GoogleFonts.poppins(
+                color: AppColors.white,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -328,26 +394,18 @@ class _RosarioOptionCard extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(22),
         onTap: onTap,
         child: Ink(
-          padding: const EdgeInsets.all(18),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: highlighted ? const Color(0xFFFFF8E8) : Colors.white,
-            borderRadius: BorderRadius.circular(24),
+            color: AppColors.white.withValues(alpha: highlighted ? 0.10 : 0.07),
+            borderRadius: BorderRadius.circular(22),
             border: Border.all(
               color: highlighted
-                  ? const Color(0xFFD4AF37)
-                  : const Color(0xFFE5EAF5),
-              width: highlighted ? 1.4 : 1,
+                  ? AppColors.gold.withValues(alpha: 0.55)
+                  : AppColors.white.withValues(alpha: 0.08),
             ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
-                blurRadius: 14,
-                offset: const Offset(0, 6),
-              ),
-            ],
           ),
           child: Row(
             children: [
@@ -356,16 +414,13 @@ class _RosarioOptionCard extends StatelessWidget {
                 height: 52,
                 decoration: BoxDecoration(
                   color: highlighted
-                      ? const Color(0xFFD4AF37)
-                      : const Color(0xFFF3F6FD),
+                      ? AppColors.gold.withValues(alpha: 0.16)
+                      : AppColors.white.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Icon(
                   icon,
-                  color: highlighted
-                      ? const Color(0xFF1A2340)
-                      : const Color(0xFF0B1E66),
-                  size: 24,
+                  color: highlighted ? AppColors.gold : AppColors.white,
                 ),
               ),
               const SizedBox(width: 14),
@@ -375,29 +430,29 @@ class _RosarioOptionCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: GoogleFonts.poppins(
-                        fontSize: 17,
+                      style: GoogleFonts.lora(
+                        fontSize: 18,
                         fontWeight: FontWeight.w700,
-                        color: const Color(0xFF0B1E66),
+                        color: AppColors.white,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       subtitle,
                       style: GoogleFonts.poppins(
-                        fontSize: 13.5,
-                        color: const Color(0xFF6D7693),
+                        fontSize: 12.8,
+                        color: AppColors.white.withValues(alpha: 0.72),
                       ),
                     ),
                   ],
                 ),
               ),
               Icon(
-                Icons.chevron_right_rounded,
+                Icons.arrow_forward_ios_rounded,
+                size: 15,
                 color: highlighted
-                    ? const Color(0xFFD4AF37)
-                    : const Color(0xFF98A2BD),
-                size: 28,
+                    ? AppColors.gold
+                    : AppColors.white.withValues(alpha: 0.74),
               ),
             ],
           ),

@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:escoge/core/theme/app_colors.dart';
 import 'package:escoge/features/oracion/data/models/liturgia_day_model.dart';
 import 'package:escoge/features/oracion/presentation/evangelio_screen.dart';
 import 'package:escoge/features/oracion/presentation/lecturas_screen.dart';
+import 'package:escoge/features/oracion/presentation/reflexiones_screen.dart';
 import 'package:escoge/features/oracion/presentation/rosario_screen.dart';
 import 'package:escoge/features/oracion/presentation/santo_del_dia_screen.dart';
 import 'package:escoge/features/oracion/services/liturgia_service.dart';
@@ -13,11 +15,6 @@ import 'package:google_fonts/google_fonts.dart';
 
 class OracionScreen extends StatefulWidget {
   const OracionScreen({super.key});
-
-  static const Color gold = Color(0xFFD4AF37);
-  static const Color softGold = Color(0xFFE8C76A);
-  static const Color deepBlue = Color(0xFF0B1E66);
-  static const Color secondaryBlue = Color(0xFF1736B6);
 
   @override
   State<OracionScreen> createState() => _OracionScreenState();
@@ -102,7 +99,7 @@ class _OracionScreenState extends State<OracionScreen> {
                 : 'No se encontró liturgia para esta fecha.')
             : null;
       });
-    } catch (e) {
+    } catch (_) {
       if (!mounted) return;
 
       setState(() {
@@ -151,7 +148,7 @@ class _OracionScreenState extends State<OracionScreen> {
         : 'Entrar a Hoy en la Iglesia';
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.darkBackground,
       body: Stack(
         children: [
           Positioned.fill(
@@ -178,7 +175,7 @@ class _OracionScreenState extends State<OracionScreen> {
           ),
           Positioned.fill(
             child: Container(
-              color: OracionScreen.deepBlue.withValues(alpha: 0.10),
+              color: AppColors.primaryBlue.withValues(alpha: 0.10),
             ),
           ),
           SafeArea(
@@ -195,7 +192,7 @@ class _OracionScreenState extends State<OracionScreen> {
                         style: GoogleFonts.lora(
                           fontSize: 31,
                           fontWeight: FontWeight.w700,
-                          color: Colors.white,
+                          color: AppColors.white,
                           height: 1.08,
                         ),
                       ),
@@ -207,7 +204,7 @@ class _OracionScreenState extends State<OracionScreen> {
                         textAlign: TextAlign.center,
                         style: GoogleFonts.poppins(
                           fontSize: 14,
-                          color: Colors.white.withValues(alpha: 0.82),
+                          color: AppColors.white.withValues(alpha: 0.82),
                           fontWeight: FontWeight.w500,
                           height: 1.45,
                         ),
@@ -308,7 +305,7 @@ class _OracionScreenState extends State<OracionScreen> {
                           ),
                           icon: Icons.menu_book_rounded,
                           enabled: _hasLiturgia,
-                          accent: OracionScreen.gold,
+                          accent: AppColors.gold,
                           onTap: () {
                             Navigator.push(
                               context,
@@ -336,12 +333,38 @@ class _OracionScreenState extends State<OracionScreen> {
                           ),
                           icon: Icons.person_rounded,
                           enabled: _hasLiturgia,
-                          accent: const Color(0xFFE8C76A),
+                          accent: AppColors.goldSoft,
                           onTap: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (_) => SantoDelDiaScreen(
+                                  selectedDate: _selectedDate,
+                                ),
+                              ),
+                            );
+                          },
+                          destinationBuilder: _unusedBuilder,
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: _ModuloCard(
+                          titulo: 'Reflexiones',
+                          subtitulo: _buildReflexionSubtitle(
+                            _liturgiaDay,
+                            _loading,
+                            _errorMessage,
+                          ),
+                          icon: Icons.lightbulb_outline_rounded,
+                          enabled: _hasLiturgia,
+                          accent: const Color(0xFFE6C66B),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => ReflexionesScreen(
                                   selectedDate: _selectedDate,
                                 ),
                               ),
@@ -370,7 +393,7 @@ class _OracionScreenState extends State<OracionScreen> {
                           subtitulo:
                               'Comparte una intención y únete en oración con la comunidad.',
                           icon: Icons.favorite_border_rounded,
-                          accent: const Color(0xFFE8C76A),
+                          accent: AppColors.goldSoft,
                           destinationBuilder: (context) =>
                               const PeticionesScreen(),
                         ),
@@ -391,15 +414,6 @@ class _OracionScreenState extends State<OracionScreen> {
                           titulo: 'Oraciones',
                           subtitulo: 'Muy pronto disponibles.',
                           icon: Icons.self_improvement,
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        child: _ComingSoonCard(
-                          titulo: 'Reflexiones',
-                          subtitulo: 'Muy pronto disponibles.',
-                          icon: Icons.lightbulb_outline,
                         ),
                       ),
                     ],
@@ -455,6 +469,27 @@ class _OracionScreenState extends State<OracionScreen> {
     return 'Descubre el santo y su testimonio de fe.';
   }
 
+  static String _buildReflexionSubtitle(
+    LiturgiaDayModel? day,
+    bool loading,
+    String? errorMessage,
+  ) {
+    if (loading) {
+      return 'Preparando la reflexión espiritual del día...';
+    }
+
+    if (errorMessage != null) {
+      return 'Se mostrará cuando la liturgia del día esté disponible.';
+    }
+
+    final reflexion = day?.reflexionBreve?.trim() ?? '';
+    if (reflexion.isNotEmpty) {
+      return 'Medita una reflexión breve para acompañar tu día.';
+    }
+
+    return 'Profundiza con una reflexión breve inspirada en la liturgia.';
+  }
+
   static Widget _buildRosarioScreen(BuildContext context) =>
       const RosarioScreen();
 
@@ -478,10 +513,10 @@ class _DaySwitcher extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(4),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.08),
+          color: AppColors.white.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(999),
           border: Border.all(
-            color: Colors.white.withValues(alpha: 0.08),
+            color: AppColors.white.withValues(alpha: 0.08),
           ),
         ),
         child: Row(
@@ -526,19 +561,19 @@ class _DayPill extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 11),
         decoration: BoxDecoration(
           color: selected
-              ? OracionScreen.gold.withValues(alpha: 0.18)
+              ? AppColors.gold.withValues(alpha: 0.18)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(999),
           border: Border.all(
             color: selected
-                ? Colors.white.withValues(alpha: 0.10)
+                ? AppColors.white.withValues(alpha: 0.10)
                 : Colors.transparent,
           ),
         ),
         child: Text(
           label,
           style: GoogleFonts.poppins(
-            color: Colors.white,
+            color: AppColors.white,
             fontSize: 13.5,
             fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
           ),
@@ -621,7 +656,7 @@ class _HoyEnLaIglesiaHeroClean extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(30),
       child: SizedBox(
-        height: 305,
+        height: 280,
         width: double.infinity,
         child: Stack(
           children: [
@@ -641,7 +676,7 @@ class _HoyEnLaIglesiaHeroClean extends StatelessWidget {
                     colors: [
                       Colors.black.withValues(alpha: 0.18),
                       Colors.black.withValues(alpha: 0.28),
-                      OracionScreen.deepBlue.withValues(alpha: 0.48),
+                      AppColors.primaryBlue.withValues(alpha: 0.48),
                       Colors.black.withValues(alpha: 0.82),
                     ],
                   ),
@@ -653,7 +688,7 @@ class _HoyEnLaIglesiaHeroClean extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(30),
                   border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.08),
+                    color: AppColors.white.withValues(alpha: 0.08),
                   ),
                 ),
               ),
@@ -665,7 +700,7 @@ class _HoyEnLaIglesiaHeroClean extends StatelessWidget {
               child: Text(
                 fechaTexto,
                 style: GoogleFonts.poppins(
-                  color: Colors.white.withValues(alpha: 0.86),
+                  color: AppColors.white.withValues(alpha: 0.86),
                   fontSize: 13.2,
                   fontWeight: FontWeight.w500,
                 ),
@@ -683,7 +718,7 @@ class _HoyEnLaIglesiaHeroClean extends StatelessWidget {
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.lora(
-                      color: Colors.white,
+                      color: AppColors.white,
                       fontSize: 27,
                       height: 1.12,
                       fontWeight: FontWeight.w700,
@@ -700,8 +735,8 @@ class _HoyEnLaIglesiaHeroClean extends StatelessWidget {
                           color: errorMessage != null
                               ? const Color(0xFFE8A7A7)
                               : (loading
-                                  ? OracionScreen.softGold
-                                  : Colors.white),
+                                  ? AppColors.goldSoft
+                                  : AppColors.white),
                         ),
                       ),
                       const SizedBox(width: 9),
@@ -709,7 +744,7 @@ class _HoyEnLaIglesiaHeroClean extends StatelessWidget {
                         child: Text(
                           _buildEstadoPrincipal(),
                           style: GoogleFonts.poppins(
-                            color: Colors.white.withValues(alpha: 0.90),
+                            color: AppColors.white.withValues(alpha: 0.90),
                             fontSize: 13.5,
                             fontWeight: FontWeight.w600,
                             height: 1.4,
@@ -758,10 +793,10 @@ class _HeroActionButton extends StatelessWidget {
             vertical: 13,
           ),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.08),
+            color: AppColors.white.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: Colors.white.withValues(alpha: 0.10),
+              color: AppColors.white.withValues(alpha: 0.10),
             ),
             boxShadow: [
               BoxShadow(
@@ -774,9 +809,9 @@ class _HeroActionButton extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
+              const Icon(
                 Icons.menu_book_rounded,
-                color: OracionScreen.gold,
+                color: AppColors.gold,
                 size: 18,
               ),
               const SizedBox(width: 9),
@@ -784,7 +819,7 @@ class _HeroActionButton extends StatelessWidget {
                 child: Text(
                   label,
                   style: GoogleFonts.poppins(
-                    color: Colors.white,
+                    color: AppColors.white,
                     fontSize: 13.6,
                     fontWeight: FontWeight.w600,
                     height: 1.35,
@@ -818,7 +853,7 @@ class _SectionHeader extends StatelessWidget {
           style: GoogleFonts.poppins(
             fontSize: 19,
             fontWeight: FontWeight.w700,
-            color: Colors.white,
+            color: AppColors.white,
           ),
         ),
         const SizedBox(height: 6),
@@ -827,7 +862,7 @@ class _SectionHeader extends StatelessWidget {
           style: GoogleFonts.poppins(
             fontSize: 13,
             height: 1.55,
-            color: Colors.white.withValues(alpha: 0.72),
+            color: AppColors.white.withValues(alpha: 0.72),
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -844,7 +879,7 @@ class _ModuloCard extends StatelessWidget {
     required this.destinationBuilder,
     this.onTap,
     this.enabled = true,
-    this.accent = OracionScreen.gold,
+    this.accent = AppColors.gold,
   });
 
   final String titulo;
@@ -878,10 +913,10 @@ class _ModuloCard extends StatelessWidget {
           child: Ink(
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.07),
+              color: AppColors.white.withValues(alpha: 0.07),
               borderRadius: BorderRadius.circular(24),
               border: Border.all(
-                color: Colors.white.withValues(alpha: 0.08),
+                color: AppColors.white.withValues(alpha: 0.08),
               ),
               boxShadow: [
                 BoxShadow(
@@ -900,7 +935,7 @@ class _ModuloCard extends StatelessWidget {
                     color: accent.withValues(alpha: 0.14),
                     borderRadius: BorderRadius.circular(18),
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.06),
+                      color: AppColors.white.withValues(alpha: 0.06),
                     ),
                   ),
                   child: Icon(icon, color: accent),
@@ -915,7 +950,7 @@ class _ModuloCard extends StatelessWidget {
                         style: GoogleFonts.lora(
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
-                          color: Colors.white,
+                          color: AppColors.white,
                         ),
                       ),
                       const SizedBox(height: 5),
@@ -924,7 +959,7 @@ class _ModuloCard extends StatelessWidget {
                         style: GoogleFonts.poppins(
                           fontSize: 13.5,
                           height: 1.55,
-                          color: Colors.white.withValues(alpha: 0.76),
+                          color: AppColors.white.withValues(alpha: 0.76),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -936,7 +971,7 @@ class _ModuloCard extends StatelessWidget {
                       ? Icons.arrow_forward_ios_rounded
                       : Icons.lock_outline_rounded,
                   size: 16,
-                  color: Colors.white.withValues(alpha: 0.74),
+                  color: AppColors.white.withValues(alpha: 0.74),
                 ),
               ],
             ),
@@ -963,10 +998,10 @@ class _ReflexionDestacadaCard extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.07),
+            color: AppColors.white.withValues(alpha: 0.07),
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
-              color: Colors.white.withValues(alpha: 0.08),
+              color: AppColors.white.withValues(alpha: 0.08),
             ),
           ),
           child: Column(
@@ -977,7 +1012,7 @@ class _ReflexionDestacadaCard extends StatelessWidget {
                 style: GoogleFonts.poppins(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: OracionScreen.softGold,
+                  color: AppColors.goldSoft,
                 ),
               ),
               const SizedBox(height: 10),
@@ -986,7 +1021,7 @@ class _ReflexionDestacadaCard extends StatelessWidget {
                 style: GoogleFonts.lora(
                   fontSize: 17,
                   height: 1.6,
-                  color: Colors.white.withValues(alpha: 0.94),
+                  color: AppColors.white.withValues(alpha: 0.94),
                   fontStyle: FontStyle.italic,
                   fontWeight: FontWeight.w500,
                 ),
@@ -1015,10 +1050,10 @@ class _ComingSoonCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.06),
+        color: AppColors.white.withValues(alpha: 0.06),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.08),
+          color: AppColors.white.withValues(alpha: 0.08),
         ),
       ),
       child: Row(
@@ -1027,12 +1062,12 @@ class _ComingSoonCard extends StatelessWidget {
             height: 52,
             width: 52,
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.08),
+              color: AppColors.white.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Icon(
               icon,
-              color: Colors.white.withValues(alpha: 0.78),
+              color: AppColors.white.withValues(alpha: 0.78),
             ),
           ),
           const SizedBox(width: 14),
@@ -1045,7 +1080,7 @@ class _ComingSoonCard extends StatelessWidget {
                   style: GoogleFonts.lora(
                     fontSize: 19,
                     fontWeight: FontWeight.w700,
-                    color: Colors.white.withValues(alpha: 0.92),
+                    color: AppColors.white.withValues(alpha: 0.92),
                   ),
                 ),
                 const SizedBox(height: 5),
@@ -1054,7 +1089,7 @@ class _ComingSoonCard extends StatelessWidget {
                   style: GoogleFonts.poppins(
                     fontSize: 13.5,
                     height: 1.5,
-                    color: Colors.white.withValues(alpha: 0.68),
+                    color: AppColors.white.withValues(alpha: 0.68),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -1067,10 +1102,10 @@ class _ComingSoonCard extends StatelessWidget {
               vertical: 6,
             ),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.08),
+              color: AppColors.white.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(999),
               border: Border.all(
-                color: Colors.white.withValues(alpha: 0.08),
+                color: AppColors.white.withValues(alpha: 0.08),
               ),
             ),
             child: Text(
@@ -1078,7 +1113,7 @@ class _ComingSoonCard extends StatelessWidget {
               style: GoogleFonts.poppins(
                 fontSize: 11.5,
                 fontWeight: FontWeight.w600,
-                color: OracionScreen.softGold,
+                color: AppColors.goldSoft,
               ),
             ),
           ),

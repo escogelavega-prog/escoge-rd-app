@@ -1,6 +1,7 @@
 import 'package:escoge/features/oracion/data/models/evangelio_model.dart';
 import 'package:escoge/features/oracion/data/models/lectura_model.dart';
 import 'package:escoge/features/oracion/data/models/santo_model.dart';
+import 'package:escoge/features/oracion/data/models/versiculo_del_dia_model.dart';
 
 class LiturgiaDayModel {
   final String id;
@@ -13,6 +14,7 @@ class LiturgiaDayModel {
   final EvangelioModel? evangelio;
   final List<LecturaModel> lecturas;
   final SantoModel? santoDelDia;
+  final VersiculoDelDiaModel? versiculoDelDia;
   final bool publicado;
 
   const LiturgiaDayModel({
@@ -26,6 +28,7 @@ class LiturgiaDayModel {
     required this.evangelio,
     required this.lecturas,
     this.santoDelDia,
+    this.versiculoDelDia,
     required this.publicado,
   });
 
@@ -36,6 +39,7 @@ class LiturgiaDayModel {
     final evangelioMap = map['evangelio'];
     final lecturasList = map['lecturas'] as List<dynamic>? ?? [];
     final santoMap = map['santoDelDia'];
+    final versiculoMap = map['versiculoDelDia'];
 
     return LiturgiaDayModel(
       id: id,
@@ -56,6 +60,9 @@ class LiturgiaDayModel {
       santoDelDia: santoMap is Map<String, dynamic>
           ? SantoModel.fromMap(santoMap)
           : null,
+      versiculoDelDia: versiculoMap is Map<String, dynamic>
+          ? VersiculoDelDiaModel.fromMap(versiculoMap)
+          : null,
       publicado: map['publicado'] == true,
     );
   }
@@ -71,6 +78,7 @@ class LiturgiaDayModel {
       'evangelio': evangelio?.toMap(),
       'lecturas': lecturas.map((e) => e.toMap()).toList(),
       'santoDelDia': santoDelDia?.toMap(),
+      'versiculoDelDia': versiculoDelDia?.toMap(),
       'publicado': publicado,
     };
   }
@@ -86,6 +94,7 @@ class LiturgiaDayModel {
     EvangelioModel? evangelio,
     List<LecturaModel>? lecturas,
     SantoModel? santoDelDia,
+    VersiculoDelDiaModel? versiculoDelDia,
     bool? publicado,
   }) {
     return LiturgiaDayModel(
@@ -99,6 +108,7 @@ class LiturgiaDayModel {
       evangelio: evangelio ?? this.evangelio,
       lecturas: lecturas ?? this.lecturas,
       santoDelDia: santoDelDia ?? this.santoDelDia,
+      versiculoDelDia: versiculoDelDia ?? this.versiculoDelDia,
       publicado: publicado ?? this.publicado,
     );
   }

@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:escoge/core/theme/app_colors.dart';
 import 'package:escoge/features/oracion/data/models/lectura_model.dart';
 import 'package:escoge/features/oracion/data/models/liturgia_day_model.dart';
 import 'package:escoge/features/oracion/services/liturgia_service.dart';
@@ -20,10 +21,6 @@ class LecturasScreen extends StatefulWidget {
 
 class _LecturasScreenState extends State<LecturasScreen>
     with SingleTickerProviderStateMixin {
-  static const Color gold = Color(0xFFD4AF37);
-  static const Color softGold = Color(0xFFE8C76A);
-  static const Color deepBlue = Color(0xFF0B1E66);
-
   final LiturgiaService _liturgiaService = LiturgiaService();
 
   LiturgiaDayModel? _data;
@@ -82,7 +79,7 @@ class _LecturasScreenState extends State<LecturasScreen>
         _loading = false;
         _errorMessage = null;
       });
-    } catch (e) {
+    } catch (_) {
       if (!mounted) return;
 
       setState(() {
@@ -141,9 +138,9 @@ class _LecturasScreenState extends State<LecturasScreen>
       case 'rosa':
         return const Color(0xFFD98AA8);
       case 'dorado':
-        return const Color(0xFFD4AF37);
+        return AppColors.gold;
       default:
-        return softGold;
+        return AppColors.goldSoft;
     }
   }
 
@@ -152,7 +149,7 @@ class _LecturasScreenState extends State<LecturasScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.darkBackground,
       body: Stack(
         children: [
           Positioned.fill(
@@ -180,7 +177,7 @@ class _LecturasScreenState extends State<LecturasScreen>
                     Colors.black.withValues(alpha: 0.24),
                     Colors.black.withValues(alpha: 0.18),
                     Colors.black.withValues(alpha: 0.42),
-                    Colors.black.withValues(alpha: 0.70),
+                    Colors.black.withValues(alpha: 0.72),
                   ],
                 ),
               ),
@@ -188,7 +185,7 @@ class _LecturasScreenState extends State<LecturasScreen>
           ),
           Positioned.fill(
             child: Container(
-              color: deepBlue.withValues(alpha: 0.08),
+              color: AppColors.primaryBlue.withValues(alpha: 0.08),
             ),
           ),
           SafeArea(
@@ -233,27 +230,7 @@ class _LecturasScreenState extends State<LecturasScreen>
             height: 190,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(30),
-              color: Colors.white.withValues(alpha: 0.08),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.08),
-              ),
-            ),
-          ),
-          const SizedBox(height: 14),
-          SizedBox(
-            height: 48,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              itemBuilder: (_, __) => Container(
-                width: 82,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(999),
-                  color: Colors.white.withValues(alpha: 0.08),
-                ),
-              ),
-              separatorBuilder: (_, __) => const SizedBox(width: 8),
-              itemCount: 5,
+              color: AppColors.white.withValues(alpha: 0.08),
             ),
           ),
           const SizedBox(height: 14),
@@ -262,10 +239,7 @@ class _LecturasScreenState extends State<LecturasScreen>
               width: double.infinity,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(28),
-                color: Colors.white.withValues(alpha: 0.07),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.08),
-                ),
+                color: AppColors.white.withValues(alpha: 0.07),
               ),
             ),
           ),
@@ -275,30 +249,75 @@ class _LecturasScreenState extends State<LecturasScreen>
   }
 
   Widget _buildErrorState() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: _MessageCard(
-          icon: Icons.error_outline_rounded,
-          title: 'No se pudieron cargar las lecturas',
-          message: _errorMessage ?? 'Ocurrió un error inesperado.',
-          buttonLabel: 'Reintentar',
-          onTap: _load,
-        ),
-      ),
+    return _buildMessageState(
+      icon: Icons.error_outline_rounded,
+      title: 'No se pudieron cargar las lecturas',
+      message: _errorMessage ?? 'Ocurrió un error inesperado.',
+      buttonLabel: 'Reintentar',
+      onTap: _load,
     );
   }
 
   Widget _buildEmptyState() {
+    return _buildMessageState(
+      icon: Icons.chrome_reader_mode_rounded,
+      title: 'No hay lecturas disponibles',
+      message: 'No se encontró contenido litúrgico para este día.',
+      buttonLabel: 'Volver',
+      onTap: () => Navigator.pop(context),
+    );
+  }
+
+  Widget _buildMessageState({
+    required IconData icon,
+    required String title,
+    required String message,
+    required String buttonLabel,
+    required VoidCallback onTap,
+  }) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: _MessageCard(
-          icon: Icons.chrome_reader_mode_rounded,
-          title: 'No hay lecturas disponibles',
-          message: 'No se encontró contenido litúrgico para este día.',
-          buttonLabel: 'Volver',
-          onTap: () => Navigator.pop(context),
+        child: Container(
+          padding: const EdgeInsets.all(22),
+          decoration: BoxDecoration(
+            color: AppColors.white.withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: AppColors.white.withValues(alpha: 0.08),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: AppColors.goldSoft, size: 34),
+              const SizedBox(height: 14),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.lora(
+                  color: AppColors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.lora(
+                  color: AppColors.white.withValues(alpha: 0.88),
+                  fontSize: 17,
+                  height: 1.6,
+                ),
+              ),
+              const SizedBox(height: 18),
+              ElevatedButton(
+                onPressed: onTap,
+                child: Text(buttonLabel),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -315,14 +334,14 @@ class _LecturasScreenState extends State<LecturasScreen>
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withValues(alpha: 0.08),
+                color: AppColors.white.withValues(alpha: 0.08),
                 border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.08),
+                  color: AppColors.white.withValues(alpha: 0.08),
                 ),
               ),
               child: const Icon(
                 Icons.arrow_back_ios_new,
-                color: Colors.white,
+                color: AppColors.white,
                 size: 18,
               ),
             ),
@@ -337,7 +356,7 @@ class _LecturasScreenState extends State<LecturasScreen>
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
               style: GoogleFonts.lora(
-                color: Colors.white,
+                color: AppColors.white,
                 fontSize: 24,
                 height: 1.2,
                 fontWeight: FontWeight.w600,
@@ -359,82 +378,93 @@ class _LecturasScreenState extends State<LecturasScreen>
         ? ''
         : 'Color ${colorRaw[0].toUpperCase()}${colorRaw.substring(1)}';
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(30),
-      child: SizedBox(
-        height: 190,
-        width: double.infinity,
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Image.asset(
-                'assets/images/hoy_la_iglesia.png',
-                fit: BoxFit.cover,
-              ),
-            ),
-            Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    stops: const [0.0, 0.30, 0.64, 1.0],
-                    colors: [
-                      Colors.black.withValues(alpha: 0.12),
-                      Colors.black.withValues(alpha: 0.18),
-                      deepBlue.withValues(alpha: 0.50),
-                      Colors.black.withValues(alpha: 0.82),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.10),
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              left: 18,
-              right: 18,
-              top: 16,
-              child: Wrap(
+    return Container(
+      height: 190,
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30),
+        image: const DecorationImage(
+          image: AssetImage('assets/images/hoy_la_iglesia.png'),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(26),
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.black.withValues(alpha: 0.12),
+              Colors.black.withValues(alpha: 0.55),
+            ],
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Wrap(
                 spacing: 10,
                 runSpacing: 10,
                 children: [
-                  _GlassBadge(
-                    icon: Icons.calendar_today_rounded,
-                    label: fechaTexto,
-                  ),
+                  _badge(Icons.calendar_today_rounded, fechaTexto),
                   if (colorText.isNotEmpty)
-                    _GlassBadge(
-                      icon: Icons.circle,
-                      label: colorText,
-                      dotColor: _liturgicalColor(colorRaw),
+                    _badge(
+                      Icons.circle,
+                      colorText,
+                      color: _liturgicalColor(colorRaw),
                     ),
                 ],
               ),
-            ),
-            Positioned(
-              left: 18,
-              right: 18,
-              bottom: 16,
-              child: Text(
+              const Spacer(),
+              Text(
                 tiempo,
                 style: GoogleFonts.poppins(
-                  color: Colors.white.withValues(alpha: 0.86),
+                  color: AppColors.white.withValues(alpha: 0.88),
                   fontSize: 13.5,
                   fontWeight: FontWeight.w600,
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget _badge(IconData icon, String label, {Color? color}) {
+    final isDot = icon == Icons.circle;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: AppColors.white.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(
+          color: AppColors.white.withValues(alpha: 0.10),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: isDot ? 11 : 14,
+            color: color ?? AppColors.goldSoft,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontSize: 12.2,
+              fontWeight: FontWeight.w600,
+              color: AppColors.white.withValues(alpha: 0.92),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -453,25 +483,26 @@ class _LecturasScreenState extends State<LecturasScreen>
             onTap: () => setState(() => currentTab = index),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 220),
-              curve: Curves.easeOut,
               margin: const EdgeInsets.only(right: 8),
               padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(999),
                 color: selected
-                    ? gold.withValues(alpha: 0.18)
-                    : Colors.white.withValues(alpha: 0.05),
+                    ? AppColors.gold.withValues(alpha: 0.18)
+                    : AppColors.white.withValues(alpha: 0.05),
                 border: Border.all(
                   color: selected
-                      ? Colors.white.withValues(alpha: 0.10)
-                      : Colors.white.withValues(alpha: 0.05),
+                      ? AppColors.white.withValues(alpha: 0.10)
+                      : AppColors.white.withValues(alpha: 0.05),
                 ),
               ),
               alignment: Alignment.center,
               child: Text(
                 tabs[index],
                 style: GoogleFonts.poppins(
-                  color: selected ? softGold : Colors.white70,
+                  color: selected
+                      ? AppColors.goldSoft
+                      : AppColors.white.withValues(alpha: 0.70),
                   fontWeight: FontWeight.w600,
                   fontSize: 13,
                 ),
@@ -488,99 +519,70 @@ class _LecturasScreenState extends State<LecturasScreen>
 
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 320),
-      transitionBuilder: (child, animation) {
-        return FadeTransition(
-          opacity: animation,
-          child: SlideTransition(
-            position: Tween<Offset>(
-              begin: const Offset(0.03, 0),
-              end: Offset.zero,
-            ).animate(animation),
-            child: child,
-          ),
-        );
-      },
       child: _buildContent(section),
     );
   }
 
   Widget _buildContent(Map<String, String> section) {
-    final cita = section['cita'] ?? '';
-    final texto = section['texto'] ?? '';
-    final titulo = section['titulo'] ?? '';
-    final label = section['label'] ?? '';
-
     return SingleChildScrollView(
       key: ValueKey(currentTab),
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 34),
-      physics: const BouncingScrollPhysics(),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(28),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.07),
-              borderRadius: BorderRadius.circular(28),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.08),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: AppColors.white.withValues(alpha: 0.07),
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(
+            color: AppColors.white.withValues(alpha: 0.08),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              section['label'] ?? '',
+              style: GoogleFonts.poppins(
+                color: AppColors.gold,
+                fontSize: 15.2,
+                fontWeight: FontWeight.w600,
               ),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: GoogleFonts.poppins(
-                    color: gold,
-                    fontSize: 15.2,
-                    fontWeight: FontWeight.w600,
-                  ),
+            if ((section['cita'] ?? '').isNotEmpty) ...[
+              const SizedBox(height: 10),
+              Text(
+                section['cita']!,
+                style: GoogleFonts.poppins(
+                  color: AppColors.goldSoft,
+                  fontSize: 14.5,
                 ),
-                if (cita.isNotEmpty) ...[
-                  const SizedBox(height: 10),
-                  Text(
-                    cita,
-                    style: GoogleFonts.poppins(
-                      color: softGold,
-                      fontSize: 14.5,
-                      height: 1.5,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 18),
-                Text(
-                  titulo.isNotEmpty ? titulo : 'Contenido del día',
-                  style: GoogleFonts.lora(
-                    color: Colors.white,
-                    fontSize: 26,
-                    height: 1.2,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 18),
-                Container(
-                  width: double.infinity,
-                  height: 1,
-                  color: Colors.white.withValues(alpha: 0.08),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  texto.isNotEmpty ? texto : 'No disponible.',
-                  style: GoogleFonts.lora(
-                    color: Colors.white.withValues(alpha: 0.98),
-                    fontSize: 19.2,
-                    height: 1.82,
-                    letterSpacing: 0.15,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ],
+              ),
+            ],
+            const SizedBox(height: 18),
+            Text(
+              section['titulo'] ?? '',
+              style: GoogleFonts.lora(
+                color: AppColors.white,
+                fontSize: 26,
+                fontWeight: FontWeight.w700,
+              ),
             ),
-          ),
+            const SizedBox(height: 18),
+            Container(
+              width: double.infinity,
+              height: 1,
+              color: AppColors.white.withValues(alpha: 0.08),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              section['texto'] ?? '',
+              style: GoogleFonts.lora(
+                color: AppColors.white.withValues(alpha: 0.98),
+                fontSize: 19.2,
+                height: 1.82,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -591,29 +593,19 @@ class _LecturasScreenState extends State<LecturasScreen>
       case 0:
         return {
           'label': 'Santo del día',
-          'cita': '',
           'titulo': _data?.santoDelDia?.nombre ?? 'Santo del día',
           'texto':
               _data?.santoDelDia?.resumen ?? 'No hay información disponible.',
         };
 
       case 1:
-        return _buildLecturaSection(
-          'Primera Lectura',
-          'primera_lectura',
-        );
+        return _buildLecturaSection('Primera Lectura', 'primera_lectura');
 
       case 2:
-        return _buildLecturaSection(
-          'Salmo',
-          'salmo',
-        );
+        return _buildLecturaSection('Salmo', 'salmo');
 
       case 3:
-        return _buildLecturaSection(
-          'Segunda Lectura',
-          'segunda_lectura',
-        );
+        return _buildLecturaSection('Segunda Lectura', 'segunda_lectura');
 
       case 4:
         return {
@@ -626,7 +618,6 @@ class _LecturasScreenState extends State<LecturasScreen>
       case 5:
         return {
           'label': 'Reflexión',
-          'cita': '',
           'titulo': 'Reflexión del día',
           'texto': _data?.reflexionBreve?.trim().isNotEmpty == true
               ? _data!.reflexionBreve!.trim()
@@ -634,19 +625,11 @@ class _LecturasScreenState extends State<LecturasScreen>
         };
 
       default:
-        return {
-          'label': '',
-          'cita': '',
-          'titulo': '',
-          'texto': '',
-        };
+        return {};
     }
   }
 
-  Map<String, String> _buildLecturaSection(
-    String label,
-    String tipo,
-  ) {
+  Map<String, String> _buildLecturaSection(String label, String tipo) {
     final lectura = _findLectura(tipo);
 
     return {
@@ -659,153 +642,9 @@ class _LecturasScreenState extends State<LecturasScreen>
 
   LecturaModel? _findLectura(String tipo) {
     try {
-      return _data?.lecturas.firstWhere(
-        (item) => item.tipo == tipo,
-      );
+      return _data?.lecturas.firstWhere((item) => item.tipo == tipo);
     } catch (_) {
       return null;
     }
-  }
-}
-
-class _GlassBadge extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final Color? dotColor;
-
-  const _GlassBadge({
-    required this.icon,
-    required this.label,
-    this.dotColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final isDot = icon == Icons.circle;
-
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(999),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(999),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.10),
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                icon,
-                size: isDot ? 11 : 14,
-                color: isDot
-                    ? (dotColor ?? _LecturasScreenState.softGold)
-                    : _LecturasScreenState.softGold,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                label,
-                style: GoogleFonts.poppins(
-                  fontSize: 12.2,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white.withValues(alpha: 0.92),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _MessageCard extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String message;
-  final String buttonLabel;
-  final VoidCallback onTap;
-
-  const _MessageCard({
-    required this.icon,
-    required this.title,
-    required this.message,
-    required this.buttonLabel,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(24),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
-        child: Container(
-          padding: const EdgeInsets.all(22),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.08),
-            ),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                icon,
-                color: _LecturasScreenState.softGold,
-                size: 34,
-              ),
-              const SizedBox(height: 14),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: GoogleFonts.lora(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                message,
-                textAlign: TextAlign.center,
-                style: GoogleFonts.lora(
-                  color: Colors.white.withValues(alpha: 0.88),
-                  fontSize: 17,
-                  height: 1.6,
-                ),
-              ),
-              const SizedBox(height: 18),
-              ElevatedButton(
-                onPressed: onTap,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _LecturasScreenState.gold,
-                  foregroundColor: Colors.black87,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 18,
-                    vertical: 12,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-                child: Text(
-                  buttonLabel,
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }
