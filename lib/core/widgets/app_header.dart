@@ -28,12 +28,12 @@ class AppHeader extends StatelessWidget {
       padding: padding ??
           const EdgeInsets.fromLTRB(
             AppSpacing.lg,
-            54,
+            52,
             AppSpacing.lg,
-            22,
+            24,
           ),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
           colors: [
             AppColors.primaryBlue,
             AppColors.secondaryBlue,
@@ -41,13 +41,40 @@ class AppHeader extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.vertical(
-          bottom: Radius.circular(30),
+        borderRadius: const BorderRadius.vertical(
+          bottom: Radius.circular(34),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.14),
+            blurRadius: 22,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: Stack(
         alignment: Alignment.center,
         children: [
+          Positioned.fill(
+            child: IgnorePointer(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.vertical(
+                    bottom: Radius.circular(34),
+                  ),
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.white.withValues(alpha: 0.04),
+                      Colors.transparent,
+                      Colors.black.withValues(alpha: 0.06),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
           if (leftWidget != null)
             Align(
               alignment: Alignment.centerLeft,
@@ -69,17 +96,19 @@ class AppHeader extends StatelessWidget {
                   style: textTheme.headlineSmall?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w800,
-                    height: 1.15,
+                    height: 1.1,
+                    letterSpacing: -0.2,
                   ),
                 ),
-                if (subtitle != null) ...[
-                  const SizedBox(height: 5),
+                if (subtitle != null && subtitle!.trim().isNotEmpty) ...[
+                  const SizedBox(height: 6),
                   Text(
                     subtitle!,
                     textAlign: TextAlign.center,
                     style: textTheme.bodyMedium?.copyWith(
-                      color: Colors.white.withValues(alpha: 0.82),
-                      height: 1.3,
+                      color: Colors.white.withValues(alpha: 0.80),
+                      height: 1.38,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ],
