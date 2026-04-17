@@ -137,7 +137,7 @@ class _RosarioRezoScreenState extends State<RosarioRezoScreen>
       if (!mounted) return;
       setState(() => _soundEnabled = false);
     } else {
-      await _audioService.resumeAmbient(volume: _soundVolume);
+      await _audioService.resumeAmbient();
       if (!mounted) return;
       setState(() => _soundEnabled = true);
     }
