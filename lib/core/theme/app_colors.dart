@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   // =========================
-  // IDENTIDAD PRINCIPAL
+  // IDENTIDAD ACTUAL
   // =========================
   static const Color primaryBlue = Color(0xFF0B1E66);
   static const Color secondaryBlue = Color(0xFF1736A2);
@@ -28,30 +28,49 @@ class AppColors {
   static const Color divider = Color(0xFFE9EEF8);
 
   // =========================
-  // DARK SPIRITUAL SYSTEM
+  // LUMEN / SPIRITUAL DARK
   // =========================
-  static const Color darkBackground = Color(0xFF070B17);
-  static const Color darkBackgroundSoft = Color(0xFF0C1224);
-  static const Color darkSurface = Color(0xFF10182D);
-  static const Color darkSurfaceSoft = Color(0xFF16213B);
-  static const Color darkCard = Color(0xFF121C31);
-  static const Color darkCardStrong = Color(0xFF182540);
+  static const Color darkBackground = Color(0xFF0A0912);
+  static const Color darkBackgroundSoft = Color(0xFF11101B);
+  static const Color darkSurface = Color(0xFF171621);
+  static const Color darkSurfaceSoft = Color(0xFF1C1A27);
+  static const Color darkCard = Color(0xFF191824);
+  static const Color darkCardStrong = Color(0xFF201E2E);
 
-  static const Color darkTextPrimary = Color(0xFFF5F7FC);
-  static const Color darkTextSecondary = Color(0xFFB8C2D8);
-  static const Color darkTextMuted = Color(0xFF8B97B2);
+  static const Color darkTextPrimary = Color(0xFFF4F1F6);
+  static const Color darkTextSecondary = Color(0xFFCDC7D7);
+  static const Color darkTextMuted = Color(0xFF958FA2);
 
-  static const Color darkBorder = Color(0xFF26324F);
-  static const Color darkBorderSoft = Color(0xFF1D2740);
-  static const Color darkDivider = Color(0xFF1C2742);
+  static const Color darkBorder = Color(0xFF302D3C);
+  static const Color darkBorderSoft = Color(0xFF262432);
+  static const Color darkDivider = Color(0xFF262334);
 
-  static const Color navShell = Color(0xFF070C19);
-  static const Color navBackground = Color(0xFF131C34);
-  static const Color navBackgroundActive = Color(0xFF1A2747);
-  static const Color navBorder = Color(0xFF283657);
+  static const Color navShell = Color(0xFF0D0B15);
+  static const Color navBackground = Color(0xFF191824);
+  static const Color navBackgroundActive = Color(0xFF232131);
+  static const Color navBorder = Color(0xFF343041);
 
-  static const Color overlayStrong = Color(0x99000000);
+  static const Color overlayStrong = Color(0xB3000000);
   static const Color overlaySoft = Color(0x33000000);
+
+  // =========================
+  // PALETA LUMEN
+  // =========================
+  static const Color lumenBackground = Color(0xFF100F18);
+  static const Color lumenCard = Color(0xFF191824);
+  static const Color lumenCardElevated = Color(0xFF1E1D2B);
+  static const Color lumenCardStroke = Color(0x33FFFFFF);
+
+  static const Color lumenGold = Color(0xFFC8A732);
+  static const Color lumenGoldBright = Color(0xFFDBCC4D);
+  static const Color lumenGoldDeep = Color(0xFFB49425);
+
+  static const Color lumenTextPrimary = Color(0xFFF4F0F6);
+  static const Color lumenTextSecondary = Color(0xFFCFC9D8);
+  static const Color lumenTextMuted = Color(0xFF9B95A6);
+
+  static const Color lumenPurpleGlow = Color(0xFF2B2543);
+  static const Color lumenBlueGlow = Color(0xFF1B2540);
 
   // =========================
   // STATUS

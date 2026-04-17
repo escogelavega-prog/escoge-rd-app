@@ -24,16 +24,12 @@ class _MainShellState extends State<MainShell> {
   void initState() {
     super.initState();
 
-    _screens = [
-      HomeScreen(
-        onOpenOracion: () => _goToTab(1),
-        onOpenRetiros: () => _goToTab(2),
-        onOpenContenido: () => _goToTab(3),
-      ),
-      const OracionScreen(),
-      const RetirosScreen(),
-      const ContenidoScreen(),
-      const PerfilScreen(),
+    _screens = const [
+      HomeScreen(),
+      OracionScreen(),
+      RetirosScreen(),
+      ContenidoScreen(),
+      PerfilScreen(),
     ];
   }
 
@@ -48,14 +44,11 @@ class _MainShellState extends State<MainShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // 🔥 IMPORTANTE: evita que el teclado rompa el layout
       resizeToAvoidBottomInset: false,
-
       body: IndexedStack(
         index: _currentIndex,
         children: _screens,
       ),
-
       bottomNavigationBar: CustomBottomNav(
         currentIndex: _currentIndex,
         onTap: _goToTab,

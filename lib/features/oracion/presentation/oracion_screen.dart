@@ -1,7 +1,10 @@
+// ignore_for_file: unused_element
+
 import 'dart:async';
 import 'dart:ui';
 
 import 'package:escoge/core/theme/app_colors.dart';
+import 'package:escoge/core/widgets/lumen_segmented_control.dart';
 import 'package:escoge/features/oracion/data/models/liturgia_day_model.dart';
 import 'package:escoge/features/oracion/presentation/evangelio_screen.dart';
 import 'package:escoge/features/oracion/presentation/lecturas_screen.dart';
@@ -220,10 +223,16 @@ class _OracionScreenState extends State<OracionScreen> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: _DaySwitcher(
-                          showTomorrow: _showTomorrow,
-                          onSelectToday: _selectToday,
-                          onSelectTomorrow: _selectTomorrow,
+                        child: LumenSegmentedControl(
+                          selectedIndex: _showTomorrow ? 1 : 0,
+                          items: const ['Hoy', 'Mañana'],
+                          onChanged: (index) {
+                            if (index == 0) {
+                              _selectToday();
+                            } else {
+                              _selectTomorrow();
+                            }
+                          },
                         ),
                       ),
                       const SizedBox(height: 14),
@@ -496,12 +505,12 @@ class _OracionScreenState extends State<OracionScreen> {
   static Widget _unusedBuilder(BuildContext context) => const SizedBox.shrink();
 }
 
-class _DaySwitcher extends StatelessWidget {
+class _LumenSegmentedControl extends StatelessWidget {
   final bool showTomorrow;
   final VoidCallback onSelectToday;
   final VoidCallback onSelectTomorrow;
 
-  const _DaySwitcher({
+  const _LumenSegmentedControl({
     required this.showTomorrow,
     required this.onSelectToday,
     required this.onSelectTomorrow,

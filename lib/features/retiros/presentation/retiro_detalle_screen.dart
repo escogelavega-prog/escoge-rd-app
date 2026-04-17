@@ -1,5 +1,4 @@
 import 'package:escoge/core/theme/app_backgrounds.dart';
-import 'package:escoge/core/theme/app_colors.dart';
 import 'package:escoge/core/widgets/app_background.dart';
 import 'package:escoge/core/widgets/premium_menu_card.dart';
 import 'package:escoge/features/retiros/domain/retiro_item.dart';

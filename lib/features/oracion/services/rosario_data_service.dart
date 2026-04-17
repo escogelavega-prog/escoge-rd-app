@@ -17,168 +17,176 @@ class RosarioDataService {
     'Jaculatoria',
   ];
 
+  // =========================
+  // MÉTODO PRINCIPAL
+  // =========================
   static List<RosarioMisterioModel> getMisterios(String tipo) {
     switch (tipo) {
       case 'gozosos':
-        return const [
-          RosarioMisterioModel(
-            tituloCorto: 'Primer Misterio Gozoso',
-            titulo: 'La Anunciación',
-            subtitulo: 'El ángel Gabriel visita a la Virgen María',
-            imagePath: 'assets/images/rosario/Gozosos/gozoso01.png',
-          ),
-          RosarioMisterioModel(
-            tituloCorto: 'Segundo Misterio Gozoso',
-            titulo: 'La Visitación',
-            subtitulo: 'María visita a su prima Isabel',
-            imagePath: 'assets/images/rosario/Gozosos/gozoso02.png',
-          ),
-          RosarioMisterioModel(
-            tituloCorto: 'Tercer Misterio Gozoso',
-            titulo: 'El Nacimiento de Jesús',
-            subtitulo: 'El Hijo de Dios nace en Belén',
-            imagePath: 'assets/images/rosario/Gozosos/gozoso03.png',
-          ),
-          RosarioMisterioModel(
-            tituloCorto: 'Cuarto Misterio Gozoso',
-            titulo: 'La Presentación',
-            subtitulo: 'Jesús es presentado en el templo',
-            imagePath: 'assets/images/rosario/Gozosos/gozoso04.png',
-          ),
-          RosarioMisterioModel(
-            tituloCorto: 'Quinto Misterio Gozoso',
-            titulo: 'El Niño Jesús Perdido y Hallado',
-            subtitulo: 'Jesús es hallado en el templo',
-            imagePath: 'assets/images/rosario/Gozosos/gozoso05.png',
-          ),
-        ];
-
+        return _gozosos;
       case 'dolorosos':
-        return const [
-          RosarioMisterioModel(
-            tituloCorto: 'Primer Misterio Doloroso',
-            titulo: 'La Oración en el Huerto',
-            subtitulo: 'Jesús ora en Getsemaní',
-            imagePath: 'assets/images/rosario/Dolorosos/doloroso01.png',
-          ),
-          RosarioMisterioModel(
-            tituloCorto: 'Segundo Misterio Doloroso',
-            titulo: 'La Flagelación',
-            subtitulo: 'Jesús es azotado',
-            imagePath: 'assets/images/rosario/Dolorosos/doloroso02.png',
-          ),
-          RosarioMisterioModel(
-            tituloCorto: 'Tercer Misterio Doloroso',
-            titulo: 'La Coronación de Espinas',
-            subtitulo: 'Jesús es coronado con espinas',
-            imagePath: 'assets/images/rosario/Dolorosos/doloroso03.png',
-          ),
-          RosarioMisterioModel(
-            tituloCorto: 'Cuarto Misterio Doloroso',
-            titulo: 'Jesús con la Cruz a Cuestas',
-            subtitulo: 'Camino al Calvario',
-            imagePath: 'assets/images/rosario/Dolorosos/doloroso04.png',
-          ),
-          RosarioMisterioModel(
-            tituloCorto: 'Quinto Misterio Doloroso',
-            titulo: 'La Crucifixión',
-            subtitulo: 'Jesús muere en la cruz',
-            imagePath: 'assets/images/rosario/Dolorosos/doloroso05.png',
-          ),
-        ];
-
+        return _dolorosos;
       case 'gloriosos':
-        return const [
-          RosarioMisterioModel(
-            tituloCorto: 'Primer Misterio Glorioso',
-            titulo: 'La Resurrección',
-            subtitulo: 'Jesús resucita glorioso',
-            imagePath: 'assets/images/rosario/Gloriosos/glorioso01.png',
-          ),
-          RosarioMisterioModel(
-            tituloCorto: 'Segundo Misterio Glorioso',
-            titulo: 'La Ascensión',
-            subtitulo: 'Jesús asciende al cielo',
-            imagePath: 'assets/images/rosario/Gloriosos/glorioso02.png',
-          ),
-          RosarioMisterioModel(
-            tituloCorto: 'Tercer Misterio Glorioso',
-            titulo: 'La Venida del Espíritu Santo',
-            subtitulo: 'Pentecostés sobre María y los apóstoles',
-            imagePath: 'assets/images/rosario/Gloriosos/glorioso03.png',
-          ),
-          RosarioMisterioModel(
-            tituloCorto: 'Cuarto Misterio Glorioso',
-            titulo: 'La Asunción de María',
-            subtitulo: 'María es llevada al cielo',
-            imagePath: 'assets/images/rosario/Gloriosos/glorioso04.png',
-          ),
-          RosarioMisterioModel(
-            tituloCorto: 'Quinto Misterio Glorioso',
-            titulo: 'La Coronación de María',
-            subtitulo: 'María es coronada como Reina del Cielo',
-            imagePath: 'assets/images/rosario/Gloriosos/glorioso05.png',
-          ),
-        ];
-
+        return _gloriosos;
       case 'luminosos':
-        return const [
-          RosarioMisterioModel(
-            tituloCorto: 'Primer Misterio Luminoso',
-            titulo: 'El Bautismo de Jesús',
-            subtitulo: 'Jesús es bautizado en el Jordán',
-            imagePath: 'assets/images/rosario/Luminosos/luminoso01.png',
-          ),
-          RosarioMisterioModel(
-            tituloCorto: 'Segundo Misterio Luminoso',
-            titulo: 'Las Bodas de Caná',
-            subtitulo: 'Jesús realiza su primer milagro',
-            imagePath: 'assets/images/rosario/Luminosos/luminoso02.png',
-          ),
-          RosarioMisterioModel(
-            tituloCorto: 'Tercer Misterio Luminoso',
-            titulo: 'El Anuncio del Reino',
-            subtitulo: 'Jesús invita a la conversión',
-            imagePath: 'assets/images/rosario/Luminosos/luminoso03.png',
-          ),
-          RosarioMisterioModel(
-            tituloCorto: 'Cuarto Misterio Luminoso',
-            titulo: 'La Transfiguración',
-            subtitulo: 'Jesús se manifiesta glorioso',
-            imagePath: 'assets/images/rosario/Luminosos/luminoso04.png',
-          ),
-          RosarioMisterioModel(
-            tituloCorto: 'Quinto Misterio Luminoso',
-            titulo: 'La Institución de la Eucaristía',
-            subtitulo: 'Jesús se entrega en el pan y el vino',
-            imagePath: 'assets/images/rosario/Luminosos/luminoso05.png',
-          ),
-        ];
-
+        return _luminosos;
       default:
-        return const [
-          RosarioMisterioModel(
-            tituloCorto: 'Primer Misterio Gozoso',
-            titulo: 'La Anunciación',
-            subtitulo: 'El ángel Gabriel visita a la Virgen María',
-            imagePath: 'assets/images/rosario/Gozosos/gozoso01.png',
-          ),
-        ];
+        return _gozosos;
     }
   }
+
+  // =========================
+  // DATA ORGANIZADA
+  // =========================
+
+  static const List<RosarioMisterioModel> _gozosos = [
+    RosarioMisterioModel(
+      tituloCorto: '1° Gozoso',
+      titulo: 'La Anunciación',
+      subtitulo: 'El ángel Gabriel visita a la Virgen María',
+      imagePath: 'assets/images/rosario/Gozosos/gozoso01.png',
+    ),
+    RosarioMisterioModel(
+      tituloCorto: '2° Gozoso',
+      titulo: 'La Visitación',
+      subtitulo: 'María visita a su prima Isabel',
+      imagePath: 'assets/images/rosario/Gozosos/gozoso02.png',
+    ),
+    RosarioMisterioModel(
+      tituloCorto: '3° Gozoso',
+      titulo: 'El Nacimiento de Jesús',
+      subtitulo: 'El Hijo de Dios nace en Belén',
+      imagePath: 'assets/images/rosario/Gozosos/gozoso03.png',
+    ),
+    RosarioMisterioModel(
+      tituloCorto: '4° Gozoso',
+      titulo: 'La Presentación',
+      subtitulo: 'Jesús es presentado en el templo',
+      imagePath: 'assets/images/rosario/Gozosos/gozoso04.png',
+    ),
+    RosarioMisterioModel(
+      tituloCorto: '5° Gozoso',
+      titulo: 'El Niño Jesús Perdido y Hallado',
+      subtitulo: 'Jesús es hallado en el templo',
+      imagePath: 'assets/images/rosario/Gozosos/gozoso05.png',
+    ),
+  ];
+
+  static const List<RosarioMisterioModel> _dolorosos = [
+    RosarioMisterioModel(
+      tituloCorto: '1° Doloroso',
+      titulo: 'La Oración en el Huerto',
+      subtitulo: 'Jesús ora en Getsemaní',
+      imagePath: 'assets/images/rosario/Dolorosos/doloroso01.png',
+    ),
+    RosarioMisterioModel(
+      tituloCorto: '2° Doloroso',
+      titulo: 'La Flagelación',
+      subtitulo: 'Jesús es azotado',
+      imagePath: 'assets/images/rosario/Dolorosos/doloroso02.png',
+    ),
+    RosarioMisterioModel(
+      tituloCorto: '3° Doloroso',
+      titulo: 'La Coronación de Espinas',
+      subtitulo: 'Jesús es coronado con espinas',
+      imagePath: 'assets/images/rosario/Dolorosos/doloroso03.png',
+    ),
+    RosarioMisterioModel(
+      tituloCorto: '4° Doloroso',
+      titulo: 'Jesús con la Cruz a Cuestas',
+      subtitulo: 'Camino al Calvario',
+      imagePath: 'assets/images/rosario/Dolorosos/doloroso04.png',
+    ),
+    RosarioMisterioModel(
+      tituloCorto: '5° Doloroso',
+      titulo: 'La Crucifixión',
+      subtitulo: 'Jesús muere en la cruz',
+      imagePath: 'assets/images/rosario/Dolorosos/doloroso05.png',
+    ),
+  ];
+
+  static const List<RosarioMisterioModel> _gloriosos = [
+    RosarioMisterioModel(
+      tituloCorto: '1° Glorioso',
+      titulo: 'La Resurrección',
+      subtitulo: 'Jesús resucita glorioso',
+      imagePath: 'assets/images/rosario/Gloriosos/glorioso01.png',
+    ),
+    RosarioMisterioModel(
+      tituloCorto: '2° Glorioso',
+      titulo: 'La Ascensión',
+      subtitulo: 'Jesús asciende al cielo',
+      imagePath: 'assets/images/rosario/Gloriosos/glorioso02.png',
+    ),
+    RosarioMisterioModel(
+      tituloCorto: '3° Glorioso',
+      titulo: 'Pentecostés',
+      subtitulo: 'El Espíritu Santo desciende',
+      imagePath: 'assets/images/rosario/Gloriosos/glorioso03.png',
+    ),
+    RosarioMisterioModel(
+      tituloCorto: '4° Glorioso',
+      titulo: 'La Asunción',
+      subtitulo: 'María es llevada al cielo',
+      imagePath: 'assets/images/rosario/Gloriosos/glorioso04.png',
+    ),
+    RosarioMisterioModel(
+      tituloCorto: '5° Glorioso',
+      titulo: 'La Coronación',
+      subtitulo: 'María es coronada reina',
+      imagePath: 'assets/images/rosario/Gloriosos/glorioso05.png',
+    ),
+  ];
+
+  static const List<RosarioMisterioModel> _luminosos = [
+    RosarioMisterioModel(
+      tituloCorto: '1° Luminoso',
+      titulo: 'El Bautismo de Jesús',
+      subtitulo: 'En el Jordán',
+      imagePath: 'assets/images/rosario/Luminosos/luminoso01.png',
+    ),
+    RosarioMisterioModel(
+      tituloCorto: '2° Luminoso',
+      titulo: 'Las Bodas de Caná',
+      subtitulo: 'Primer milagro',
+      imagePath: 'assets/images/rosario/Luminosos/luminoso02.png',
+    ),
+    RosarioMisterioModel(
+      tituloCorto: '3° Luminoso',
+      titulo: 'El Reino de Dios',
+      subtitulo: 'Llamado a la conversión',
+      imagePath: 'assets/images/rosario/Luminosos/luminoso03.png',
+    ),
+    RosarioMisterioModel(
+      tituloCorto: '4° Luminoso',
+      titulo: 'La Transfiguración',
+      subtitulo: 'Jesús glorioso',
+      imagePath: 'assets/images/rosario/Luminosos/luminoso04.png',
+    ),
+    RosarioMisterioModel(
+      tituloCorto: '5° Luminoso',
+      titulo: 'La Eucaristía',
+      subtitulo: 'Entrega total de Cristo',
+      imagePath: 'assets/images/rosario/Luminosos/luminoso05.png',
+    ),
+  ];
+
+  // =========================
+  // ORACIONES
+  // =========================
 
   static String getPrayerText(String paso) {
     switch (paso) {
       case 'Padre Nuestro':
-        return 'Padre nuestro, que estás en el cielo, santificado sea tu Nombre; venga a nosotros tu reino; hágase tu voluntad en la tierra como en el cielo.';
+        return 'Padre nuestro, que estás en el cielo...';
       case 'Ave María':
-        return 'Dios te salve, María; llena eres de gracia; el Señor es contigo. Bendita tú eres entre todas las mujeres, y bendito es el fruto de tu vientre, Jesús.';
+        return 'Dios te salve, María...';
       case 'Gloria':
-        return 'Gloria al Padre, al Hijo y al Espíritu Santo, como era en el principio, ahora y siempre, por los siglos de los siglos. Amén.';
+        return 'Gloria al Padre, al Hijo...';
       case 'Jaculatoria':
-        return 'María, Madre de gracia, Madre de misericordia, en la vida y en la muerte ampáranos, gran Señora.';
+        return 'María, Madre de gracia...';
       default:
-        return 'Continúa este paso del Santo Rosario con recogimiento y devoción.';
+        return 'Continúa con recogimiento y devoción.';
     }
   }
 }
