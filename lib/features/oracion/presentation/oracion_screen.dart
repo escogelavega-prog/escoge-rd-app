@@ -26,6 +26,14 @@ class OracionScreen extends StatefulWidget {
 class _OracionScreenState extends State<OracionScreen> {
   final LiturgiaService _liturgiaService = LiturgiaService();
 
+  static const String _iconSantoDelDia =
+      'assets/icons/modules/santo_del_dia.png';
+  static const String _iconRosario = 'assets/icons/modules/santo_rosario.png';
+  static const String _iconPeticiones = 'assets/icons/modules/peticiones.png';
+  static const String _iconReflexiones = 'assets/icons/modules/reflexiones.png';
+  static const String _iconEvangelio = 'assets/icons/modules/evangelio.png';
+  static const String _iconOraciones = 'assets/icons/modules/oraciones.png';
+
   LiturgiaDayModel? _liturgiaDay;
   bool _loading = true;
   String? _errorMessage;
@@ -301,34 +309,8 @@ class _OracionScreenState extends State<OracionScreen> {
                         ),
                       ),
                       const SizedBox(height: 14),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: _ModuloCard(
-                          titulo: _showTomorrow
-                              ? 'Evangelio de Mañana'
-                              : 'Evangelio del Día',
-                          subtitulo: _buildEvangelioSubtitle(
-                            _liturgiaDay,
-                            _loading,
-                            _errorMessage,
-                          ),
-                          icon: Icons.menu_book_rounded,
-                          enabled: _hasLiturgia,
-                          accent: AppColors.gold,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => EvangelioScreen(
-                                  selectedDate: _selectedDate,
-                                ),
-                              ),
-                            );
-                          },
-                          destinationBuilder: _unusedBuilder,
-                        ),
-                      ),
-                      const SizedBox(height: 14),
+
+                      // 1. Santo del Día
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: _ModuloCard(
@@ -340,9 +322,8 @@ class _OracionScreenState extends State<OracionScreen> {
                             _loading,
                             _errorMessage,
                           ),
-                          icon: Icons.person_rounded,
+                          imageAsset: _iconSantoDelDia,
                           enabled: _hasLiturgia,
-                          accent: AppColors.goldSoft,
                           onTap: () {
                             Navigator.push(
                               context,
@@ -357,6 +338,35 @@ class _OracionScreenState extends State<OracionScreen> {
                         ),
                       ),
                       const SizedBox(height: 14),
+
+                      // 2. Santo Rosario
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: _ModuloCard(
+                          titulo: 'Santo Rosario',
+                          subtitulo:
+                              'Vive una experiencia guiada de oración contemplativa y profunda.',
+                          imageAsset: _iconRosario,
+                          destinationBuilder: _buildRosarioScreen,
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+
+                      // 3. Peticiones
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: _ModuloCard(
+                          titulo: 'Peticiones',
+                          subtitulo:
+                              'Comparte una intención y únete en oración con la comunidad.',
+                          imageAsset: _iconPeticiones,
+                          destinationBuilder: (context) =>
+                              const PeticionesScreen(),
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+
+                      // 4. Reflexiones
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: _ModuloCard(
@@ -366,9 +376,8 @@ class _OracionScreenState extends State<OracionScreen> {
                             _loading,
                             _errorMessage,
                           ),
-                          icon: Icons.lightbulb_outline_rounded,
+                          imageAsset: _iconReflexiones,
                           enabled: _hasLiturgia,
-                          accent: const Color(0xFFE6C66B),
                           onTap: () {
                             Navigator.push(
                               context,
@@ -383,31 +392,36 @@ class _OracionScreenState extends State<OracionScreen> {
                         ),
                       ),
                       const SizedBox(height: 14),
+
+                      // 5. Evangelio del Día
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: _ModuloCard(
-                          titulo: 'Santo Rosario',
-                          subtitulo:
-                              'Vive una experiencia guiada de oración contemplativa y profunda.',
-                          icon: Icons.auto_awesome,
-                          accent: const Color(0xFFDCC58A),
-                          destinationBuilder: _buildRosarioScreen,
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: _ModuloCard(
-                          titulo: 'Peticiones',
-                          subtitulo:
-                              'Comparte una intención y únete en oración con la comunidad.',
-                          icon: Icons.favorite_border_rounded,
-                          accent: AppColors.goldSoft,
-                          destinationBuilder: (context) =>
-                              const PeticionesScreen(),
+                          titulo: _showTomorrow
+                              ? 'Evangelio de Mañana'
+                              : 'Evangelio del Día',
+                          subtitulo: _buildEvangelioSubtitle(
+                            _liturgiaDay,
+                            _loading,
+                            _errorMessage,
+                          ),
+                          imageAsset: _iconEvangelio,
+                          enabled: _hasLiturgia,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => EvangelioScreen(
+                                  selectedDate: _selectedDate,
+                                ),
+                              ),
+                            );
+                          },
+                          destinationBuilder: _unusedBuilder,
                         ),
                       ),
                       const SizedBox(height: 24),
+
                       const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 16),
                         child: _SectionHeader(
@@ -417,12 +431,12 @@ class _OracionScreenState extends State<OracionScreen> {
                         ),
                       ),
                       const SizedBox(height: 14),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: _ComingSoonCard(
                           titulo: 'Oraciones',
                           subtitulo: 'Muy pronto disponibles.',
-                          icon: Icons.self_improvement,
+                          imageAsset: _iconOraciones,
                         ),
                       ),
                     ],
@@ -503,93 +517,6 @@ class _OracionScreenState extends State<OracionScreen> {
       const RosarioScreen();
 
   static Widget _unusedBuilder(BuildContext context) => const SizedBox.shrink();
-}
-
-class _LumenSegmentedControl extends StatelessWidget {
-  final bool showTomorrow;
-  final VoidCallback onSelectToday;
-  final VoidCallback onSelectTomorrow;
-
-  const _LumenSegmentedControl({
-    required this.showTomorrow,
-    required this.onSelectToday,
-    required this.onSelectTomorrow,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        padding: const EdgeInsets.all(4),
-        decoration: BoxDecoration(
-          color: AppColors.white.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(999),
-          border: Border.all(
-            color: AppColors.white.withValues(alpha: 0.08),
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _DayPill(
-              label: 'Hoy',
-              selected: !showTomorrow,
-              onTap: onSelectToday,
-            ),
-            const SizedBox(width: 6),
-            _DayPill(
-              label: 'Mañana',
-              selected: showTomorrow,
-              onTap: onSelectTomorrow,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _DayPill extends StatelessWidget {
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _DayPill({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 220),
-        curve: Curves.easeOut,
-        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 11),
-        decoration: BoxDecoration(
-          color: selected
-              ? AppColors.gold.withValues(alpha: 0.18)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(999),
-          border: Border.all(
-            color: selected
-                ? AppColors.white.withValues(alpha: 0.10)
-                : Colors.transparent,
-          ),
-        ),
-        child: Text(
-          label,
-          style: GoogleFonts.poppins(
-            color: AppColors.white,
-            fontSize: 13.5,
-            fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 class _HoyEnLaIglesiaHeroClean extends StatelessWidget {
@@ -884,20 +811,18 @@ class _ModuloCard extends StatelessWidget {
   const _ModuloCard({
     required this.titulo,
     required this.subtitulo,
-    required this.icon,
+    required this.imageAsset,
     required this.destinationBuilder,
     this.onTap,
     this.enabled = true,
-    this.accent = AppColors.gold,
   });
 
   final String titulo;
   final String subtitulo;
-  final IconData icon;
+  final String imageAsset;
   final WidgetBuilder destinationBuilder;
   final VoidCallback? onTap;
   final bool enabled;
-  final Color accent;
 
   @override
   Widget build(BuildContext context) {
@@ -938,18 +863,27 @@ class _ModuloCard extends StatelessWidget {
             child: Row(
               children: [
                 Container(
-                  height: 56,
-                  width: 56,
+                  height: 78,
+                  width: 78,
+                  padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: accent.withValues(alpha: 0.14),
-                    borderRadius: BorderRadius.circular(18),
+                    color: AppColors.white.withValues(alpha: 0.06),
+                    borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: AppColors.white.withValues(alpha: 0.06),
                     ),
                   ),
-                  child: Icon(icon, color: accent),
+                  child: Image.asset(
+                    imageAsset,
+                    fit: BoxFit.contain,
+                    errorBuilder: (_, __, ___) => Icon(
+                      Icons.image_not_supported_outlined,
+                      size: 30,
+                      color: AppColors.white.withValues(alpha: 0.65),
+                    ),
+                  ),
                 ),
-                const SizedBox(width: 14),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -962,11 +896,11 @@ class _ModuloCard extends StatelessWidget {
                           color: AppColors.white,
                         ),
                       ),
-                      const SizedBox(height: 5),
+                      const SizedBox(height: 6),
                       Text(
                         subtitulo,
                         style: GoogleFonts.poppins(
-                          fontSize: 13.5,
+                          fontSize: 13.6,
                           height: 1.55,
                           color: AppColors.white.withValues(alpha: 0.76),
                           fontWeight: FontWeight.w500,
@@ -1047,12 +981,12 @@ class _ComingSoonCard extends StatelessWidget {
   const _ComingSoonCard({
     required this.titulo,
     required this.subtitulo,
-    required this.icon,
+    required this.imageAsset,
   });
 
   final String titulo;
   final String subtitulo;
-  final IconData icon;
+  final String imageAsset;
 
   @override
   Widget build(BuildContext context) {
@@ -1068,18 +1002,24 @@ class _ComingSoonCard extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            height: 52,
-            width: 52,
+            height: 74,
+            width: 74,
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: AppColors.white.withValues(alpha: 0.08),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(18),
             ),
-            child: Icon(
-              icon,
-              color: AppColors.white.withValues(alpha: 0.78),
+            child: Image.asset(
+              imageAsset,
+              fit: BoxFit.contain,
+              errorBuilder: (_, __, ___) => Icon(
+                Icons.image_not_supported_outlined,
+                size: 30,
+                color: AppColors.white.withValues(alpha: 0.65),
+              ),
             ),
           ),
-          const SizedBox(width: 14),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

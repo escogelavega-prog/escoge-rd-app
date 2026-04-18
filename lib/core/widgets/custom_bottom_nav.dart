@@ -1,7 +1,4 @@
-import 'package:escoge/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class CustomBottomNav extends StatelessWidget {
   final int currentIndex;
@@ -13,223 +10,102 @@ class CustomBottomNav extends StatelessWidget {
     required this.onTap,
   });
 
+  static const Color primaryBlue = Color(0xFF0B1E66);
+  static const Color gold = Color(0xFFD4AF37);
+
   @override
   Widget build(BuildContext context) {
-    final mainItems = <_NavItemData>[
-      const _NavItemData(icon: Icons.home_rounded, label: 'Inicio'),
-      const _NavItemData(icon: Icons.auto_awesome_rounded, label: 'Oración'),
-      const _NavItemData(icon: Icons.groups_rounded, label: 'Retiros'),
-      const _NavItemData(icon: Icons.grid_view_rounded, label: 'Contenido'),
-    ];
-
-    const perfilItem = _NavItemData(
-      icon: Icons.person_rounded,
-      label: 'Perfil',
-    );
-
     return Container(
-      color: AppColors.navShell,
-      padding: const EdgeInsets.fromLTRB(14, 6, 14, 12),
+      height: 88,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 10,
+            offset: Offset(0, -2),
+          ),
+        ],
+      ),
       child: SafeArea(
         top: false,
         child: Row(
           children: [
-            Expanded(
-              child: _GlassNavCapsule(
-                child: Row(
-                  children: List.generate(mainItems.length, (index) {
-                    final item = mainItems[index];
-                    return Expanded(
-                      child: _PressableNavButton(
-                        item: item,
-                        isActive: currentIndex == index,
-                        onTap: () {
-                          HapticFeedback.lightImpact();
-                          onTap(index);
-                        },
-                      ),
-                    );
-                  }),
-                ),
-              ),
+            _buildItem(
+              index: 0,
+              asset: 'assets/icons/home.png',
+              label: 'Inicio',
             ),
-            const SizedBox(width: 8),
-            SizedBox(
-              width: 80,
-              child: _GlassNavCapsule(
-                active: currentIndex == 4,
-                child: _PressableNavButton(
-                  item: perfilItem,
-                  isActive: currentIndex == 4,
-                  onTap: () {
-                    HapticFeedback.lightImpact();
-                    onTap(4);
-                  },
-                ),
-              ),
+            _buildItem(
+              index: 1,
+              asset: 'assets/icons/contenido.png',
+              label: 'oraciones',
+            ),
+            _buildItem(
+              index: 2,
+              asset: 'assets/icons/retiros.png',
+              label: 'Retiros',
+            ),
+            _buildItem(
+              index: 3,
+              asset: 'assets/icons/inscripcion.png',
+              label: 'contenido',
+            ),
+            _buildItem(
+              index: 4,
+              asset: 'assets/icons/perfil.png',
+              label: 'Perfil',
             ),
           ],
         ),
       ),
     );
   }
-}
 
-class _GlassNavCapsule extends StatelessWidget {
-  final Widget child;
-  final bool active;
+  Widget _buildItem({
+    required int index,
+    required String asset,
+    required String label,
+  }) {
+    final bool isActive = currentIndex == index;
 
-  const _GlassNavCapsule({
-    required this.child,
-    this.active = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 260),
-      curve: Curves.easeOutCubic,
-      height: 74,
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
-      decoration: BoxDecoration(
-        color:
-            (active ? AppColors.navBackgroundActive : AppColors.navBackground)
-                .withValues(alpha: 0.94),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(
-          color: AppColors.white.withValues(alpha: 0.08),
-          width: 1,
-        ),
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            AppColors.white.withValues(alpha: 0.04),
-            Colors.transparent,
-          ],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.34),
-            blurRadius: 24,
-            spreadRadius: -10,
-            offset: const Offset(0, 14),
-          ),
-          BoxShadow(
-            color: AppColors.lumenPurpleGlow.withValues(alpha: 0.16),
-            blurRadius: 18,
-            spreadRadius: -8,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: child,
-    );
-  }
-}
-
-class _PressableNavButton extends StatefulWidget {
-  final _NavItemData item;
-  final bool isActive;
-  final VoidCallback onTap;
-
-  const _PressableNavButton({
-    required this.item,
-    required this.isActive,
-    required this.onTap,
-  });
-
-  @override
-  State<_PressableNavButton> createState() => _PressableNavButtonState();
-}
-
-class _PressableNavButtonState extends State<_PressableNavButton> {
-  bool _pressed = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final isActive = widget.isActive;
-
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTapDown: (_) => setState(() => _pressed = true),
-      onTapCancel: () => setState(() => _pressed = false),
-      onTapUp: (_) {
-        setState(() => _pressed = false);
-        widget.onTap();
-      },
-      child: AnimatedScale(
-        scale: _pressed ? 0.94 : (isActive ? 1.05 : 1),
-        duration: const Duration(milliseconds: 140),
-        curve: Curves.easeOutCubic,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 260),
-          curve: Curves.easeOutCubic,
-          margin: const EdgeInsets.symmetric(horizontal: 2.5),
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
-          decoration: BoxDecoration(
-            color: isActive
-                ? AppColors.lumenGold.withValues(alpha: 0.12)
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(999),
-            boxShadow: isActive
-                ? [
-                    BoxShadow(
-                      color: AppColors.lumenGold.withValues(alpha: 0.22),
-                      blurRadius: 18,
-                      spreadRadius: -6,
-                      offset: const Offset(0, 6),
-                    ),
-                  ]
-                : null,
-          ),
+    return Expanded(
+      child: InkWell(
+        onTap: () => onTap(index),
+        borderRadius: BorderRadius.circular(18),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 260),
-                curve: Curves.easeOutCubic,
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: isActive
-                      ? AppColors.lumenGold.withValues(alpha: 0.18)
-                      : Colors.transparent,
-                  boxShadow: isActive
-                      ? [
-                          BoxShadow(
-                            color: AppColors.lumenGold.withValues(alpha: 0.25),
-                            blurRadius: 16,
-                            spreadRadius: -6,
-                            offset: const Offset(0, 6),
-                          ),
-                        ]
-                      : null,
-                ),
-                child: Icon(
-                  widget.item.icon,
-                  size: isActive ? 22 : 20,
-                  color: isActive
-                      ? AppColors.lumenGoldBright
-                      : AppColors.darkTextSecondary,
+              AnimatedScale(
+                scale: isActive ? 1.05 : 1.0,
+                duration: const Duration(milliseconds: 200),
+                child: Image.asset(
+                  asset,
+                  width: 22,
+                  height: 22,
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Icon(
+                      Icons.broken_image_outlined,
+                      size: 22,
+                      color: isActive ? gold : primaryBlue,
+                    );
+                  },
                 ),
               ),
-              const SizedBox(height: 4),
-              AnimatedDefaultTextStyle(
-                duration: const Duration(milliseconds: 220),
-                curve: Curves.easeOutCubic,
-                style: GoogleFonts.poppins(
-                  fontSize: isActive ? 11 : 10,
-                  fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                  color: isActive
-                      ? AppColors.lumenGoldBright
-                      : AppColors.darkTextSecondary,
+              const SizedBox(height: 5),
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 10,
                   height: 1.0,
-                ),
-                child: Text(
-                  widget.item.label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+                  color: isActive ? gold : primaryBlue,
                 ),
               ),
             ],
@@ -238,14 +114,4 @@ class _PressableNavButtonState extends State<_PressableNavButton> {
       ),
     );
   }
-}
-
-class _NavItemData {
-  final IconData icon;
-  final String label;
-
-  const _NavItemData({
-    required this.icon,
-    required this.label,
-  });
 }

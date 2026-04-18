@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 
 import 'package:escoge/core/widgets/custom_bottom_nav.dart';
-
+import 'package:escoge/features/contenido/presentation/contenido_screen.dart';
 import 'package:escoge/features/home/presentation/home_screen.dart';
 import 'package:escoge/features/oracion/presentation/oracion_screen.dart';
-import 'package:escoge/features/retiros/presentation/retiros_screen.dart';
-import 'package:escoge/features/contenido/presentation/contenido_screen.dart';
 import 'package:escoge/features/perfil/presentation/perfil_screen.dart';
+import 'package:escoge/features/retiros/presentation/retiros_screen.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -18,23 +17,18 @@ class MainShell extends StatefulWidget {
 class _MainShellState extends State<MainShell> {
   int _currentIndex = 0;
 
-  late final List<Widget> _screens;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _screens = const [
-      HomeScreen(),
-      OracionScreen(),
-      RetirosScreen(),
-      ContenidoScreen(),
-      PerfilScreen(),
-    ];
-  }
+  static const List<Widget> _screens = [
+    HomeScreen(),
+    OracionScreen(),
+    RetirosScreen(),
+    ContenidoScreen(),
+    PerfilScreen(),
+  ];
 
   void _goToTab(int index) {
-    if (_currentIndex == index) return;
+    if (_currentIndex == index) {
+      return;
+    }
 
     setState(() {
       _currentIndex = index;
