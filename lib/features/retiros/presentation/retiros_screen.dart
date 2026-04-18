@@ -3,8 +3,8 @@ import 'package:escoge/core/widgets/app_background.dart';
 import 'package:escoge/core/widgets/app_card.dart';
 import 'package:escoge/features/auth/data/services/auth_service.dart';
 import 'package:escoge/features/auth/domain/app_user_model.dart';
+import 'package:escoge/features/retiros/data/models/retiro_item_model.dart';
 import 'package:escoge/features/retiros/data/services/retiros_service.dart';
-import 'package:escoge/features/retiros/domain/retiro_item.dart';
 import 'package:escoge/features/retiros/presentation/retiro_detalle_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -29,13 +29,15 @@ class RetirosScreen extends StatelessWidget {
             future: authService.getCurrentAppUser(),
             builder: (context, userSnapshot) {
               if (userSnapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
               }
 
               final user = userSnapshot.data;
 
               // Si no hay usuario autenticado o perfil disponible,
-              // usamos una vista básica tipo joven sin diócesis fija.
+              // se usa vista básica tipo joven sin diócesis fija.
               final role = user?.role ?? 'joven';
               final diocesisId = user?.diocesisId;
 
@@ -103,7 +105,9 @@ class RetirosScreen extends StatelessWidget {
 class _Header extends StatelessWidget {
   final String roleLabel;
 
-  const _Header({required this.roleLabel});
+  const _Header({
+    required this.roleLabel,
+  });
 
   String _friendlyRole(String role) {
     switch (role) {
@@ -208,7 +212,7 @@ class _RetirosList extends StatelessWidget {
   Widget build(BuildContext context) {
     final service = RetirosService();
 
-    return StreamBuilder<List<RetiroItem>>(
+    return StreamBuilder<List<RetiroItemModel>>(
       stream: service.escucharRetirosPorRol(
         role: role,
         diocesisId: diocesisId,
@@ -225,7 +229,7 @@ class _RetirosList extends StatelessWidget {
           );
         }
 
-        final retiros = snapshot.data ?? [];
+        final retiros = snapshot.data ?? <RetiroItemModel>[];
 
         if (retiros.isEmpty) {
           return const _MessageCard(
@@ -236,10 +240,10 @@ class _RetirosList extends StatelessWidget {
         }
 
         return Column(
-          children: retiros.map((r) {
+          children: retiros.map((retiro) {
             return Padding(
               padding: const EdgeInsets.only(bottom: 16),
-              child: _RetiroCard(retiro: r),
+              child: _RetiroCard(retiro: retiro),
             );
           }).toList(),
         );
@@ -249,9 +253,11 @@ class _RetirosList extends StatelessWidget {
 }
 
 class _RetiroCard extends StatelessWidget {
-  final RetiroItem retiro;
+  final RetiroItemModel retiro;
 
-  const _RetiroCard({required this.retiro});
+  const _RetiroCard({
+    required this.retiro,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -298,11 +304,23 @@ class _RetiroCard extends StatelessWidget {
           const SizedBox(height: 12),
           Wrap(
             spacing: 10,
+            runSpacing: 10,
             children: [
               if (retiro.fecha.isNotEmpty)
-                _MetaChip(icon: Icons.calendar_today, text: retiro.fecha),
+                _MetaChip(
+                  icon: Icons.calendar_today,
+                  text: retiro.fecha,
+                ),
               if (retiro.ciudad.isNotEmpty)
-                _MetaChip(icon: Icons.location_on, text: retiro.ciudad),
+                _MetaChip(
+                  icon: Icons.location_on,
+                  text: retiro.ciudad,
+                ),
+              if (retiro.diocesis.isNotEmpty)
+                _MetaChip(
+                  icon: Icons.church,
+                  text: retiro.diocesis,
+                ),
             ],
           ),
         ],
@@ -315,7 +333,10 @@ class _MetaChip extends StatelessWidget {
   final IconData icon;
   final String text;
 
-  const _MetaChip({required this.icon, required this.text});
+  const _MetaChip({
+    required this.icon,
+    required this.text,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -328,7 +349,11 @@ class _MetaChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: RetirosScreen.gold),
+          Icon(
+            icon,
+            size: 14,
+            color: RetirosScreen.gold,
+          ),
           const SizedBox(width: 6),
           Text(
             text,
@@ -371,6 +396,7 @@ class _MessageCard extends StatelessWidget {
         children: [
           Text(
             title,
+            textAlign: TextAlign.center,
             style: GoogleFonts.poppins(
               color: Colors.white,
               fontWeight: FontWeight.w700,
@@ -379,6 +405,7 @@ class _MessageCard extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             subtitle,
+            textAlign: TextAlign.center,
             style: GoogleFonts.poppins(
               color: Colors.white.withValues(alpha: 0.7),
               fontSize: 12,

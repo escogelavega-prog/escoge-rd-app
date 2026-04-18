@@ -64,6 +64,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '735501422337',
     projectId: 'escogerd-48354',
     storageBucket: 'escogerd-48354.firebasestorage.app',
+    androidClientId: '735501422337-k11ju35u5dac1drtnna1lksv9o3s4nd0.apps.googleusercontent.com',
+    iosClientId: '735501422337-teu9l1ftbmchf064qcspijp399ihhk5m.apps.googleusercontent.com',
     iosBundleId: 'com.example.escoge',
   );
 
@@ -73,6 +75,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '735501422337',
     projectId: 'escogerd-48354',
     storageBucket: 'escogerd-48354.firebasestorage.app',
+    androidClientId: '735501422337-k11ju35u5dac1drtnna1lksv9o3s4nd0.apps.googleusercontent.com',
+    iosClientId: '735501422337-teu9l1ftbmchf064qcspijp399ihhk5m.apps.googleusercontent.com',
     iosBundleId: 'com.example.escoge',
   );
 
@@ -85,4 +89,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'escogerd-48354.firebasestorage.app',
     measurementId: 'G-4KCHWW3L9X',
   );
+
 }

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:escoge/features/oracion/data/models/evangelio_model.dart';
 import 'package:escoge/features/oracion/data/models/lectura_model.dart';
 import 'package:escoge/features/oracion/data/models/santo_model.dart';
@@ -36,31 +37,28 @@ class LiturgiaDayModel {
     String id,
     Map<String, dynamic> map,
   ) {
-    final evangelioMap = map['evangelio'];
+    final evangelioMap = _asStringDynamicMap(map['evangelio']);
+    final santoMap = _asStringDynamicMap(map['santoDelDia']);
+    final versiculoMap = _asStringDynamicMap(map['versiculoDelDia']);
     final lecturasList = map['lecturas'] as List<dynamic>? ?? [];
-    final santoMap = map['santoDelDia'];
-    final versiculoMap = map['versiculoDelDia'];
 
     return LiturgiaDayModel(
       id: id,
-      fecha:
-          DateTime.tryParse((map['fecha'] ?? '').toString()) ?? DateTime.now(),
+      fecha: _parseDate(map['fecha']) ?? DateTime.now(),
       titulo: (map['titulo'] ?? '').toString(),
       tiempoLiturgico: (map['tiempoLiturgico'] ?? '').toString(),
       colorLiturgico: (map['colorLiturgico'] ?? '').toString(),
       celebracion: (map['celebracion'] ?? '').toString(),
       reflexionBreve: map['reflexionBreve']?.toString(),
-      evangelio: evangelioMap is Map<String, dynamic>
-          ? EvangelioModel.fromMap(evangelioMap)
-          : null,
+      evangelio:
+          evangelioMap != null ? EvangelioModel.fromMap(evangelioMap) : null,
       lecturas: lecturasList
+          .map(_asStringDynamicMap)
           .whereType<Map<String, dynamic>>()
           .map(LecturaModel.fromMap)
           .toList(),
-      santoDelDia: santoMap is Map<String, dynamic>
-          ? SantoModel.fromMap(santoMap)
-          : null,
-      versiculoDelDia: versiculoMap is Map<String, dynamic>
+      santoDelDia: santoMap != null ? SantoModel.fromMap(santoMap) : null,
+      versiculoDelDia: versiculoMap != null
           ? VersiculoDelDiaModel.fromMap(versiculoMap)
           : null,
       publicado: map['publicado'] == true,
@@ -111,6 +109,36 @@ class LiturgiaDayModel {
       versiculoDelDia: versiculoDelDia ?? this.versiculoDelDia,
       publicado: publicado ?? this.publicado,
     );
+  }
+
+  static DateTime? _parseDate(dynamic value) {
+    if (value == null) return null;
+
+    if (value is Timestamp) {
+      return value.toDate();
+    }
+
+    if (value is DateTime) {
+      return value;
+    }
+
+    return DateTime.tryParse(value.toString());
+  }
+
+  static Map<String, dynamic>? _asStringDynamicMap(dynamic value) {
+    if (value == null) return null;
+
+    if (value is Map<String, dynamic>) {
+      return value;
+    }
+
+    if (value is Map) {
+      return value.map(
+        (key, val) => MapEntry(key.toString(), val),
+      );
+    }
+
+    return null;
   }
 
   static String _dateOnlyString(DateTime date) {

@@ -115,8 +115,9 @@ class _LoginScreenState extends State<LoginScreen> {
     final message = error.toString();
 
     if (message.contains('invalid-email')) return 'Correo no válido.';
-    if (message.contains('invalid-credential'))
+    if (message.contains('invalid-credential')) {
       return 'Credenciales incorrectas.';
+    }
     if (message.contains('user-not-found')) return 'Usuario no existe.';
     if (message.contains('wrong-password')) return 'Contraseña incorrecta.';
     if (message.contains('too-many-requests')) return 'Intenta más tarde.';

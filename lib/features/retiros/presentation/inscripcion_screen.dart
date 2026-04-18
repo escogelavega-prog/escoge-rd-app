@@ -207,7 +207,6 @@ class _InscripcionHeroHeader extends StatelessWidget {
     required this.esFds,
   });
 
-  static const Color gold = Color(0xFFD4AF37);
   static const Color _softGold = Color(0xFFE8C76A);
 
   @override

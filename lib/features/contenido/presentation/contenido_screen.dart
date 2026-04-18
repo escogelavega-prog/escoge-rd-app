@@ -59,9 +59,9 @@ class ContenidoScreen extends StatelessWidget {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Colors.black.withOpacity(0.18),
-                Colors.black.withOpacity(0.28),
-                Colors.black.withOpacity(0.38),
+                Colors.black.withValues(alpha: .18),
+                Colors.black.withValues(alpha: .28),
+                Colors.black.withValues(alpha: 0.38),
               ],
             ),
           ),
@@ -87,7 +87,7 @@ class ContenidoScreen extends StatelessWidget {
         Text(
           'Explora formación, oración y recursos para tu crecimiento espiritual.',
           style: GoogleFonts.poppins(
-            color: softWhite.withOpacity(0.88),
+            color: softWhite.withValues(alpha: 0.88),
             fontSize: 14,
             fontWeight: FontWeight.w400,
             height: 1.45,
@@ -112,20 +112,20 @@ class ContenidoScreen extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(28),
           border: Border.all(
-            color: Colors.white.withOpacity(0.14),
+            color: Colors.white.withValues(alpha: .14),
             width: 1,
           ),
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Colors.white.withOpacity(0.16),
-              Colors.white.withOpacity(0.08),
+              Colors.white.withValues(alpha: 0.16),
+              Colors.white.withValues(alpha: 0.08),
             ],
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.22),
+              color: Colors.black.withValues(alpha: .22),
               blurRadius: 24,
               offset: const Offset(0, 10),
             ),
@@ -157,7 +157,7 @@ class ContenidoScreen extends StatelessWidget {
                   Text(
                     'Profundiza en la doctrina católica con una experiencia organizada, clara y visualmente integrada con el resto de la app.',
                     style: GoogleFonts.poppins(
-                      color: softWhite.withOpacity(0.82),
+                      color: softWhite.withValues(alpha: 0.82),
                       fontSize: 13,
                       fontWeight: FontWeight.w400,
                       height: 1.45,
@@ -171,9 +171,9 @@ class ContenidoScreen extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(18),
-                      color: Colors.black.withOpacity(0.16),
+                      color: Colors.black.withValues(alpha: .16),
                       border: Border.all(
-                        color: Colors.white.withOpacity(0.10),
+                        color: Colors.white.withValues(alpha: 0.10),
                       ),
                     ),
                     child: Row(
@@ -182,13 +182,13 @@ class ContenidoScreen extends StatelessWidget {
                         Icon(
                           Icons.menu_book_rounded,
                           size: 18,
-                          color: gold.withOpacity(0.95),
+                          color: gold.withValues(alpha: 0.95),
                         ),
                         const SizedBox(width: 8),
                         Text(
                           'Entrar a Catecismo',
                           style: GoogleFonts.poppins(
-                            color: softWhite.withOpacity(0.92),
+                            color: softWhite.withValues(alpha: .92),
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                           ),
@@ -225,7 +225,7 @@ class ContenidoScreen extends StatelessWidget {
         Text(
           subtitle,
           style: GoogleFonts.poppins(
-            color: softWhite.withOpacity(0.82),
+            color: softWhite.withValues(alpha: 0.82),
             fontSize: 14,
             fontWeight: FontWeight.w400,
             height: 1.45,
@@ -301,20 +301,20 @@ class ContenidoScreen extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(28),
           border: Border.all(
-            color: Colors.white.withOpacity(0.12),
+            color: Colors.white.withValues(alpha: 0.12),
             width: 1,
           ),
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Colors.white.withOpacity(0.14),
-              Colors.white.withOpacity(0.07),
+              Colors.white.withValues(alpha: 0.14),
+              Colors.white.withValues(alpha: 0.07),
             ],
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.20),
+              color: Colors.black.withValues(alpha: .20),
               blurRadius: 22,
               offset: const Offset(0, 8),
             ),
@@ -345,7 +345,7 @@ class ContenidoScreen extends StatelessWidget {
                   Text(
                     item.subtitle,
                     style: GoogleFonts.poppins(
-                      color: softWhite.withOpacity(0.78),
+                      color: softWhite.withValues(alpha: 0.78),
                       fontSize: 13,
                       fontWeight: FontWeight.w400,
                       height: 1.45,
@@ -358,7 +358,7 @@ class ContenidoScreen extends StatelessWidget {
             Icon(
               Icons.arrow_forward_ios_rounded,
               size: 16,
-              color: softWhite.withOpacity(0.65),
+              color: softWhite.withValues(alpha: 0.65),
             ),
           ],
         ),
@@ -376,9 +376,9 @@ class ContenidoScreen extends StatelessWidget {
       height: boxSize,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(18),
-        color: gold.withOpacity(0.12),
+        color: gold.withValues(alpha: 0.12),
         border: Border.all(
-          color: Colors.white.withOpacity(0.08),
+          color: Colors.white.withValues(alpha: 0.08),
         ),
       ),
       child: Center(

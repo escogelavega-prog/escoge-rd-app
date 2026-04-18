@@ -1,16 +1,30 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:escoge/core/constants/firebase_collections.dart';
 import 'package:escoge/features/auth/domain/app_roles.dart';
-import 'package:escoge/features/retiros/domain/retiro_item.dart';
+import 'package:escoge/features/retiros/data/models/retiro_item_model.dart';
 
 class RetirosService {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  RetirosService({
+    FirebaseFirestore? firestore,
+  }) : _firestore = firestore ?? FirebaseFirestore.instance;
 
-  RetiroItem _mapDocToRetiro(DocumentSnapshot<Map<String, dynamic>> doc) {
+  final FirebaseFirestore _firestore;
+
+  CollectionReference<Map<String, dynamic>> get _retirosRef =>
+      _firestore.collection(FirebaseCollections.retiros);
+
+  // =========================
+  // MAPEO
+  // =========================
+
+  RetiroItemModel _mapDocToRetiro(
+    DocumentSnapshot<Map<String, dynamic>> doc,
+  ) {
     final data = doc.data() ?? {};
 
-    final recomendaciones =
-        (data['recomendaciones'] as List?)?.map((e) => e.toString()).toList() ??
-            <String>[];
+    final recomendaciones = (data['recomendaciones'] as List<dynamic>? ?? [])
+        .map((e) => e.toString())
+        .toList();
 
     final imagePath = _readString(
       data,
@@ -18,7 +32,7 @@ class RetirosService {
       fallback: 'assets/images/retiro_default.png',
     );
 
-    return RetiroItem(
+    return RetiroItemModel(
       id: doc.id,
       titulo: _readString(
         data,
@@ -67,29 +81,33 @@ class RetirosService {
     );
   }
 
-  Stream<List<RetiroItem>> escucharRetirosPorRol({
+  // =========================
+  // STREAM POR ROL
+  // =========================
+
+  Stream<List<RetiroItemModel>> escucharRetirosPorRol({
     required String role,
     String? diocesisId,
   }) {
     final normalizedRole = AppRoles.normalize(role);
-    Query<Map<String, dynamic>> query = _firestore.collection('retiros');
+    Query<Map<String, dynamic>> query = _retirosRef;
 
-    // superadmin: no se filtra nada
+    // SUPERADMIN
     if (normalizedRole == AppRoles.superadmin) {
       return query.snapshots().map(_mapAndSort);
     }
 
-    // nacional: todos los activos/publicados
+    // NACIONAL
     if (normalizedRole == AppRoles.nacional) {
       return query.snapshots().map(
             (snapshot) => _mapAndSort(snapshot).where((e) => e.activo).toList(),
           );
     }
 
-    // diocesano: solo su diócesis y activos
+    // DIOCESANO
     if (normalizedRole == AppRoles.diocesano) {
       if (diocesisId == null || diocesisId.trim().isEmpty) {
-        return Stream.value(<RetiroItem>[]);
+        return Stream.value(<RetiroItemModel>[]);
       }
 
       query = query.where('diocesisId', isEqualTo: diocesisId.trim());
@@ -99,8 +117,7 @@ class RetirosService {
           );
     }
 
-    // joven: solo activos/publicados.
-    // Si tiene diócesis, se prioriza solo su diócesis.
+    // JOVEN / USUARIO NORMAL
     if (diocesisId != null && diocesisId.trim().isNotEmpty) {
       query = query.where('diocesisId', isEqualTo: diocesisId.trim());
     }
@@ -110,12 +127,16 @@ class RetirosService {
         );
   }
 
-  Future<List<RetiroItem>> obtenerRetirosPorRol({
+  // =========================
+  // FUTURE POR ROL
+  // =========================
+
+  Future<List<RetiroItemModel>> obtenerRetirosPorRol({
     required String role,
     String? diocesisId,
   }) async {
     final normalizedRole = AppRoles.normalize(role);
-    Query<Map<String, dynamic>> query = _firestore.collection('retiros');
+    Query<Map<String, dynamic>> query = _retirosRef;
 
     if (normalizedRole == AppRoles.superadmin) {
       final snapshot = await query.get();
@@ -129,7 +150,7 @@ class RetirosService {
 
     if (normalizedRole == AppRoles.diocesano) {
       if (diocesisId == null || diocesisId.trim().isEmpty) {
-        return <RetiroItem>[];
+        return <RetiroItemModel>[];
       }
 
       final snapshot =
@@ -146,7 +167,11 @@ class RetirosService {
     return _mapAndSort(snapshot).where((e) => e.activo).toList();
   }
 
-  Future<List<RetiroItem>> obtenerRetirosDestacadosPorRol({
+  // =========================
+  // DESTACADOS
+  // =========================
+
+  Future<List<RetiroItemModel>> obtenerRetirosDestacadosPorRol({
     required String role,
     String? diocesisId,
   }) async {
@@ -154,10 +179,11 @@ class RetirosService {
       role: role,
       diocesisId: diocesisId,
     );
+
     return items.where((e) => e.destacado).take(5).toList();
   }
 
-  Future<RetiroItem?> obtenerRetiroPrincipalPorRol({
+  Future<RetiroItemModel?> obtenerRetiroPrincipalPorRol({
     required String role,
     String? diocesisId,
   }) async {
@@ -172,7 +198,13 @@ class RetirosService {
     return destacados.isNotEmpty ? destacados.first : items.first;
   }
 
-  List<RetiroItem> _mapAndSort(QuerySnapshot<Map<String, dynamic>> snapshot) {
+  // =========================
+  // HELPERS
+  // =========================
+
+  List<RetiroItemModel> _mapAndSort(
+    QuerySnapshot<Map<String, dynamic>> snapshot,
+  ) {
     final items = snapshot.docs.map(_mapDocToRetiro).toList();
 
     items.sort((a, b) {
@@ -191,6 +223,7 @@ class RetirosService {
     for (final key in keys) {
       final value = data[key];
       if (value == null) continue;
+
       final text = value.toString().trim();
       if (text.isNotEmpty) return text;
     }
@@ -198,7 +231,7 @@ class RetirosService {
   }
 
   bool _isFalse(dynamic value) {
-    return value == false || value.toString().toLowerCase() == 'false';
+    return value == false || value.toString().toLowerCase().trim() == 'false';
   }
 
   bool _isEstadoOculto(dynamic value) {
