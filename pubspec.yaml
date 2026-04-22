@@ -34,10 +34,10 @@ flutter:
 
   assets:
     - assets/images/
-    - assets/images/rosario/Gozosos/
-    - assets/images/rosario/Dolorosos/
-    - assets/images/rosario/Gloriosos/
-    - assets/images/rosario/Luminosos/
+    - assets/rosario/Gozosos/
+    - assets/rosario/Dolorosos/
+    - assets/rosario/Gloriosos/
+    - assets/rosario/Luminosos/
     - assets/logos/logo.png
     - assets/backgrounds/
     - assets/backgrounds/form.png
