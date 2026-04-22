@@ -94,15 +94,15 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.07),
+          color: Colors.white.withOpacity(0.07),
           borderRadius: BorderRadius.circular(22),
           border: Border.all(
-            color: Colors.white.withValues(alpha: 0.10),
+            color: Colors.white.withOpacity(0.10),
             width: 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.18),
+              color: Colors.black.withOpacity(0.18),
               blurRadius: 14,
               offset: const Offset(0, 6),
             ),
@@ -160,9 +160,9 @@ class _HomeScreenState extends State<HomeScreen> {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    Colors.black.withValues(alpha: 0.18),
-                    Colors.black.withValues(alpha: 0.38),
-                    Colors.black.withValues(alpha: 0.72),
+                    Colors.black.withOpacity(0.18),
+                    Colors.black.withOpacity(0.38),
+                    Colors.black.withOpacity(0.72),
                   ],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
