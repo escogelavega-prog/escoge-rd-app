@@ -1,4 +1,5 @@
 import 'package:escoge/app/routes/app_page_route.dart';
+import 'package:escoge/core/constants/app_icons.dart';
 import 'package:escoge/core/theme/app_colors.dart';
 import 'package:escoge/core/widgets/lumen_segmented_control.dart';
 import 'package:escoge/features/oracion/data/models/liturgia_day_model.dart';
@@ -98,40 +99,19 @@ class _HomeScreenState extends State<HomeScreen> {
           borderRadius: BorderRadius.circular(22),
           border: Border.all(
             color: Colors.white.withOpacity(0.10),
-            width: 1,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.18),
-              blurRadius: 14,
-              offset: const Offset(0, 6),
-            ),
-          ],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Expanded(
-              child: Center(
-                child: Image.asset(
-                  iconPath,
-                  width: 44,
-                  height: 44,
-                  fit: BoxFit.contain,
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
+            Image.asset(iconPath, width: 40),
+            const SizedBox(height: 10),
             Text(
               title,
               textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
               style: GoogleFonts.poppins(
                 color: Colors.white,
                 fontSize: 13,
-                fontWeight: FontWeight.w500,
-                height: 1.2,
               ),
             ),
           ],
@@ -157,17 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Positioned.fill(
             child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Colors.black.withOpacity(0.18),
-                    Colors.black.withOpacity(0.38),
-                    Colors.black.withOpacity(0.72),
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
+              color: Colors.black.withOpacity(0.2),
             ),
           ),
           SafeArea(
@@ -179,16 +149,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   )
                 : _errorMessage != null
                     ? Center(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24),
-                          child: Text(
-                            _errorMessage!,
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.poppins(
-                              color: Colors.white,
-                              fontSize: 15,
-                            ),
-                          ),
+                        child: Text(
+                          _errorMessage!,
+                          style: const TextStyle(color: Colors.white),
                         ),
                       )
                     : SingleChildScrollView(
@@ -196,23 +159,17 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            // 🔥 HEADER
                             Center(
                               child: Column(
                                 children: [
-                                  Image.asset(
-                                    'assets/icons/icon_book.png',
-                                    width: 54,
-                                    height: 54,
-                                    fit: BoxFit.contain,
-                                  ),
+                                  Image.asset(AppIcons.biblia, width: 54),
                                   const SizedBox(height: 8),
                                   Text(
                                     'Escoge RD',
                                     style: GoogleFonts.poppins(
                                       color: AppColors.lumenGold,
                                       fontWeight: FontWeight.w600,
-                                      fontSize: 15,
-                                      letterSpacing: 0.5,
                                     ),
                                   ),
                                   const SizedBox(height: 4),
@@ -223,13 +180,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                       color: Colors.white,
                                       fontSize: 28,
                                       fontWeight: FontWeight.w700,
-                                      height: 1.15,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
+
                             const SizedBox(height: 18),
+
                             LumenSegmentedControl(
                               selectedIndex: _showTomorrow ? 1 : 0,
                               items: const ['Hoy', 'Mañana'],
@@ -247,41 +205,30 @@ class _HomeScreenState extends State<HomeScreen> {
                                 _loadForDate(date);
                               },
                             ),
+
                             const SizedBox(height: 18),
+
+                            // 🔥 EVANGELIO
                             GlassSpiritualCard(
-                              radius: 30,
-                              blur: 18,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    _data?.celebracion ?? 'Hoy en la Iglesia',
+                                    _data?.celebracion ?? '',
                                     style: GoogleFonts.lora(
                                       color: Colors.white,
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.w700,
-                                      height: 1.2,
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  const SizedBox(height: 8),
+                                  const SizedBox(height: 10),
                                   Text(
                                     evangelio?.cita ?? '',
                                     style: GoogleFonts.poppins(
                                       color: AppColors.lumenGold,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
-                                  const SizedBox(height: 12),
-                                  Text(
-                                    evangelio?.titulo ?? 'Evangelio del día',
-                                    style: GoogleFonts.lora(
-                                      color: Colors.white,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 12),
+                                  const SizedBox(height: 10),
                                   GestureDetector(
                                     onTap: () {
                                       Navigator.push(
@@ -297,114 +244,57 @@ class _HomeScreenState extends State<HomeScreen> {
                                       'Leer evangelio',
                                       style: GoogleFonts.poppins(
                                         color: AppColors.lumenGoldBright,
-                                        fontWeight: FontWeight.w600,
                                       ),
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                            const SizedBox(height: 16),
-                            if (primera != null)
-                              GlassSpiritualCard(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Primera Lectura',
-                                      style: GoogleFonts.poppins(
-                                        color: AppColors.lumenGold,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 6),
-                                    Text(
-                                      primera.titulo,
-                                      style: GoogleFonts.lora(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 18,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      _preview(primera.texto),
-                                      style: GoogleFonts.lora(
-                                        color: Colors.white70,
-                                        height: 1.45,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          AppPageRoute(
-                                            page: LecturasScreen(
-                                              selectedDate: _selectedDate,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      child: Text(
-                                        'Ver lecturas',
-                                        style: GoogleFonts.poppins(
-                                          color: AppColors.lumenGoldBright,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            const SizedBox(height: 24),
+
+                            const SizedBox(height: 20),
+
+                            // 🔥 ACCESOS RÁPIDOS
                             Text(
                               'Explorar',
                               style: GoogleFonts.poppins(
                                 color: AppColors.lumenGold,
                                 fontWeight: FontWeight.w600,
-                                fontSize: 15,
                               ),
                             ),
+
                             const SizedBox(height: 12),
+
                             GridView.count(
                               crossAxisCount: 2,
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
-                              mainAxisSpacing: 12,
                               crossAxisSpacing: 12,
-                              childAspectRatio: 1.15,
+                              mainAxisSpacing: 12,
                               children: [
                                 _buildQuickAccessItem(
+                                  title: 'Biblia',
+                                  iconPath: AppIcons.biblia,
+                                  onTap: () => _showComingSoon('Biblia'),
+                                ),
+                                _buildQuickAccessItem(
                                   title: 'Catecismo',
-                                  iconPath: 'assets/icons/icon_book.png',
+                                  iconPath: AppIcons.catecismo,
                                   onTap: () => _showComingSoon('Catecismo'),
                                 ),
                                 _buildQuickAccessItem(
-                                  title: 'Nuevo Testamento',
-                                  iconPath: 'assets/icons/icon_evangelio.png',
-                                  onTap: () =>
-                                      _showComingSoon('Nuevo Testamento'),
-                                ),
-                                _buildQuickAccessItem(
                                   title: 'Santos del Día',
-                                  iconPath: 'assets/icons/icon_santos_dia.png',
+                                  iconPath: AppIcons.santoDelDia,
                                   onTap: () =>
                                       _showComingSoon('Santos del Día'),
                                 ),
                                 _buildQuickAccessItem(
-                                  title: 'Oración',
-                                  iconPath: 'assets/icons/icon_prayer.png',
-                                  onTap: () => _showComingSoon('Oración'),
-                                ),
-                                _buildQuickAccessItem(
                                   title: 'Rosario',
-                                  iconPath: 'assets/icons/icon_rosario.png',
+                                  iconPath: AppIcons.santoRosario,
                                   onTap: () => _showComingSoon('Rosario'),
                                 ),
                                 _buildQuickAccessItem(
                                   title: 'Reflexión',
-                                  iconPath: 'assets/icons/icon_reflexion.png',
+                                  iconPath: AppIcons.reflexiones,
                                   onTap: () => _showComingSoon('Reflexión'),
                                 ),
                               ],
