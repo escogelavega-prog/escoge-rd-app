@@ -12,6 +12,8 @@ class EscogeApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Escoge RD',
       theme: AppTheme.light,
+      darkTheme: AppTheme.spiritualDark,
+      themeMode: ThemeMode.dark,
       home: const SessionGate(),
       onGenerateRoute: AppRoutes.onGenerateRoute,
     );

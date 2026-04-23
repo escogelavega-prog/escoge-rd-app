@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   // =========================
-  // IDENTIDAD ACTUAL
+  // IDENTIDAD BASE
   // =========================
   static const Color primaryBlue = Color(0xFF0B1E66);
   static const Color secondaryBlue = Color(0xFF1736A2);
@@ -28,25 +28,25 @@ class AppColors {
   static const Color divider = Color(0xFFE9EEF8);
 
   // =========================
-  // LUMEN / SPIRITUAL DARK
+  // LUMEN / SACRO DARK
   // =========================
   static const Color darkBackground = Color(0xFF0A0912);
   static const Color darkBackgroundSoft = Color(0xFF11101B);
   static const Color darkSurface = Color(0xFF171621);
-  static const Color darkSurfaceSoft = Color(0xFF1C1A27);
+  static const Color darkSurfaceSoft = Color(0xFF1B1926);
   static const Color darkCard = Color(0xFF191824);
   static const Color darkCardStrong = Color(0xFF201E2E);
 
-  static const Color darkTextPrimary = Color(0xFFF4F1F6);
-  static const Color darkTextSecondary = Color(0xFFCDC7D7);
-  static const Color darkTextMuted = Color(0xFF958FA2);
+  static const Color darkTextPrimary = Color(0xFFF5F1F6);
+  static const Color darkTextSecondary = Color(0xFFD2CBD9);
+  static const Color darkTextMuted = Color(0xFF9A93A7);
 
   static const Color darkBorder = Color(0xFF302D3C);
   static const Color darkBorderSoft = Color(0xFF262432);
   static const Color darkDivider = Color(0xFF262334);
 
   static const Color navShell = Color(0xFF0D0B15);
-  static const Color navBackground = Color(0xFF191824);
+  static const Color navBackground = Color(0xFF171621);
   static const Color navBackgroundActive = Color(0xFF232131);
   static const Color navBorder = Color(0xFF343041);
 
@@ -54,15 +54,19 @@ class AppColors {
   static const Color overlaySoft = Color(0x33000000);
 
   // =========================
-  // PALETA LUMEN
+  // PALETA LUMEN PREMIUM
   // =========================
   static const Color lumenBackground = Color(0xFF100F18);
+  static const Color lumenBackgroundTop = Color(0xFF13111D);
+  static const Color lumenBackgroundBottom = Color(0xFF09080F);
+
   static const Color lumenCard = Color(0xFF191824);
   static const Color lumenCardElevated = Color(0xFF1E1D2B);
-  static const Color lumenCardStroke = Color(0x33FFFFFF);
+  static const Color lumenCardStroke = Color(0x26FFFFFF);
 
   static const Color lumenGold = Color(0xFFC8A732);
-  static const Color lumenGoldBright = Color(0xFFDBCC4D);
+  static const Color lumenGoldBright = Color(0xFFE0C15A);
+  static const Color lumenGoldSoft = Color(0xFFF1DE9E);
   static const Color lumenGoldDeep = Color(0xFFB49425);
 
   static const Color lumenTextPrimary = Color(0xFFF4F0F6);
@@ -71,6 +75,14 @@ class AppColors {
 
   static const Color lumenPurpleGlow = Color(0xFF2B2543);
   static const Color lumenBlueGlow = Color(0xFF1B2540);
+  static const Color lumenWineGlow = Color(0xFF3A1E2A);
+
+  // =========================
+  // GLASS / HIGHLIGHT
+  // =========================
+  static const Color glassFill = Color(0x14FFFFFF);
+  static const Color glassStroke = Color(0x2AFFFFFF);
+  static const Color glassHighlight = Color(0x22F1DE9E);
 
   // =========================
   // STATUS
@@ -82,4 +94,27 @@ class AppColors {
 
   static const Color white = Colors.white;
   static const Color black = Colors.black;
+
+  // =========================
+  // GRADIENTES REUTILIZABLES
+  // =========================
+  static const LinearGradient screenGradient = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [
+      lumenBackgroundTop,
+      lumenBackground,
+      lumenBackgroundBottom,
+    ],
+  );
+
+  static const LinearGradient sacredGlowGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [
+      Color(0x22C8A732),
+      Color(0x0F8A7BF7),
+      Color(0x12FFFFFF),
+    ],
+  );
 }

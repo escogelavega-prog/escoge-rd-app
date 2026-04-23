@@ -1,39 +1,271 @@
+import 'dart:ui';
+import 'package:escoge/features/biblia/presentation/biblia_home_screen.dart';
+import 'package:escoge/features/contenido/presentation/catecismo_screen.dart';
+import 'package:escoge/features/oracion/presentation/evangelio_screen.dart';
+import 'package:escoge/features/oracion/presentation/reflexiones_screen.dart';
+import 'package:escoge/features/oracion/presentation/rosario_screen.dart';
+import 'package:escoge/features/oracion/presentation/santo_del_dia_screen.dart';
+import 'package:escoge/features/peticiones/presentation/peticiones_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:escoge/features/contenido/presentation/catecismo_screen.dart';
 
 class ContenidoScreen extends StatelessWidget {
   const ContenidoScreen({super.key});
 
-  static const Color primaryBlue = Color(0xFF0B1E66);
-  static const Color secondaryBlue = Color(0xFF1A3DAB);
-  static const Color gold = Color(0xFFD4AF37);
-  static const Color softWhite = Color(0xFFF8F8F8);
+  static const Color _bgTop = Color(0xFF08142E);
+  static const Color _bgBottom = Color(0xFF0D1F4F);
+  static const Color _gold = Color(0xFFD4AF37);
+  static const Color _offWhite = Color(0xFFEDE7D9);
+  static const Color _softWhite = Color(0xFFBFC6D9);
 
   @override
   Widget build(BuildContext context) {
+    final items = <_ContenidoItem>[
+      _ContenidoItem(
+        title: 'Santo Rosario',
+        subtitle: 'Ora con recogimiento y paz interior.',
+        iconPath: 'assets/icons/rosario.png',
+        onTap: () => _open(context, const RosarioScreen()),
+      ),
+      _ContenidoItem(
+        title: 'Santo del día',
+        subtitle: 'Conoce el testimonio que inspira hoy.',
+        iconPath: 'assets/icons/santo.png',
+        onTap: () => _open(context, const SantoDelDiaScreen()),
+      ),
+      _ContenidoItem(
+        title: 'Peticiones',
+        subtitle: 'Presenta tus intenciones y acompaña en oración.',
+        iconPath: 'assets/icons/peticiones.png',
+        onTap: () => _open(context, const PeticionesScreen()),
+      ),
+      _ContenidoItem(
+        title: 'Evangelio',
+        subtitle: 'Medita la Palabra del día con profundidad.',
+        iconPath: 'assets/icons/evangelio.png',
+        onTap: () => _open(context, const EvangelioScreen()),
+      ),
+      _ContenidoItem(
+        title: 'Reflexiones',
+        subtitle: 'Encuentra mensajes breves para alimentar el alma.',
+        iconPath: 'assets/icons/reflexion.png',
+        onTap: () => _open(context, const ReflexionesScreen()),
+      ),
+      _ContenidoItem(
+        title: 'Catecismo',
+        subtitle: 'Profundiza en la doctrina y enseñanza de la Iglesia.',
+        iconPath: 'assets/icons/catequesis.png',
+        onTap: () => _open(context, const CatecismoScreen()),
+      ),
+      _ContenidoItem(
+        title: 'Biblia',
+        subtitle: 'Accede a la Sagrada Escritura y alimenta tu fe.',
+        iconPath: 'assets/icons/biblia.png',
+        onTap: () => _open(context, const BibliaHomeScreen()),
+      ),
+    ];
+
     return Scaffold(
-      body: Stack(
-        children: [
-          _buildBackground(),
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(20, 18, 20, 120),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeader(),
-                  const SizedBox(height: 24),
-                  _buildCatecismoHero(context),
-                  const SizedBox(height: 28),
-                  _buildSectionHeader(
-                    title: 'Accesos principales',
-                    subtitle:
-                        'Abre lo más importante de tu recorrido espiritual.',
+      backgroundColor: Colors.transparent,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [_bgTop, _bgBottom],
+          ),
+        ),
+        child: SafeArea(
+          child: CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 18, 20, 8),
+                  child: _PremiumHeader(),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 6),
+                  child: _IntroCard(),
+                ),
+              ),
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(20, 18, 20, 28),
+                sliver: SliverGrid(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) => _ContenidoCard(item: items[index]),
+                    childCount: items.length,
                   ),
-                  const SizedBox(height: 16),
-                  _buildQuickAccessList(context),
-                ],
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 14,
+                    crossAxisSpacing: 14,
+                    childAspectRatio: 0.86,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  static void _open(BuildContext context, Widget screen) {
+    Navigator.of(context).push(
+      PageRouteBuilder(
+        transitionDuration: const Duration(milliseconds: 320),
+        reverseTransitionDuration: const Duration(milliseconds: 260),
+        pageBuilder: (_, animation, __) => FadeTransition(
+          opacity: CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeOut,
+          ),
+          child: screen,
+        ),
+      ),
+    );
+  }
+}
+
+class _PremiumHeader extends StatelessWidget {
+  const _PremiumHeader();
+
+  static const Color _gold = Color(0xFFD4AF37);
+  static const Color _offWhite = Color(0xFFEDE7D9);
+  static const Color _softWhite = Color(0xFFBFC6D9);
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(28),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(28),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.white.withValues(alpha: .10),
+                Colors.white.withValues(alpha: .04),
+              ],
+            ),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: .09),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: .14),
+                blurRadius: 22,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: _gold.withValues(alpha: .12),
+                  border: Border.all(
+                    color: _gold.withValues(alpha: .34),
+                    width: 1,
+                  ),
+                ),
+                child: const Center(
+                  child: Icon(
+                    Icons.menu_book_rounded,
+                    color: _gold,
+                    size: 24,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Contenido',
+                      style: GoogleFonts.lora(
+                        color: _offWhite,
+                        fontSize: 25,
+                        fontWeight: FontWeight.w700,
+                        height: 1.1,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Espiritualidad, formación y encuentro con Dios',
+                      style: GoogleFonts.poppins(
+                        color: _softWhite,
+                        fontSize: 12.8,
+                        fontWeight: FontWeight.w400,
+                        height: 1.35,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _IntroCard extends StatelessWidget {
+  const _IntroCard();
+
+  static const Color _gold = Color(0xFFD4AF37);
+  static const Color _offWhite = Color(0xFFEDE7D9);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        color: Colors.white.withValues(alpha: .045),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: .08),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: _gold.withValues(alpha: .10),
+            ),
+            child: const Icon(
+              Icons.auto_awesome_rounded,
+              color: _gold,
+              size: 18,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'Accede a recursos espirituales y formativos cuidadosamente organizados para acompañar tu oración, tu formación cristiana y tu vida diaria.',
+              style: GoogleFonts.poppins(
+                color: _offWhite.withValues(alpha: .92),
+                fontSize: 13,
+                height: 1.55,
+                fontWeight: FontWeight.w400,
               ),
             ),
           ),
@@ -41,357 +273,137 @@ class ContenidoScreen extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildBackground() {
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        Image.asset(
-          'assets/images/fondo_uniforme.png',
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) {
-            return Container(color: const Color(0xFF091538));
-          },
-        ),
-        Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Colors.black.withValues(alpha: .18),
-                Colors.black.withValues(alpha: .28),
-                Colors.black.withValues(alpha: 0.38),
+class _ContenidoCard extends StatelessWidget {
+  final _ContenidoItem item;
+
+  const _ContenidoCard({required this.item});
+
+  static const Color _gold = Color(0xFFD4AF37);
+  static const Color _offWhite = Color(0xFFEDE7D9);
+  static const Color _softWhite = Color(0xFFBFC6D9);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: item.onTap,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(26),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(16, 18, 16, 16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(26),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.white.withValues(alpha: .085),
+                  Colors.white.withOpacity(0.040),
+                ],
+              ),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.09),
+                width: 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.12),
+                  blurRadius: 18,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _IconFrame(iconPath: item.iconPath),
+                const Spacer(),
+                Text(
+                  item.title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.lora(
+                    color: _offWhite,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    height: 1.15,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  item.subtitle,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.poppins(
+                    color: _softWhite,
+                    fontSize: 11.8,
+                    fontWeight: FontWeight.w400,
+                    height: 1.45,
+                  ),
+                ),
+                const SizedBox(height: 14),
+                Row(
+                  children: [
+                    Text(
+                      'Entrar',
+                      style: GoogleFonts.poppins(
+                        color: _gold,
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    const Icon(
+                      Icons.arrow_forward_rounded,
+                      size: 15,
+                      color: _gold,
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
         ),
-      ],
-    );
-  }
-
-  Widget _buildHeader() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Contenido',
-          style: GoogleFonts.lora(
-            color: softWhite,
-            fontSize: 34,
-            fontWeight: FontWeight.w700,
-            height: 1.05,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Explora formación, oración y recursos para tu crecimiento espiritual.',
-          style: GoogleFonts.poppins(
-            color: softWhite.withValues(alpha: 0.88),
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-            height: 1.45,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCatecismoHero(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(28),
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const CatecismoScreen()),
-        );
-      },
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(22),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(28),
-          border: Border.all(
-            color: Colors.white.withValues(alpha: .14),
-            width: 1,
-          ),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Colors.white.withValues(alpha: 0.16),
-              Colors.white.withValues(alpha: 0.08),
-            ],
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: .22),
-              blurRadius: 24,
-              offset: const Offset(0, 10),
-            ),
-          ],
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildGlassIcon(
-              assetPath: 'assets/icons/catecismo.png',
-              size: 28,
-              boxSize: 62,
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Catecismo',
-                    style: GoogleFonts.lora(
-                      color: softWhite,
-                      fontSize: 28,
-                      fontWeight: FontWeight.w700,
-                      height: 1.1,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Profundiza en la doctrina católica con una experiencia organizada, clara y visualmente integrada con el resto de la app.',
-                    style: GoogleFonts.poppins(
-                      color: softWhite.withValues(alpha: 0.82),
-                      fontSize: 13,
-                      fontWeight: FontWeight.w400,
-                      height: 1.45,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(18),
-                      color: Colors.black.withValues(alpha: .16),
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.10),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.menu_book_rounded,
-                          size: 18,
-                          color: gold.withValues(alpha: 0.95),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Entrar a Catecismo',
-                          style: GoogleFonts.poppins(
-                            color: softWhite.withValues(alpha: .92),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            )
-          ],
-        ),
       ),
     );
   }
+}
 
-  Widget _buildSectionHeader({
-    required String title,
-    required String subtitle,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: GoogleFonts.lora(
-            color: softWhite,
-            fontSize: 28,
-            fontWeight: FontWeight.w700,
-            height: 1.1,
-          ),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          subtitle,
-          style: GoogleFonts.poppins(
-            color: softWhite.withValues(alpha: 0.82),
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-            height: 1.45,
-          ),
-        ),
-      ],
-    );
-  }
+class _IconFrame extends StatelessWidget {
+  final String iconPath;
 
-  Widget _buildQuickAccessList(BuildContext context) {
-    final items = <_ContenidoItem>[
-      _ContenidoItem(
-        title: 'Santo Rosario',
-        subtitle: 'Accede al rezo guiado y acompaña tu oración diaria.',
-        assetPath: 'assets/icons/rosario.png',
-        onTap: () {
-          // Navigator.pushNamed(context, '/rosario');
-        },
-      ),
-      _ContenidoItem(
-        title: 'Santo del Día',
-        subtitle: 'Descubre la memoria o celebración del día.',
-        assetPath: 'assets/icons/santo_dia.png',
-        onTap: () {
-          // Navigator.pushNamed(context, '/santo-del-dia');
-        },
-      ),
-      _ContenidoItem(
-        title: 'Peticiones',
-        subtitle: 'Comparte intenciones y acompaña en oración.',
-        assetPath: 'assets/icons/peticiones.png',
-        onTap: () {
-          // Navigator.pushNamed(context, '/peticiones');
-        },
-      ),
-      _ContenidoItem(
-        title: 'Evangelio',
-        subtitle: 'Lee y medita el Evangelio correspondiente al día.',
-        assetPath: 'assets/icons/evangelio.png',
-        onTap: () {
-          // Navigator.pushNamed(context, '/evangelio');
-        },
-      ),
-      _ContenidoItem(
-        title: 'Reflexiones',
-        subtitle: 'Encuentra pensamientos y mensajes para tu vida espiritual.',
-        assetPath: 'assets/icons/reflexiones.png',
-        onTap: () {
-          // Navigator.pushNamed(context, '/reflexiones');
-        },
-      ),
-    ];
+  const _IconFrame({required this.iconPath});
 
-    return Column(
-      children: items
-          .map(
-            (item) => Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: _buildAccessCard(item),
-            ),
-          )
-          .toList(),
-    );
-  }
+  static const Color _gold = Color(0xFFD4AF37);
 
-  Widget _buildAccessCard(_ContenidoItem item) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(28),
-      onTap: item.onTap,
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(28),
-          border: Border.all(
-            color: Colors.white.withValues(alpha: 0.12),
-            width: 1,
-          ),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Colors.white.withValues(alpha: 0.14),
-              Colors.white.withValues(alpha: 0.07),
-            ],
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: .20),
-              blurRadius: 22,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            _buildGlassIcon(
-              assetPath: item.assetPath,
-              size: 26,
-              boxSize: 58,
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    item.title,
-                    style: GoogleFonts.lora(
-                      color: softWhite,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      height: 1.1,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    item.subtitle,
-                    style: GoogleFonts.poppins(
-                      color: softWhite.withValues(alpha: 0.78),
-                      fontSize: 13,
-                      fontWeight: FontWeight.w400,
-                      height: 1.45,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 10),
-            Icon(
-              Icons.arrow_forward_ios_rounded,
-              size: 16,
-              color: softWhite.withValues(alpha: 0.65),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildGlassIcon({
-    required String assetPath,
-    required double size,
-    required double boxSize,
-  }) {
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      width: boxSize,
-      height: boxSize,
+      width: 58,
+      height: 58,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(18),
-        color: gold.withValues(alpha: 0.12),
+        color: _gold.withOpacity(0.10),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.08),
+          color: _gold.withOpacity(0.24),
+          width: 1,
         ),
       ),
       child: Center(
         child: Image.asset(
-          assetPath,
-          width: size,
-          height: size,
+          iconPath,
+          width: 28,
+          height: 28,
           fit: BoxFit.contain,
+          color: _gold,
           errorBuilder: (_, __, ___) {
-            return Icon(
-              Icons.broken_image_outlined,
-              size: size,
-              color: gold,
+            return const Icon(
+              Icons.image_not_supported_outlined,
+              color: _gold,
+              size: 24,
             );
           },
         ),
@@ -403,13 +415,13 @@ class ContenidoScreen extends StatelessWidget {
 class _ContenidoItem {
   final String title;
   final String subtitle;
-  final String assetPath;
+  final String iconPath;
   final VoidCallback onTap;
 
   _ContenidoItem({
     required this.title,
     required this.subtitle,
-    required this.assetPath,
+    required this.iconPath,
     required this.onTap,
   });
 }

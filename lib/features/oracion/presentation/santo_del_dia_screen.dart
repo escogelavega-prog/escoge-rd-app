@@ -1,10 +1,14 @@
 import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:escoge/core/theme/app_colors.dart';
+import 'package:escoge/features/oracion/data/models/liturgia_day_model.dart';
 import 'package:escoge/features/oracion/data/models/santo_model.dart';
-import 'package:escoge/features/oracion/services/santos_service.dart';
+import 'package:escoge/features/oracion/services/liturgia_service.dart';
+import 'package:escoge/features/oracion/widgets/glass_spiritual_card.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class SantoDelDiaScreen extends StatefulWidget {
   final DateTime? selectedDate;
@@ -19,11 +23,14 @@ class SantoDelDiaScreen extends StatefulWidget {
 }
 
 class _SantoDelDiaScreenState extends State<SantoDelDiaScreen> {
-  final SantosService _santosService = SantosService();
+  final LiturgiaService _liturgiaService = LiturgiaService();
 
+  LiturgiaDayModel? _liturgiaDay;
   SantoModel? _santo;
   bool _loading = true;
   String? _errorMessage;
+
+  bool get _hasSanto => _santo != null;
 
   @override
   void initState() {
@@ -39,14 +46,14 @@ class _SantoDelDiaScreenState extends State<SantoDelDiaScreen> {
 
     try {
       final targetDate = widget.selectedDate ?? DateTime.now();
-      final santo = await _santosService.getSantoByDate(targetDate);
+      final liturgia = await _liturgiaService.getLiturgiaByDate(targetDate);
 
       if (!mounted) return;
 
       setState(() {
-        _santo = santo;
+        _liturgiaDay = liturgia;
+        _santo = liturgia?.santoDelDia;
         _loading = false;
-        _errorMessage = null;
       });
     } catch (_) {
       if (!mounted) return;
@@ -58,267 +65,288 @@ class _SantoDelDiaScreenState extends State<SantoDelDiaScreen> {
     }
   }
 
-  String _getNombre() {
-    final nombre = _santo?.nombre.trim() ?? '';
-    return nombre.isNotEmpty ? nombre : 'Santo del día';
+  String _formatDate(DateTime? date) {
+    if (date == null) return '';
+    const months = [
+      '',
+      'enero',
+      'febrero',
+      'marzo',
+      'abril',
+      'mayo',
+      'junio',
+      'julio',
+      'agosto',
+      'septiembre',
+      'octubre',
+      'noviembre',
+      'diciembre',
+    ];
+    return '${date.day} de ${months[date.month]}';
   }
 
-  String _getSubtitulo() {
-    return _santo?.subtitulo.trim() ?? '';
-  }
+  String get _name => _santo?.nombre.trim().isNotEmpty == true
+      ? _santo!.nombre
+      : 'Santo del día';
+  String get _subtitle => _santo?.subtitulo.trim() ?? '';
+  String get _summary => _santo?.resumen.trim() ?? 'No hay resumen disponible.';
+  String get _history => _santo?.historia?.trim().isNotEmpty == true
+      ? _santo!.historia!.trim()
+      : 'No hay historia disponible para este día.';
+  String get _quote => _santo?.frase?.trim() ?? '';
 
-  String _getResumen() {
-    final resumen = _santo?.resumen.trim() ?? '';
-    return resumen.isNotEmpty
-        ? resumen
-        : 'No hay información disponible para este día.';
+  String? get _imageUrl {
+    final url = _santo?.imagenUrl?.trim();
+    if (url == null || url.isEmpty) return null;
+    return url;
   }
-
-  String _getHistoria() {
-    final historia = _santo?.historia?.trim() ?? '';
-    return historia.isNotEmpty ? historia : _getResumen();
-  }
-
-  String _getFrase() {
-    return _santo?.frase?.trim() ?? '';
-  }
-
-  String? _getImagenUrl() {
-    final url = _santo?.imagenUrl?.trim() ?? '';
-    return url.isNotEmpty ? url : null;
-  }
-
-  bool get _hasSanto => _santo != null && _errorMessage == null;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.darkBackground,
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Image.asset(
-              'assets/backgrounds/lecturas.png',
-              fit: BoxFit.cover,
-            ),
-          ),
-          Positioned.fill(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black.withValues(alpha: 0.28),
-                    Colors.black.withValues(alpha: 0.20),
-                    Colors.black.withValues(alpha: 0.42),
-                    Colors.black.withValues(alpha: 0.70),
-                  ],
-                ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: AppColors.screenGradient,
+        ),
+        child: Stack(
+          children: [
+            Positioned(
+              top: -110,
+              left: -60,
+              child: _GlowOrb(
+                size: 250,
+                color: AppColors.lumenGold.withValues(alpha: 0.10),
               ),
             ),
-          ),
-          Positioned.fill(
-            child: Container(
-              color: AppColors.primaryBlue.withValues(alpha: 0.08),
+            Positioned(
+              bottom: 90,
+              right: -60,
+              child: _GlowOrb(
+                size: 240,
+                color: AppColors.lumenPurpleGlow.withValues(alpha: 0.25),
+              ),
             ),
-          ),
-          SafeArea(
-            child: _loading
-                ? _buildLoadingState(context)
-                : _errorMessage != null
-                    ? _buildErrorState()
-                    : !_hasSanto
-                        ? _buildEmptyState()
-                        : Column(
-                            children: [
-                              _buildHeader(context),
-                              Expanded(
-                                child: _buildContent(),
+            SafeArea(
+              child: _loading
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.lumenGold,
+                      ),
+                    )
+                  : _errorMessage != null
+                      ? _StateCard(
+                          icon: PhosphorIcons.warningCircle(
+                              PhosphorIconsStyle.light),
+                          title: 'No se pudo cargar el santo',
+                          message: _errorMessage!,
+                          buttonLabel: 'Reintentar',
+                          onTap: _load,
+                        )
+                      : !_hasSanto
+                          ? _StateCard(
+                              icon: PhosphorIcons.sparkle(
+                                  PhosphorIconsStyle.light),
+                              title: 'Sin santo disponible',
+                              message:
+                                  'No se encontró contenido para esta fecha.',
+                              buttonLabel: 'Volver',
+                              onTap: () => Navigator.pop(context),
+                            )
+                          : RefreshIndicator(
+                              color: AppColors.lumenGold,
+                              onRefresh: _load,
+                              child: ListView(
+                                padding:
+                                    const EdgeInsets.fromLTRB(16, 12, 16, 32),
+                                physics: const BouncingScrollPhysics(),
+                                children: [
+                                  _HeaderBar(
+                                    title: 'Santo del día',
+                                    onBack: () => Navigator.pop(context),
+                                  ),
+                                  const SizedBox(height: 20),
+                                  _SaintHero(
+                                    name: _name,
+                                    subtitle: _subtitle,
+                                    dateLabel: _formatDate(_liturgiaDay?.fecha),
+                                    imageUrl: _imageUrl,
+                                  ),
+                                  const SizedBox(height: 18),
+                                  GlassSpiritualCard(
+                                    radius: 30,
+                                    blur: 16,
+                                    fillOpacity: 0.08,
+                                    borderOpacity: 0.12,
+                                    padding: const EdgeInsets.all(22),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        _SectionEyebrow(
+                                          text: 'Resumen espiritual',
+                                          icon: PhosphorIcons.star(
+                                              PhosphorIconsStyle.light),
+                                        ),
+                                        const SizedBox(height: 16),
+                                        Text(
+                                          _summary,
+                                          style: GoogleFonts.poppins(
+                                            color: AppColors.lumenTextSecondary,
+                                            fontSize: 14.2,
+                                            height: 1.78,
+                                          ),
+                                        ),
+                                        if (_quote.isNotEmpty) ...[
+                                          const SizedBox(height: 22),
+                                          Container(
+                                            width: double.infinity,
+                                            padding: const EdgeInsets.all(18),
+                                            decoration: BoxDecoration(
+                                              color: AppColors.white
+                                                  .withValues(alpha: 0.05),
+                                              borderRadius:
+                                                  BorderRadius.circular(22),
+                                              border: Border.all(
+                                                color: AppColors.white
+                                                    .withValues(alpha: 0.08),
+                                              ),
+                                            ),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  'Frase',
+                                                  style: GoogleFonts.poppins(
+                                                    color: AppColors
+                                                        .lumenGoldBright,
+                                                    fontSize: 11.5,
+                                                    fontWeight: FontWeight.w700,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 10),
+                                                Text(
+                                                  '“$_quote”',
+                                                  style: GoogleFonts.lora(
+                                                    color: AppColors
+                                                        .lumenTextPrimary,
+                                                    fontSize: 18,
+                                                    height: 1.65,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 18),
+                                  GlassSpiritualCard(
+                                    radius: 28,
+                                    blur: 14,
+                                    fillOpacity: 0.07,
+                                    borderOpacity: 0.10,
+                                    padding: const EdgeInsets.all(20),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        _SectionEyebrow(
+                                          text: 'Historia',
+                                          icon: PhosphorIcons.scroll(
+                                              PhosphorIconsStyle.light),
+                                        ),
+                                        const SizedBox(height: 16),
+                                        Text(
+                                          _history,
+                                          style: GoogleFonts.poppins(
+                                            color: AppColors.lumenTextSecondary,
+                                            fontSize: 14,
+                                            height: 1.8,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLoadingState(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
-      child: Column(
-        children: [
-          _buildHeader(context, loading: true),
-          const SizedBox(height: 18),
-          Container(
-            width: double.infinity,
-            height: 220,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(30),
-              color: AppColors.white.withValues(alpha: 0.08),
-              border: Border.all(
-                color: AppColors.white.withValues(alpha: 0.08),
-              ),
+                            ),
             ),
-          ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(28),
-                color: AppColors.white.withValues(alpha: 0.07),
-                border: Border.all(
-                  color: AppColors.white.withValues(alpha: 0.08),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildErrorState() {
-    return _buildMessageState(
-      icon: Icons.error_outline_rounded,
-      title: 'No se pudo cargar el santo del día',
-      message: _errorMessage ?? 'Ocurrió un error inesperado.',
-      buttonLabel: 'Reintentar',
-      onTap: _load,
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return _buildMessageState(
-      icon: Icons.auto_stories_rounded,
-      title: 'No hay santo disponible',
-      message: 'No se encontró contenido del santo del día.',
-      buttonLabel: 'Volver',
-      onTap: () => Navigator.pop(context),
-    );
-  }
-
-  Widget _buildMessageState({
-    required IconData icon,
-    required String title,
-    required String message,
-    required String buttonLabel,
-    required VoidCallback onTap,
-  }) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: _MessageCard(
-          icon: icon,
-          title: title,
-          message: message,
-          buttonLabel: buttonLabel,
-          onTap: onTap,
+          ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildHeader(BuildContext context, {bool loading = false}) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-      child: Row(
-        children: [
-          GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.white.withValues(alpha: 0.08),
-                border: Border.all(
-                  color: AppColors.white.withValues(alpha: 0.08),
-                ),
-              ),
-              child: const Icon(
-                Icons.arrow_back_ios_new,
-                color: AppColors.white,
-                size: 18,
-              ),
+class _HeaderBar extends StatelessWidget {
+  final String title;
+  final VoidCallback onBack;
+
+  const _HeaderBar({
+    required this.title,
+    required this.onBack,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        _CircleButton(
+          icon: PhosphorIcons.caretLeft(PhosphorIconsStyle.light),
+          onTap: onBack,
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            title,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.lora(
+              color: AppColors.lumenTextPrimary,
+              fontSize: 24,
+              fontWeight: FontWeight.w700,
             ),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              'Santo del día',
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.lora(
-                color: AppColors.white,
-                fontSize: 24,
-                height: 1.2,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          const SizedBox(width: 46),
-        ],
-      ),
+        ),
+        const SizedBox(width: 46),
+      ],
     );
   }
+}
 
-  Widget _buildContent() {
-    final frase = _getFrase();
-    final imageUrl = _getImagenUrl();
+class _SaintHero extends StatelessWidget {
+  final String name;
+  final String subtitle;
+  final String dateLabel;
+  final String? imageUrl;
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(16, 18, 16, 34),
-      physics: const BouncingScrollPhysics(),
-      child: Column(
-        children: [
-          _buildHeroCard(imageUrl),
-          const SizedBox(height: 18),
-          _ContentCard(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _SectionLabel('Resumen'),
-                const SizedBox(height: 16),
-                _BodyText(_getResumen()),
-                if (frase.isNotEmpty) ...[
-                  const SizedBox(height: 22),
-                  _QuoteCard(frase: frase),
-                ],
-                const SizedBox(height: 22),
-                Divider(
-                  color: AppColors.white.withValues(alpha: 0.08),
-                ),
-                const SizedBox(height: 22),
-                _SectionLabel('Historia'),
-                const SizedBox(height: 16),
-                _BodyText(_getHistoria()),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  const _SaintHero({
+    required this.name,
+    required this.subtitle,
+    required this.dateLabel,
+    required this.imageUrl,
+  });
 
-  Widget _buildHeroCard(String? imageUrl) {
+  @override
+  Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(30),
+      borderRadius: BorderRadius.circular(32),
       child: SizedBox(
-        height: 220,
-        width: double.infinity,
+        height: 320,
         child: Stack(
           children: [
             Positioned.fill(
               child: imageUrl != null
-                  ? Image.network(
-                      imageUrl,
+                  ? CachedNetworkImage(
+                      imageUrl: imageUrl!,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => _buildImageFallback(),
+                      fadeInDuration: const Duration(milliseconds: 250),
+                      placeholder: (_, __) => _fallback(),
+                      errorWidget: (_, __, ___) => _fallback(),
                     )
-                  : _buildImageFallback(),
+                  : _fallback(),
             ),
             Positioned.fill(
               child: DecoratedBox(
@@ -326,12 +354,10 @@ class _SantoDelDiaScreenState extends State<SantoDelDiaScreen> {
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    stops: const [0.0, 0.30, 0.64, 1.0],
                     colors: [
-                      Colors.black.withValues(alpha: 0.12),
-                      Colors.black.withValues(alpha: 0.18),
-                      AppColors.primaryBlue.withValues(alpha: 0.50),
-                      Colors.black.withValues(alpha: 0.82),
+                      Colors.black.withValues(alpha: 0.08),
+                      Colors.black.withValues(alpha: 0.16),
+                      Colors.black.withValues(alpha: 0.76),
                     ],
                   ),
                 ),
@@ -340,46 +366,69 @@ class _SantoDelDiaScreenState extends State<SantoDelDiaScreen> {
             Positioned.fill(
               child: Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(32),
                   border: Border.all(
-                    color: AppColors.white.withValues(alpha: 0.10),
+                    color: AppColors.white.withValues(alpha: 0.09),
                   ),
                 ),
               ),
             ),
             Positioned(
-              left: 18,
-              right: 18,
-              bottom: 16,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    _getNombre(),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.lora(
-                      color: AppColors.white,
-                      fontSize: 27,
-                      height: 1.14,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  if (_getSubtitulo().isNotEmpty) ...[
-                    const SizedBox(height: 8),
-                    Text(
-                      _getSubtitulo(),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.poppins(
-                        color: AppColors.goldSoft,
-                        fontSize: 13.8,
-                        height: 1.45,
-                        fontWeight: FontWeight.w500,
+              left: 20,
+              right: 20,
+              bottom: 20,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                  child: Container(
+                    padding: const EdgeInsets.all(18),
+                    decoration: BoxDecoration(
+                      color: AppColors.black.withValues(alpha: 0.18),
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(
+                        color: AppColors.white.withValues(alpha: 0.10),
                       ),
                     ),
-                  ],
-                ],
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (dateLabel.isNotEmpty) ...[
+                          Text(
+                            dateLabel,
+                            style: GoogleFonts.poppins(
+                              color: AppColors.lumenGoldSoft,
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                        ],
+                        Text(
+                          name,
+                          style: GoogleFonts.lora(
+                            color: AppColors.white,
+                            fontSize: 26,
+                            fontWeight: FontWeight.w700,
+                            height: 1.2,
+                          ),
+                        ),
+                        if (subtitle.isNotEmpty) ...[
+                          const SizedBox(height: 10),
+                          Text(
+                            subtitle,
+                            style: GoogleFonts.poppins(
+                              color: AppColors.lumenTextSecondary,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              height: 1.5,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ),
           ],
@@ -388,129 +437,132 @@ class _SantoDelDiaScreenState extends State<SantoDelDiaScreen> {
     );
   }
 
-  Widget _buildImageFallback() {
+  Widget _fallback() {
     return Container(
-      color: AppColors.white.withValues(alpha: 0.05),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF2B2543),
+            Color(0xFF171621),
+            Color(0xFF100F18),
+          ],
+        ),
+      ),
       child: Center(
         child: Icon(
-          Icons.auto_stories_rounded,
-          color: AppColors.goldSoft,
-          size: 52,
+          PhosphorIcons.crownSimple(PhosphorIconsStyle.light),
+          color: AppColors.lumenGold.withValues(alpha: 0.75),
+          size: 56,
         ),
       ),
     );
   }
 }
 
-class _SectionLabel extends StatelessWidget {
+class _SectionEyebrow extends StatelessWidget {
   final String text;
+  final IconData icon;
 
-  const _SectionLabel(this.text);
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: GoogleFonts.poppins(
-        color: AppColors.gold,
-        fontSize: 15.2,
-        fontWeight: FontWeight.w600,
-      ),
-    );
-  }
-}
-
-class _BodyText extends StatelessWidget {
-  final String text;
-
-  const _BodyText(this.text);
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: GoogleFonts.lora(
-        color: AppColors.white.withValues(alpha: 0.98),
-        fontSize: 19.2,
-        height: 1.82,
-        letterSpacing: 0.15,
-        fontWeight: FontWeight.w400,
-      ),
-    );
-  }
-}
-
-class _QuoteCard extends StatelessWidget {
-  final String frase;
-
-  const _QuoteCard({
-    required this.frase,
+  const _SectionEyebrow({
+    required this.text,
+    required this.icon,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.white.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: AppColors.white.withValues(alpha: 0.08),
+    return Row(
+      children: [
+        Icon(
+          icon,
+          color: AppColors.lumenGoldBright,
+          size: 16,
         ),
-      ),
-      child: Text(
-        '“$frase”',
-        style: GoogleFonts.lora(
-          color: AppColors.white.withValues(alpha: 0.95),
-          fontSize: 17.5,
-          height: 1.6,
-          fontStyle: FontStyle.italic,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-    );
-  }
-}
-
-class _ContentCard extends StatelessWidget {
-  final Widget child;
-
-  const _ContentCard({
-    required this.child,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(28),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: AppColors.white.withValues(alpha: 0.07),
-            borderRadius: BorderRadius.circular(28),
-            border: Border.all(
-              color: AppColors.white.withValues(alpha: 0.08),
-            ),
+        const SizedBox(width: 8),
+        Text(
+          text,
+          style: GoogleFonts.poppins(
+            color: AppColors.lumenGoldBright,
+            fontSize: 11.5,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.35,
           ),
-          child: child,
+        ),
+      ],
+    );
+  }
+}
+
+class _CircleButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _CircleButton({
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(999),
+      child: Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: AppColors.white.withValues(alpha: 0.06),
+          border: Border.all(
+            color: AppColors.white.withValues(alpha: 0.08),
+          ),
+        ),
+        child: Icon(
+          icon,
+          color: AppColors.lumenTextPrimary,
+          size: 20,
         ),
       ),
     );
   }
 }
 
-class _MessageCard extends StatelessWidget {
+class _GlowOrb extends StatelessWidget {
+  final double size;
+  final Color color;
+
+  const _GlowOrb({
+    required this.size,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: ImageFiltered(
+        imageFilter: ImageFilter.blur(sigmaX: 60, sigmaY: 60),
+        child: Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: color,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StateCard extends StatelessWidget {
   final IconData icon;
   final String title;
   final String message;
   final String buttonLabel;
   final VoidCallback onTap;
 
-  const _MessageCard({
+  const _StateCard({
     required this.icon,
     required this.title,
     required this.message,
@@ -520,49 +572,44 @@ class _MessageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(
-        color: AppColors.white.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: AppColors.white.withValues(alpha: 0.08),
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: GlassSpiritualCard(
+          radius: 30,
+          blur: 16,
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                color: AppColors.lumenGold,
+                size: 34,
+              ),
+              const SizedBox(height: 14),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+              const SizedBox(height: 10),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 18),
+              SizedBox(
+                width: 170,
+                child: ElevatedButton(
+                  onPressed: onTap,
+                  child: Text(buttonLabel),
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            color: AppColors.goldSoft,
-            size: 34,
-          ),
-          const SizedBox(height: 14),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: GoogleFonts.lora(
-              color: AppColors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            message,
-            textAlign: TextAlign.center,
-            style: GoogleFonts.lora(
-              color: AppColors.white.withValues(alpha: 0.88),
-              fontSize: 17,
-              height: 1.6,
-            ),
-          ),
-          const SizedBox(height: 18),
-          ElevatedButton(
-            onPressed: onTap,
-            child: Text(buttonLabel),
-          ),
-        ],
       ),
     );
   }

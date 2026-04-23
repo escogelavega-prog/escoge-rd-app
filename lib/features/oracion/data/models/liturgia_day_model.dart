@@ -18,6 +18,9 @@ class LiturgiaDayModel {
   final VersiculoDelDiaModel? versiculoDelDia;
   final bool publicado;
 
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+
   const LiturgiaDayModel({
     required this.id,
     required this.fecha,
@@ -26,11 +29,13 @@ class LiturgiaDayModel {
     required this.colorLiturgico,
     required this.celebracion,
     this.reflexionBreve,
-    required this.evangelio,
+    this.evangelio,
     required this.lecturas,
     this.santoDelDia,
     this.versiculoDelDia,
     required this.publicado,
+    this.createdAt,
+    this.updatedAt,
   });
 
   factory LiturgiaDayModel.fromMap(
@@ -40,7 +45,7 @@ class LiturgiaDayModel {
     final evangelioMap = _asStringDynamicMap(map['evangelio']);
     final santoMap = _asStringDynamicMap(map['santoDelDia']);
     final versiculoMap = _asStringDynamicMap(map['versiculoDelDia']);
-    final lecturasList = map['lecturas'] as List<dynamic>? ?? [];
+    final lecturasList = map['lecturas'] as List<dynamic>? ?? const [];
 
     return LiturgiaDayModel(
       id: id,
@@ -61,13 +66,17 @@ class LiturgiaDayModel {
       versiculoDelDia: versiculoMap != null
           ? VersiculoDelDiaModel.fromMap(versiculoMap)
           : null,
-      publicado: map['publicado'] == true,
+      publicado: map['publicado'] is bool ? map['publicado'] as bool : false,
+      createdAt: _parseDate(map['createdAt']),
+      updatedAt: _parseDate(map['updatedAt']),
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'fecha': _dateOnlyString(fecha),
+      'fecha': Timestamp.fromDate(
+        DateTime(fecha.year, fecha.month, fecha.day),
+      ),
       'titulo': titulo,
       'tiempoLiturgico': tiempoLiturgico,
       'colorLiturgico': colorLiturgico,
@@ -78,6 +87,10 @@ class LiturgiaDayModel {
       'santoDelDia': santoDelDia?.toMap(),
       'versiculoDelDia': versiculoDelDia?.toMap(),
       'publicado': publicado,
+      'createdAt': createdAt != null
+          ? Timestamp.fromDate(createdAt!)
+          : FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
     };
   }
 
@@ -94,6 +107,8 @@ class LiturgiaDayModel {
     SantoModel? santoDelDia,
     VersiculoDelDiaModel? versiculoDelDia,
     bool? publicado,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   }) {
     return LiturgiaDayModel(
       id: id ?? this.id,
@@ -108,6 +123,8 @@ class LiturgiaDayModel {
       santoDelDia: santoDelDia ?? this.santoDelDia,
       versiculoDelDia: versiculoDelDia ?? this.versiculoDelDia,
       publicado: publicado ?? this.publicado,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 
@@ -122,7 +139,11 @@ class LiturgiaDayModel {
       return value;
     }
 
-    return DateTime.tryParse(value.toString());
+    if (value is String) {
+      return DateTime.tryParse(value);
+    }
+
+    return null;
   }
 
   static Map<String, dynamic>? _asStringDynamicMap(dynamic value) {
@@ -141,10 +162,11 @@ class LiturgiaDayModel {
     return null;
   }
 
-  static String _dateOnlyString(DateTime date) {
-    final year = date.year.toString().padLeft(4, '0');
-    final month = date.month.toString().padLeft(2, '0');
-    final day = date.day.toString().padLeft(2, '0');
+  static String buildDocId(DateTime date) {
+    final normalized = DateTime(date.year, date.month, date.day);
+    final year = normalized.year.toString().padLeft(4, '0');
+    final month = normalized.month.toString().padLeft(2, '0');
+    final day = normalized.day.toString().padLeft(2, '0');
     return '$year-$month-$day';
   }
 }

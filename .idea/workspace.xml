@@ -6,11 +6,31 @@
   <component name="ChangeListManager">
     <list default="true" id="3eeb037b-8e40-4a77-b998-394a272a0f9d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.flutter-plugins-dependencies" beforeDir="false" afterPath="$PROJECT_DIR$/.flutter-plugins-dependencies" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins2.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins2.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vscode/launch.json" beforeDir="false" afterPath="$PROJECT_DIR$/.vscode/launch.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/escoge.iml" beforeDir="false" afterPath="$PROJECT_DIR$/escoge.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/Podfile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Podfile.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/Runner.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Runner.xcodeproj/project.pbxproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/app/app.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/app.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/constants/app_icons.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/constants/app_icons.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/theme/app_colors.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/theme/app_colors.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/theme/app_theme.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/theme/app_theme.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/home/presentation/home_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/home/presentation/home_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/oracion/data/models/evangelio_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/oracion/data/models/evangelio_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/oracion/data/models/liturgia_day_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/oracion/data/models/liturgia_day_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/oracion/data/repositories/liturgia_repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/oracion/data/repositories/liturgia_repository.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/oracion/presentation/evangelio_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/oracion/presentation/evangelio_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/oracion/presentation/oracion_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/oracion/presentation/oracion_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/oracion/presentation/santo_del_dia_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/oracion/presentation/santo_del_dia_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/oracion/services/liturgia_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/oracion/services/liturgia_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Flutter/GeneratedPluginRegistrant.swift" beforeDir="false" afterPath="$PROJECT_DIR$/macos/Flutter/GeneratedPluginRegistrant.swift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
