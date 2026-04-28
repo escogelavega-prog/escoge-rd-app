@@ -1,12 +1,6 @@
+import 'package:escoge/features/biblia/widgets/biblia_background.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-import 'package:escoge/features/biblia/widgets/biblia_background.dart';
-import 'package:escoge/features/biblia/widgets/biblia_header.dart';
-import 'package:escoge/features/biblia/widgets/biblia_panel.dart';
-import 'package:escoge/features/biblia/widgets/biblia_primary_button.dart';
-import 'package:escoge/features/biblia/widgets/biblia_secondary_button.dart';
-import 'package:escoge/features/biblia/widgets/biblia_section_title.dart';
 
 class BibliaLectorScreen extends StatelessWidget {
   final String bookName;
@@ -32,137 +26,39 @@ class BibliaLectorScreen extends StatelessWidget {
         child: SafeArea(
           child: Column(
             children: [
-              BibliaHeader(
-                title: bookName,
-                subtitle: 'Capítulo $chapterNumber',
+              _RoyalReaderHeader(
+                title:
+                    '${chapterData.bookDisplay.toUpperCase()} $chapterNumber',
                 onBack: () => Navigator.of(context).pop(),
-                trailing: _ReaderBadge(shortName: shortName),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                child: BibliaSectionTitle(
-                  title: chapterData.sectionTitle,
-                ),
               ),
               Expanded(
-                child: SingleChildScrollView(
+                child: ListView(
                   physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.only(bottom: 20),
-                  child: Column(
-                    children: [
-                      BibliaPanel(
-                        margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                        padding: const EdgeInsets.fromLTRB(22, 22, 22, 22),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Text(
-                              '${chapterData.bookDisplay} $chapterNumber',
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.poppins(
-                                color: const Color(0xFFD4AF37),
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 0.4,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              chapterData.chapterTitle,
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.cormorantGaramond(
-                                color: const Color(0xFFF4DFA3),
-                                fontSize: 28,
-                                fontWeight: FontWeight.w700,
-                                height: 1.05,
-                              ),
-                            ),
-                            const SizedBox(height: 18),
-                            ...chapterData.verses.map(
-                              (verse) => Padding(
-                                padding: const EdgeInsets.only(bottom: 14),
-                                child: _VerseText(
-                                  verseNumber: verse.number,
-                                  text: verse.text,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      BibliaPanel(
-                        margin: const EdgeInsets.fromLTRB(16, 14, 16, 0),
-                        padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Text(
-                              'Reflexión breve',
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.cormorantGaramond(
-                                color: const Color(0xFFF4DFA3),
-                                fontSize: 24,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              chapterData.reflection,
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.lora(
-                                color: const Color(0xFFF6E7B8),
-                                fontSize: 14.5,
-                                height: 1.7,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
-                        child: BibliaPrimaryButton(
-                          text: 'Nota Teológica (Católica)',
-                          onTap: () {
-                            _showInfoSheet(
-                              context,
-                              title: 'Nota Teológica (Católica)',
-                              content: chapterData.theologicalNote,
-                            );
-                          },
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                        child: BibliaSecondaryButton(
-                          text: 'Nota de Estudio',
-                          onTap: () {
-                            _showInfoSheet(
-                              context,
-                              title: 'Nota de Estudio',
-                              content: chapterData.studyNote,
-                            );
-                          },
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                        child: BibliaSecondaryButton(
-                          text: 'Compartir',
-                          onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'La opción de compartir se conectará en la siguiente fase.',
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(height: 18),
-                    ],
-                  ),
+                  padding: const EdgeInsets.fromLTRB(14, 10, 14, 20),
+                  children: [
+                    _RoyalReaderPanel(
+                      chapterData: chapterData,
+                      chapterNumber: chapterNumber,
+                    ),
+                    const SizedBox(height: 18),
+                    _RoyalNoteCard(
+                      title: 'Reflexión breve',
+                      icon: Icons.auto_awesome_rounded,
+                      content: chapterData.reflection,
+                    ),
+                    const SizedBox(height: 14),
+                    _RoyalActionButton(
+                      title: 'Nota Teológica (Católica)',
+                      icon: Icons.description_outlined,
+                      primary: true,
+                    ),
+                    const SizedBox(height: 12),
+                    _RoyalActionButton(
+                      title: 'Nota de Estudio',
+                      icon: Icons.edit_note_rounded,
+                      primary: false,
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -171,64 +67,162 @@ class BibliaLectorScreen extends StatelessWidget {
       ),
     );
   }
+}
 
-  void _showInfoSheet(
-    BuildContext context, {
-    required String title,
-    required String content,
-  }) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color(0xFF071C38),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+// =========================
+// HEADER REAL
+// =========================
+class _RoyalReaderHeader extends StatelessWidget {
+  final String title;
+  final VoidCallback onBack;
+
+  const _RoyalReaderHeader({
+    required this.title,
+    required this.onBack,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 58,
+      margin: const EdgeInsets.fromLTRB(10, 8, 10, 4),
+      decoration: BoxDecoration(
+        color: const Color(0xFFA7832D),
+        border: Border.all(
+          color: const Color(0xFFE5C86E),
+          width: 1.2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.28),
+            blurRadius: 14,
+            offset: const Offset(0, 7),
+          ),
+        ],
       ),
-      builder: (_) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Container(
-                    width: 52,
-                    height: 5,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFD4AF37).withOpacity(0.45),
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                  ),
-                  const SizedBox(height: 18),
-                  Text(
-                    title,
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.cormorantGaramond(
-                      color: const Color(0xFFF4DFA3),
-                      fontSize: 28,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  Text(
-                    content,
-                    textAlign: TextAlign.justify,
-                    style: GoogleFonts.lora(
-                      color: const Color(0xFFF6E7B8),
-                      fontSize: 15,
-                      height: 1.8,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: onBack,
+            icon: const Icon(
+              Icons.chevron_left_rounded,
+              color: Colors.white,
+              size: 30,
+            ),
+          ),
+          Expanded(
+            child: Text(
+              title,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.cinzel(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.8,
               ),
             ),
           ),
-        );
-      },
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(
+              Icons.star_rounded,
+              color: Color(0xFFF2E2A7),
+              size: 24,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
 
+// =========================
+// PANEL REAL CATEDRAL
+// =========================
+class _RoyalReaderPanel extends StatelessWidget {
+  final BibliaReaderChapterData chapterData;
+  final int chapterNumber;
+
+  const _RoyalReaderPanel({
+    required this.chapterData,
+    required this.chapterNumber,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF063D67),
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(
+          color: const Color(0xFFD4AF37),
+          width: 2.2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.30),
+            blurRadius: 18,
+            offset: const Offset(0, 12),
+          ),
+        ],
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            top: 0,
+            left: 18,
+            right: 18,
+            child: Image.asset(
+              'assets/biblia/frame_lector_superior.png',
+              height: 88,
+              fit: BoxFit.fill,
+              errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(26, 78, 26, 26),
+            child: Column(
+              children: [
+                Text(
+                  '${chapterData.bookDisplay.toUpperCase()} $chapterNumber',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.cinzel(
+                    color: const Color(0xFFF0DEAA),
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.6,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  chapterData.sectionTitle.toUpperCase(),
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.cormorantGaramond(
+                    color: const Color(0xFFE1C56F),
+                    fontSize: 21,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.4,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ...chapterData.verses.map(
+                  (verse) => _VerseText(
+                    verseNumber: verse.number,
+                    text: verse.text,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// =========================
+// TEXTO REAL TIPO BIBLIA
+// =========================
 class _VerseText extends StatelessWidget {
   final int verseNumber;
   final String text;
@@ -240,26 +234,88 @@ class _VerseText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RichText(
-      textAlign: TextAlign.justify,
-      text: TextSpan(
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: RichText(
+        textAlign: TextAlign.justify,
+        text: TextSpan(
+          style: GoogleFonts.cormorantGaramond(
+            color: const Color(0xFFF2E4BB),
+            fontSize: 18.8,
+            height: 1.48,
+            fontWeight: FontWeight.w600,
+          ),
+          children: [
+            TextSpan(
+              text: '$verseNumber ',
+              style: GoogleFonts.cormorantGaramond(
+                color: const Color(0xFFD4AF37),
+                fontSize: 16.5,
+                fontWeight: FontWeight.w800,
+                height: 1.48,
+              ),
+            ),
+            TextSpan(
+              text: text,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// =========================
+// REFLEXIÓN
+// =========================
+class _RoyalNoteCard extends StatelessWidget {
+  final String title;
+  final String content;
+  final IconData icon;
+
+  const _RoyalNoteCard({
+    required this.title,
+    required this.content,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
+      decoration: BoxDecoration(
+        color: const Color(0xFF052B47),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: const Color(0xFFD4AF37).withValues(alpha: 0.34),
+        ),
+      ),
+      child: Column(
         children: [
-          TextSpan(
-            text: '$verseNumber  ',
-            style: GoogleFonts.poppins(
-              color: const Color(0xFFD4AF37),
-              fontSize: 12.5,
+          Icon(
+            icon,
+            color: const Color(0xFFE1C56F),
+            size: 22,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.cinzel(
+              color: const Color(0xFFF3E2AE),
+              fontSize: 16,
               fontWeight: FontWeight.w700,
-              height: 1.9,
             ),
           ),
-          TextSpan(
-            text: text,
-            style: GoogleFonts.lora(
-              color: const Color(0xFFF6E7B8),
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              height: 1.9,
+          const SizedBox(height: 12),
+          Text(
+            content,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.cormorantGaramond(
+              color: const Color(0xFFF4E7BF),
+              fontSize: 17,
+              height: 1.55,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
@@ -268,49 +324,90 @@ class _VerseText extends StatelessWidget {
   }
 }
 
-class _ReaderBadge extends StatelessWidget {
-  final String shortName;
+// =========================
+// BOTONES
+// =========================
+class _RoyalActionButton extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final bool primary;
 
-  const _ReaderBadge({
-    required this.shortName,
+  const _RoyalActionButton({
+    required this.title,
+    required this.icon,
+    required this.primary,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 42,
-      height: 42,
-      decoration: BoxDecoration(
-        color: const Color(0xFF082447).withOpacity(0.72),
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: const Color(0xFFD4AF37).withOpacity(0.35),
-          width: 1,
-        ),
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        shortName,
-        textAlign: TextAlign.center,
-        style: GoogleFonts.poppins(
-          color: const Color(0xFFF3D27A),
-          fontSize: 10,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 0.2,
-        ),
+    final asset = primary
+        ? 'assets/biblia/btn_primario_dorado.png'
+        : 'assets/biblia/btn_secundario_outline.png';
+
+    return SizedBox(
+      height: 56,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset(
+            asset,
+            fit: BoxFit.fill,
+            errorBuilder: (_, __, ___) => Container(
+              decoration: BoxDecoration(
+                color:
+                    primary ? const Color(0xFFA7832D) : const Color(0xFF052B47),
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(
+                  color: const Color(0xFFD4AF37),
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18),
+            child: Row(
+              children: [
+                Icon(
+                  icon,
+                  color: primary ? Colors.white : const Color(0xFFE1C56F),
+                  size: 20,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: GoogleFonts.cormorantGaramond(
+                      color: primary ? Colors.white : const Color(0xFFF2E2AA),
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                Icon(
+                  Icons.auto_awesome,
+                  color: primary
+                      ? Colors.white.withValues(alpha: 0.75)
+                      : const Color(0xFFE1C56F),
+                  size: 18,
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
+// =========================
+// MOCK DATA
+// =========================
 class BibliaReaderChapterData {
   final String bookDisplay;
   final String sectionTitle;
   final String chapterTitle;
   final List<BibliaReaderVerse> verses;
   final String reflection;
-  final String theologicalNote;
-  final String studyNote;
 
   const BibliaReaderChapterData({
     required this.bookDisplay,
@@ -318,8 +415,6 @@ class BibliaReaderChapterData {
     required this.chapterTitle,
     required this.verses,
     required this.reflection,
-    required this.theologicalNote,
-    required this.studyNote,
   });
 }
 
@@ -338,98 +433,36 @@ class BibliaReaderMockData {
     required String bookName,
     required int chapterNumber,
   }) {
-    if (bookName.toLowerCase() == 'mateo' && chapterNumber == 5) {
-      return const BibliaReaderChapterData(
-        bookDisplay: 'Mateo',
-        sectionTitle: 'Sermón del Monte',
-        chapterTitle: 'Las Bienaventuranzas',
-        verses: [
-          BibliaReaderVerse(
-            number: 1,
-            text:
-                'Al ver la multitud, Jesús subió al monte; se sentó, y se le acercaron sus discípulos.',
-          ),
-          BibliaReaderVerse(
-            number: 2,
-            text: 'Entonces comenzó a hablar y les enseñaba diciendo:',
-          ),
-          BibliaReaderVerse(
-            number: 3,
-            text:
-                'Bienaventurados los pobres de espíritu, porque de ellos es el Reino de los cielos.',
-          ),
-          BibliaReaderVerse(
-            number: 4,
-            text:
-                'Bienaventurados los que lloran, porque ellos serán consolados.',
-          ),
-          BibliaReaderVerse(
-            number: 5,
-            text:
-                'Bienaventurados los mansos, porque ellos heredarán la tierra.',
-          ),
-          BibliaReaderVerse(
-            number: 6,
-            text:
-                'Bienaventurados los que tienen hambre y sed de justicia, porque ellos quedarán saciados.',
-          ),
-          BibliaReaderVerse(
-            number: 7,
-            text:
-                'Bienaventurados los misericordiosos, porque ellos alcanzarán misericordia.',
-          ),
-          BibliaReaderVerse(
-            number: 8,
-            text:
-                'Bienaventurados los limpios de corazón, porque ellos verán a Dios.',
-          ),
-          BibliaReaderVerse(
-            number: 9,
-            text:
-                'Bienaventurados los que trabajan por la paz, porque ellos serán llamados hijos de Dios.',
-          ),
-          BibliaReaderVerse(
-            number: 10,
-            text:
-                'Bienaventurados los perseguidos por causa de la justicia, porque de ellos es el Reino de los cielos.',
-          ),
-        ],
-        reflection:
-            'Cristo presenta el camino de la verdadera felicidad. No es una felicidad superficial, sino una vida transformada por la humildad, la misericordia, la justicia y la comunión con Dios.',
-        theologicalNote:
-            'Las Bienaventuranzas ocupan un lugar central en la espiritualidad cristiana. La tradición católica las entiende como retrato del mismo Cristo y como programa de vida para el discípulo. En ellas, el Señor invierte la lógica del mundo y revela la grandeza de quienes viven abiertos a la gracia, a la verdad y al amor de Dios.',
-        studyNote:
-            'Este pasaje abre el Sermón del Monte. Observa que Jesús no solo da mandatos: primero revela quiénes son verdaderamente dichosos ante Dios. Puedes estudiar este texto relacionándolo con Isaías, los Salmos y el llamado a la santidad en el Nuevo Testamento.',
-      );
-    }
-
     return BibliaReaderChapterData(
       bookDisplay: bookName,
-      sectionTitle: 'Lectura Bíblica',
+      sectionTitle: 'Nuevo Testamento',
       chapterTitle: '$bookName $chapterNumber',
-      verses: [
+      verses: const [
         BibliaReaderVerse(
           number: 1,
-          text:
-              'Este capítulo será conectado con la fuente de datos real en la siguiente fase del módulo Biblia.',
+          text: 'En el principio creó Dios el cielo y la tierra.',
         ),
         BibliaReaderVerse(
           number: 2,
           text:
-              'Por ahora, esta pantalla ya representa la estructura oficial del lector premium: cabecera, título, versículos, reflexión y notas complementarias.',
+              'La tierra era caos y confusión, y oscuridad por encima del abismo.',
         ),
         BibliaReaderVerse(
           number: 3,
+          text: 'Dijo Dios: “Haya luz”, y hubo luz.',
+        ),
+        BibliaReaderVerse(
+          number: 4,
           text:
-              'Cuando conectemos la data real, aquí se mostrarán los versículos exactos del libro y capítulo seleccionados.',
+              'Vio Dios que la luz estaba bien, y separó Dios la luz de la oscuridad.',
+        ),
+        BibliaReaderVerse(
+          number: 5,
+          text: 'Llamó Dios a la luz “día”, y a la oscuridad llamó “noche”.',
         ),
       ],
       reflection:
-          'La Palabra de Dios merece una experiencia de lectura clara, contemplativa y profundamente ordenada.',
-      theologicalNote:
-          'Esta sección servirá para explicar el sentido doctrinal, espiritual y eclesial del pasaje leído, con enfoque católico.',
-      studyNote:
-          'Esta sección permitirá ampliar contexto histórico, literario y pastoral del texto bíblico, facilitando una lectura más profunda.',
+          'La Palabra de Dios merece una experiencia visual solemne, contemplativa y profundamente reverente.',
     );
   }
 }

@@ -37,35 +37,25 @@ class BibliaTestamentoScreen extends StatelessWidget {
         child: SafeArea(
           child: Column(
             children: [
-              _TopBar(
+              _RoyalTestamentHeader(
+                title: testamentName,
                 onBack: () => Navigator.of(context).pop(),
               ),
               Expanded(
                 child: ListView(
-                  padding: const EdgeInsets.fromLTRB(18, 4, 18, 24),
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.fromLTRB(14, 10, 14, 20),
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Text(
-                        testamentName,
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.cormorantGaramond(
-                          color: const Color(0xFFE8C56A),
-                          fontSize: 34,
-                          fontWeight: FontWeight.w700,
-                          height: 1.0,
-                        ),
-                      ),
-                    ),
+                    _RoyalIntroPanel(totalGroups: groups.length),
                     const SizedBox(height: 18),
                     ...groups.map(
                       (group) => Padding(
-                        padding: const EdgeInsets.only(bottom: 18),
-                        child: _SectionBlock(group: group),
+                        padding: const EdgeInsets.only(bottom: 20),
+                        child: _RoyalGroupSection(group: group),
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const _BottomQuickActions(),
+                    const _RoyalBottomActions(),
                   ],
                 ),
               ),
@@ -77,72 +67,150 @@ class BibliaTestamentoScreen extends StatelessWidget {
   }
 }
 
-class _TopBar extends StatelessWidget {
+class _RoyalTestamentHeader extends StatelessWidget {
+  final String title;
   final VoidCallback onBack;
 
-  const _TopBar({
+  const _RoyalTestamentHeader({
+    required this.title,
     required this.onBack,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(18, 8, 18, 6),
+    return Container(
+      height: 58,
+      margin: const EdgeInsets.fromLTRB(10, 8, 10, 4),
+      decoration: BoxDecoration(
+        color: const Color(0xFFA7832D),
+        border: Border.all(
+          color: const Color(0xFFE5C86E),
+          width: 1.2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.28),
+            blurRadius: 14,
+            offset: const Offset(0, 7),
+          ),
+        ],
+      ),
       child: Row(
         children: [
-          _CircleActionButton(
-            icon: Icons.arrow_back_ios_new_rounded,
-            onTap: onBack,
+          IconButton(
+            onPressed: onBack,
+            icon: const Icon(
+              Icons.chevron_left_rounded,
+              color: Colors.white,
+              size: 30,
+            ),
           ),
-          const Spacer(),
+          Expanded(
+            child: Text(
+              title,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.cinzel(
+                color: Colors.white,
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.7,
+              ),
+            ),
+          ),
+          const SizedBox(width: 48),
         ],
       ),
     );
   }
 }
 
-class _CircleActionButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onTap;
+class _RoyalIntroPanel extends StatelessWidget {
+  final int totalGroups;
 
-  const _CircleActionButton({
-    required this.icon,
-    required this.onTap,
+  const _RoyalIntroPanel({
+    required this.totalGroups,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(99),
-        child: Ink(
-          width: 42,
-          height: 42,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: const Color(0xFF0A1E3A).withOpacity(0.82),
-            border: Border.all(
-              color: const Color(0xFFD4AF37).withOpacity(0.30),
-              width: 1,
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF063D67),
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(
+          color: const Color(0xFFD4AF37),
+          width: 2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.30),
+            blurRadius: 18,
+            offset: const Offset(0, 12),
+          ),
+        ],
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            top: 0,
+            left: 18,
+            right: 18,
+            child: Image.asset(
+              'assets/biblia/frame_lector_superior.png',
+              height: 88,
+              fit: BoxFit.fill,
+              errorBuilder: (_, __, ___) => const SizedBox.shrink(),
             ),
           ),
-          child: Icon(
-            icon,
-            color: const Color(0xFFE7C666),
-            size: 18,
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 82, 24, 24),
+            child: Column(
+              children: [
+                Text(
+                  'Biblioteca Sagrada',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.cinzel(
+                    color: const Color(0xFFF0DEAA),
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  '$totalGroups secciones disponibles',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.cormorantGaramond(
+                    color: const Color(0xFFE1C56F),
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 14),
+                Text(
+                  'Selecciona un libro y continúa el recorrido espiritual dentro del canon bíblico.',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.cormorantGaramond(
+                    color: const Color(0xFFF4E7BF),
+                    fontSize: 18,
+                    height: 1.45,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
 }
 
-class _SectionBlock extends StatelessWidget {
+class _RoyalGroupSection extends StatelessWidget {
   final BibliaBookGroup group;
 
-  const _SectionBlock({
+  const _RoyalGroupSection({
     required this.group,
   });
 
@@ -150,12 +218,12 @@ class _SectionBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _OrnamentalSectionTitle(title: group.name),
-        const SizedBox(height: 10),
+        _RoyalSectionDivider(title: group.name),
+        const SizedBox(height: 12),
         ...group.books.map(
           (book) => Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: _BookRow(book: book),
+            padding: const EdgeInsets.only(bottom: 10),
+            child: _RoyalBookButton(book: book),
           ),
         ),
       ],
@@ -163,163 +231,164 @@ class _SectionBlock extends StatelessWidget {
   }
 }
 
-class _OrnamentalSectionTitle extends StatelessWidget {
+class _RoyalSectionDivider extends StatelessWidget {
   final String title;
 
-  const _OrnamentalSectionTitle({
+  const _RoyalSectionDivider({
     required this.title,
   });
 
   @override
   Widget build(BuildContext context) {
+    Widget ornament(bool flipped) {
+      final image = Image.asset(
+        'assets/biblia/separador_seccion.png',
+        height: 18,
+        fit: BoxFit.fill,
+        errorBuilder: (_, __, ___) => Container(
+          height: 1,
+          color: const Color(0xFFD4AF37),
+        ),
+      );
+
+      if (!flipped) return image;
+
+      return Transform(
+        alignment: Alignment.center,
+        transform: Matrix4.diagonal3Values(-1.0, 1.0, 1.0),
+        child: image,
+      );
+    }
+
     return Row(
       children: [
-        const Expanded(child: _OrnamentLine()),
+        Expanded(child: ornament(false)),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Text(
             title,
-            textAlign: TextAlign.center,
             style: GoogleFonts.cormorantGaramond(
               color: const Color(0xFFE8C56A),
-              fontSize: 24,
+              fontSize: 26,
               fontWeight: FontWeight.w700,
-              height: 1,
             ),
           ),
         ),
-        const Expanded(child: _OrnamentLine(isReversed: true)),
+        Expanded(child: ornament(true)),
       ],
     );
   }
 }
 
-class _OrnamentLine extends StatelessWidget {
-  final bool isReversed;
-
-  const _OrnamentLine({
-    this.isReversed = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final ornament = Image.asset(
-      'assets/images/biblia/separador_seccion.png',
-      fit: BoxFit.contain,
-      errorBuilder: (_, __, ___) {
-        return Container(
-          height: 14,
-          alignment: Alignment.center,
-          child: Container(
-            height: 1.2,
-            color: const Color(0xFFD4AF37).withOpacity(0.55),
-          ),
-        );
-      },
-    );
-
-    return SizedBox(
-      height: 16,
-      child:
-          isReversed ? Transform.flip(flipX: true, child: ornament) : ornament,
-    );
-  }
-}
-
-class _BookRow extends StatelessWidget {
+class _RoyalBookButton extends StatelessWidget {
   final BibliaBookItem book;
 
-  const _BookRow({
+  const _RoyalBookButton({
     required this.book,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(18),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => BibliaLibroCapitulosScreen(book: book),
-            ),
-          );
-        },
-        child: Ink(
-          height: 74,
-          decoration: BoxDecoration(
-            color: const Color(0xFF08264B).withOpacity(0.94),
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(
-              color: const Color(0xFFD4AF37).withOpacity(0.70),
-              width: 1.4,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.22),
-                blurRadius: 10,
-                offset: const Offset(0, 5),
-              ),
-            ],
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => BibliaLibroCapitulosScreen(book: book),
           ),
-          child: Row(
-            children: [
-              const SizedBox(width: 14),
-              _BookIcon(icon: book.icon),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Text(
-                  book.displayName,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.cormorantGaramond(
-                    color: const Color(0xFFF5E7BE),
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
-                    height: 1,
+        );
+      },
+      child: SizedBox(
+        height: 74,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.asset(
+              'assets/biblia/btn_secundario_outline.png',
+              fit: BoxFit.fill,
+              errorBuilder: (_, __, ___) => Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFF052B47),
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(
+                    color: const Color(0xFFD4AF37),
                   ),
                 ),
               ),
-              const SizedBox(width: 8),
-              Image.asset(
-                'assets/images/biblia/icon_arrow_right.png',
-                width: 22,
-                height: 22,
-                errorBuilder: (_, __, ___) => const Icon(
-                  Icons.chevron_right_rounded,
-                  color: Color(0xFFE8C56A),
-                  size: 24,
-                ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              child: Row(
+                children: [
+                  _RoyalBookIcon(icon: book.icon),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Text(
+                      book.displayName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.cormorantGaramond(
+                        color: const Color(0xFFF5E7BE),
+                        fontSize: 26,
+                        fontWeight: FontWeight.w700,
+                        height: 1,
+                      ),
+                    ),
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '${book.chapterCount}',
+                        style: GoogleFonts.cinzel(
+                          color: const Color(0xFFF2E2AA),
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      Text(
+                        'cap.',
+                        style: GoogleFonts.cormorantGaramond(
+                          color: const Color(0xFFE1C56F),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(width: 10),
+                  const Icon(
+                    Icons.chevron_right_rounded,
+                    color: Color(0xFFE8C56A),
+                    size: 26,
+                  ),
+                ],
               ),
-              const SizedBox(width: 14),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-class _BookIcon extends StatelessWidget {
+class _RoyalBookIcon extends StatelessWidget {
   final IconData icon;
 
-  const _BookIcon({
+  const _RoyalBookIcon({
     required this.icon,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 42,
-      height: 42,
+      width: 46,
+      height: 46,
       decoration: BoxDecoration(
-        color: const Color(0xFFD4AF37).withOpacity(0.16),
-        borderRadius: BorderRadius.circular(12),
+        color: const Color(0xFFD4AF37).withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: const Color(0xFFD4AF37).withOpacity(0.40),
-          width: 1,
+          color: const Color(0xFFD4AF37).withValues(alpha: 0.36),
         ),
       ),
       child: Icon(
@@ -331,93 +400,79 @@ class _BookIcon extends StatelessWidget {
   }
 }
 
-class _BottomQuickActions extends StatelessWidget {
-  const _BottomQuickActions();
+class _RoyalBottomActions extends StatelessWidget {
+  const _RoyalBottomActions();
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return const Column(
       children: [
-        _QuickActionRow(
+        _RoyalQuickAction(
           icon: Icons.star_rounded,
           title: 'Favoritos',
-          onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content:
-                    Text('Favoritos estará disponible en la siguiente fase.'),
-              ),
-            );
-          },
         ),
-        const SizedBox(height: 10),
-        _QuickActionRow(
-          icon: Icons.note_rounded,
+        SizedBox(height: 10),
+        _RoyalQuickAction(
+          icon: Icons.note_alt_rounded,
           title: 'Notas',
-          onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Notas estará disponible en la siguiente fase.'),
-              ),
-            );
-          },
         ),
       ],
     );
   }
 }
 
-class _QuickActionRow extends StatelessWidget {
+class _RoyalQuickAction extends StatelessWidget {
   final IconData icon;
   final String title;
-  final VoidCallback onTap;
 
-  const _QuickActionRow({
+  const _RoyalQuickAction({
     required this.icon,
     required this.title,
-    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(14),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-          child: Row(
-            children: [
-              Icon(
-                icon,
-                color: const Color(0xFFE8C56A),
-                size: 22,
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  title,
-                  style: GoogleFonts.cormorantGaramond(
-                    color: const Color(0xFFF5E7BE),
-                    fontSize: 22,
-                    fontWeight: FontWeight.w600,
-                    height: 1,
-                  ),
-                ),
-              ),
-              const Icon(
-                Icons.keyboard_arrow_down_rounded,
-                color: Color(0xFFE8C56A),
-                size: 24,
-              ),
-            ],
-          ),
+    return Container(
+      height: 54,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF052B47).withValues(alpha: 0.92),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: const Color(0xFFD4AF37).withValues(alpha: 0.28),
         ),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            icon,
+            color: const Color(0xFFE8C56A),
+            size: 22,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              title,
+              style: GoogleFonts.cormorantGaramond(
+                color: const Color(0xFFF5E7BE),
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+          const Icon(
+            Icons.chevron_right_rounded,
+            color: Color(0xFFE8C56A),
+          ),
+        ],
       ),
     );
   }
 }
+
+// =========================
+// DATA MODELS
+// =========================
 
 class BibliaBookGroup {
   final String name;
@@ -444,6 +499,10 @@ class BibliaBookItem {
 
   String get displayName => name.toUpperCase();
 }
+
+// =========================
+// STATIC DATA
+// =========================
 
 class BibliaStaticData {
   static const List<BibliaBookGroup> antiguoTestamento = [

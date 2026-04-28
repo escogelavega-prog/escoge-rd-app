@@ -1,11 +1,11 @@
-import 'package:flutter/material.dart';
-
+import 'package:escoge/core/theme/app_colors.dart';
 import 'package:escoge/core/widgets/custom_bottom_nav.dart';
 import 'package:escoge/features/contenido/presentation/contenido_screen.dart';
 import 'package:escoge/features/home/presentation/home_screen.dart';
 import 'package:escoge/features/oracion/presentation/oracion_screen.dart';
 import 'package:escoge/features/perfil/presentation/perfil_screen.dart';
 import 'package:escoge/features/retiros/presentation/retiros_screen.dart';
+import 'package:flutter/material.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -26,9 +26,7 @@ class _MainShellState extends State<MainShell> {
   ];
 
   void _goToTab(int index) {
-    if (_currentIndex == index) {
-      return;
-    }
+    if (_currentIndex == index) return;
 
     setState(() {
       _currentIndex = index;
@@ -38,10 +36,18 @@ class _MainShellState extends State<MainShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.lumenBackground,
       resizeToAvoidBottomInset: false,
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
+      extendBody: true,
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 260),
+        switchInCurve: Curves.easeOutCubic,
+        switchOutCurve: Curves.easeInCubic,
+        child: IndexedStack(
+          key: ValueKey<int>(_currentIndex),
+          index: _currentIndex,
+          children: _screens,
+        ),
       ),
       bottomNavigationBar: CustomBottomNav(
         currentIndex: _currentIndex,

@@ -48,6 +48,12 @@ flutter:
     - assets/audio/dolorosos/
     - assets/audio/gloriosos/
     - assets/audio/luminosos/
-    - assets/icons/
+    - assets/icons/icon_home.png
+    - assets/icons/icon_contenido.png
+    - assets/icons/icon_retiro.png
+    - assets/icons/icon_oracion.png
+    - assets/icons/icon_perfil.png
+    - assets/biblia/
+
   
     

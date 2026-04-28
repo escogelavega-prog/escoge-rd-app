@@ -4,12 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
+  AppTheme._();
+
+  // =========================
+  // LIGHT THEME
+  // =========================
   static ThemeData get light {
     final base = ThemeData.light(useMaterial3: true);
 
     return base.copyWith(
       scaffoldBackgroundColor: AppColors.background,
       primaryColor: AppColors.primaryBlue,
+      splashFactory: InkRipple.splashFactory,
       colorScheme: const ColorScheme.light(
         primary: AppColors.primaryBlue,
         secondary: AppColors.gold,
@@ -28,11 +34,16 @@ class AppTheme {
           fontWeight: FontWeight.w700,
           color: AppColors.white,
         ),
+        iconTheme: const IconThemeData(
+          color: AppColors.white,
+          size: 22,
+        ),
       ),
       cardTheme: CardThemeData(
         color: AppColors.card,
         elevation: 0,
         margin: EdgeInsets.zero,
+        clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.lg),
         ),
@@ -40,9 +51,21 @@ class AppTheme {
       inputDecorationTheme: _lightInputTheme(),
       elevatedButtonTheme: _lightElevatedButtons(),
       outlinedButtonTheme: _lightOutlinedButtons(),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: AppColors.primaryBlue,
+          textStyle: GoogleFonts.poppins(
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
       dividerTheme: const DividerThemeData(
         color: AppColors.divider,
         thickness: 1,
+      ),
+      progressIndicatorTheme: const ProgressIndicatorThemeData(
+        color: AppColors.primaryBlue,
       ),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: AppColors.primaryBlue,
@@ -58,17 +81,20 @@ class AppTheme {
     );
   }
 
+  // =========================
+  // SPIRITUAL DARK / LUMEN
+  // =========================
   static ThemeData get spiritualDark {
     final base = ThemeData.dark(useMaterial3: true);
 
     return base.copyWith(
-      scaffoldBackgroundColor: AppColors.darkBackground,
+      scaffoldBackgroundColor: AppColors.lumenBackground,
       primaryColor: AppColors.lumenGold,
       splashFactory: InkRipple.splashFactory,
       colorScheme: const ColorScheme.dark(
         primary: AppColors.lumenGold,
         secondary: AppColors.lumenGoldBright,
-        surface: AppColors.darkSurface,
+        surface: AppColors.lumenCard,
         error: AppColors.error,
       ),
       textTheme: _darkTextTheme(),
@@ -92,10 +118,11 @@ class AppTheme {
         color: AppColors.lumenCard,
         elevation: 0,
         margin: EdgeInsets.zero,
+        clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(26),
+          borderRadius: BorderRadius.circular(28),
           side: const BorderSide(
-            color: AppColors.lumenCardStroke,
+            color: AppColors.glassStroke,
             width: 1,
           ),
         ),
@@ -127,15 +154,19 @@ class AppTheme {
           fontWeight: FontWeight.w600,
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(20),
           side: const BorderSide(
-            color: AppColors.lumenCardStroke,
+            color: AppColors.glassStroke,
+            width: 1,
           ),
         ),
       ),
     );
   }
 
+  // =========================
+  // LIGHT TEXT THEME
+  // =========================
   static TextTheme _lightTextTheme() {
     return TextTheme(
       displayLarge: GoogleFonts.lora(
@@ -200,6 +231,9 @@ class AppTheme {
     );
   }
 
+  // =========================
+  // DARK TEXT THEME
+  // =========================
   static TextTheme _darkTextTheme() {
     return TextTheme(
       displayLarge: GoogleFonts.lora(
@@ -289,11 +323,17 @@ class AppTheme {
     );
   }
 
+  // =========================
+  // LIGHT INPUTS
+  // =========================
   static InputDecorationTheme _lightInputTheme() {
     return InputDecorationTheme(
       filled: true,
       fillColor: AppColors.surface,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 16,
+      ),
       hintStyle: GoogleFonts.poppins(
         fontSize: 13.5,
         fontWeight: FontWeight.w500,
@@ -306,11 +346,15 @@ class AppTheme {
       ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),
-        borderSide: const BorderSide(color: AppColors.border),
+        borderSide: const BorderSide(
+          color: AppColors.border,
+        ),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),
-        borderSide: const BorderSide(color: AppColors.border),
+        borderSide: const BorderSide(
+          color: AppColors.border,
+        ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),
@@ -322,11 +366,17 @@ class AppTheme {
     );
   }
 
+  // =========================
+  // DARK INPUTS
+  // =========================
   static InputDecorationTheme _darkInputTheme() {
     return InputDecorationTheme(
       filled: true,
-      fillColor: AppColors.darkSurface,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+      fillColor: AppColors.glassFill,
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 18,
+        vertical: 18,
+      ),
       hintStyle: GoogleFonts.poppins(
         fontSize: 13.5,
         fontWeight: FontWeight.w500,
@@ -338,29 +388,33 @@ class AppTheme {
         color: AppColors.lumenTextSecondary,
       ),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
-        borderSide: const BorderSide(color: AppColors.darkBorderSoft),
+        borderRadius: BorderRadius.circular(20),
+        borderSide: const BorderSide(
+          color: AppColors.glassStroke,
+        ),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
-        borderSide: const BorderSide(color: AppColors.darkBorderSoft),
+        borderRadius: BorderRadius.circular(20),
+        borderSide: const BorderSide(
+          color: AppColors.glassStroke,
+        ),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(20),
         borderSide: const BorderSide(
-          color: AppColors.lumenGold,
-          width: 1.2,
+          color: AppColors.lumenGoldSoft,
+          width: 1.3,
         ),
       ),
       errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(20),
         borderSide: const BorderSide(
           color: AppColors.error,
           width: 1.2,
         ),
       ),
       focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(20),
         borderSide: const BorderSide(
           color: AppColors.error,
           width: 1.3,
@@ -369,6 +423,9 @@ class AppTheme {
     );
   }
 
+  // =========================
+  // LIGHT BUTTONS
+  // =========================
   static ElevatedButtonThemeData _lightElevatedButtons() {
     return ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
@@ -387,31 +444,43 @@ class AppTheme {
     );
   }
 
+  // =========================
+  // DARK BUTTONS
+  // =========================
   static ElevatedButtonThemeData _darkElevatedButtons() {
     return ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         elevation: 0,
         backgroundColor: AppColors.lumenGold,
         foregroundColor: AppColors.black,
-        minimumSize: const Size(double.infinity, 54),
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+        minimumSize: const Size(double.infinity, 56),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 18,
+        ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(22),
         ),
         textStyle: GoogleFonts.poppins(
           fontSize: 14,
           fontWeight: FontWeight.w700,
+          letterSpacing: 0.3,
         ),
       ),
     );
   }
 
+  // =========================
+  // LIGHT OUTLINED
+  // =========================
   static OutlinedButtonThemeData _lightOutlinedButtons() {
     return OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
         foregroundColor: AppColors.primaryBlue,
         minimumSize: const Size(double.infinity, 52),
-        side: const BorderSide(color: AppColors.border),
+        side: const BorderSide(
+          color: AppColors.border,
+        ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
         ),
@@ -423,17 +492,20 @@ class AppTheme {
     );
   }
 
+  // =========================
+  // DARK OUTLINED
+  // =========================
   static OutlinedButtonThemeData _darkOutlinedButtons() {
     return OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
         foregroundColor: AppColors.lumenTextPrimary,
-        minimumSize: const Size(double.infinity, 54),
+        minimumSize: const Size(double.infinity, 56),
         side: const BorderSide(
-          color: AppColors.lumenCardStroke,
+          color: AppColors.glassStroke,
           width: 1,
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(22),
         ),
         textStyle: GoogleFonts.poppins(
           fontSize: 14,
