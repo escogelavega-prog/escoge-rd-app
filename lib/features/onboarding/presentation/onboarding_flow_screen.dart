@@ -1,13 +1,18 @@
-import 'package:flutter/material.dart';
-import 'package:escoge/features/entry/presentation/entry_choice_screen.dart';
+import 'package:escoge/app/session_gate.dart';
+import 'package:escoge/core/theme/app_colors.dart';
 import 'package:escoge/features/onboarding/presentation/onboarding_features_screen.dart';
 import 'package:escoge/features/onboarding/presentation/onboarding_intro_screen.dart';
 import 'package:escoge/features/onboarding/presentation/onboarding_notifications_screen.dart';
 import 'package:escoge/features/onboarding/presentation/onboarding_preferences_screen.dart';
 import 'package:escoge/features/onboarding/widgets/onboarding_action_button.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OnboardingFlowScreen extends StatefulWidget {
   const OnboardingFlowScreen({super.key});
+
+  static const String onboardingKey = 'has_seen_onboarding_2026';
 
   @override
   State<OnboardingFlowScreen> createState() => _OnboardingFlowScreenState();
@@ -15,7 +20,9 @@ class OnboardingFlowScreen extends StatefulWidget {
 
 class _OnboardingFlowScreenState extends State<OnboardingFlowScreen> {
   final PageController _pageController = PageController();
+
   int _currentIndex = 0;
+  bool _isFinishing = false;
 
   final List<Widget> _pages = const [
     OnboardingIntroScreen(),
@@ -26,17 +33,35 @@ class _OnboardingFlowScreenState extends State<OnboardingFlowScreen> {
 
   bool get _isLastPage => _currentIndex == _pages.length - 1;
 
-  void _nextPage() {
+  Future<void> _nextPage() async {
+    if (_isFinishing) return;
+
     if (_isLastPage) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const EntryChoiceScreen()),
-      );
+      await _finishOnboarding();
       return;
     }
 
-    _pageController.nextPage(
-      duration: const Duration(milliseconds: 280),
-      curve: Curves.easeOut,
+    await _pageController.nextPage(
+      duration: const Duration(milliseconds: 320),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
+  Future<void> _skipOnboarding() async {
+    if (_isFinishing) return;
+    await _finishOnboarding();
+  }
+
+  Future<void> _finishOnboarding() async {
+    setState(() => _isFinishing = true);
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(OnboardingFlowScreen.onboardingKey, true);
+
+    if (!mounted) return;
+
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => const SessionGate()),
     );
   }
 
@@ -49,6 +74,7 @@ class _OnboardingFlowScreenState extends State<OnboardingFlowScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.lumenBackground,
       body: Stack(
         children: [
           PageView(
@@ -61,32 +87,61 @@ class _OnboardingFlowScreenState extends State<OnboardingFlowScreen> {
           ),
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 14),
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
               child: Column(
                 children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const SizedBox(width: 90),
+                      if (!_isLastPage)
+                        TextButton(
+                          onPressed: _isFinishing ? null : _skipOnboarding,
+                          child: Text(
+                            'Saltar',
+                            style: GoogleFonts.poppins(
+                              color: AppColors.white.withValues(alpha: 0.72),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        )
+                      else
+                        const SizedBox(width: 70),
+                    ],
+                  ),
                   const Spacer(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(
                       _pages.length,
-                      (index) => AnimatedContainer(
-                        duration: const Duration(milliseconds: 250),
-                        margin: const EdgeInsets.symmetric(horizontal: 4),
-                        width: _currentIndex == index ? 22 : 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: _currentIndex == index
-                              ? const Color(0xFFD4AF37)
-                              : Colors.white24,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
+                      (index) {
+                        final selected = _currentIndex == index;
+
+                        return AnimatedContainer(
+                          duration: const Duration(milliseconds: 250),
+                          curve: Curves.easeOutCubic,
+                          margin: const EdgeInsets.symmetric(horizontal: 4),
+                          width: selected ? 24 : 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: selected
+                                ? AppColors.lumenGold
+                                : AppColors.white.withValues(alpha: 0.24),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        );
+                      },
                     ),
                   ),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 10),
                   OnboardingActionButton(
-                    text: _isLastPage ? 'Continuar' : 'Siguiente',
-                    onTap: _nextPage,
+                    text: _isFinishing
+                        ? 'Preparando...'
+                        : _isLastPage
+                            ? 'Continuar'
+                            : 'Siguiente',
+                    onTap: _isFinishing ? null : _nextPage,
                   ),
                 ],
               ),

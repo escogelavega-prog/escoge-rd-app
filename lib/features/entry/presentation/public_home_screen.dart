@@ -6,13 +6,15 @@ import 'package:escoge/features/onboarding/widgets/onboarding_action_button.dart
 import 'package:escoge/features/onboarding/widgets/onboarding_background.dart';
 import 'package:escoge/features/oracion/presentation/evangelio_screen.dart';
 import 'package:escoge/features/oracion/presentation/lecturas_screen.dart';
-import 'package:escoge/features/retiros/presentation/retiros_screen.dart';
 import 'package:escoge/features/oracion/widgets/glass_spiritual_card.dart';
+import 'package:escoge/features/retiros/presentation/retiros_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class PublicHomeScreen extends StatelessWidget {
   const PublicHomeScreen({super.key});
+
+  static const String _logoPath = 'assets/images/logo_movimiento.png';
 
   void _push(BuildContext context, Widget screen) {
     Navigator.of(context).push(
@@ -35,16 +37,19 @@ class PublicHomeScreen extends StatelessWidget {
         child: Row(
           children: [
             Container(
-              width: 52,
-              height: 52,
+              width: 54,
+              height: 54,
               decoration: BoxDecoration(
-                color: AppColors.lumenGold.withValues(alpha: 0.18),
-                borderRadius: BorderRadius.circular(16),
+                shape: BoxShape.circle,
+                color: AppColors.lumenGold.withValues(alpha: 0.12),
+                border: Border.all(
+                  color: AppColors.lumenGold.withValues(alpha: 0.18),
+                ),
               ),
               child: Icon(
                 icon,
                 color: AppColors.lumenGold,
-                size: 24,
+                size: 25,
               ),
             ),
             const SizedBox(width: 16),
@@ -57,27 +62,108 @@ class PublicHomeScreen extends StatelessWidget {
                     style: GoogleFonts.poppins(
                       color: AppColors.white,
                       fontSize: 15.5,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
                     style: GoogleFonts.poppins(
-                      color: AppColors.white.withValues(alpha: 0.72),
-                      fontSize: 13,
+                      color: AppColors.lumenTextSecondary,
+                      fontSize: 12.8,
                       height: 1.45,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ],
               ),
             ),
-            const Icon(
+            Icon(
               Icons.arrow_forward_ios_rounded,
-              color: Colors.white38,
+              color: AppColors.white.withValues(alpha: 0.28),
               size: 15,
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeroCard(BuildContext context) {
+    return GlassSpiritualCard(
+      padding: const EdgeInsets.fromLTRB(22, 28, 22, 24),
+      child: Column(
+        children: [
+          Container(
+            width: 96,
+            height: 96,
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColors.lumenCard.withValues(alpha: 0.62),
+              border: Border.all(
+                color: AppColors.lumenGold.withValues(alpha: 0.28),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.lumenGold.withValues(alpha: 0.14),
+                  blurRadius: 24,
+                  spreadRadius: -8,
+                ),
+              ],
+            ),
+            child: ClipOval(
+              child: Image.asset(
+                _logoPath,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) {
+                  return const Icon(
+                    Icons.auto_awesome_rounded,
+                    color: AppColors.lumenGold,
+                    size: 42,
+                  );
+                },
+              ),
+            ),
+          ),
+          const SizedBox(height: 22),
+          Text(
+            'Explora Escoge RD',
+            textAlign: TextAlign.center,
+            style: GoogleFonts.lora(
+              color: AppColors.white,
+              fontSize: 30,
+              fontWeight: FontWeight.w700,
+              height: 1.1,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Una experiencia espiritual para descubrir el Evangelio, vivir la liturgia y encontrar retiros transformadores.',
+            textAlign: TextAlign.center,
+            style: GoogleFonts.poppins(
+              color: AppColors.lumenTextSecondary,
+              fontSize: 14,
+              height: 1.65,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMessageCard() {
+    return GlassSpiritualCard(
+      padding: const EdgeInsets.all(18),
+      child: Text(
+        'Crea una cuenta para acceder a una experiencia espiritual completa, personalizada y conectada con tu comunidad.',
+        textAlign: TextAlign.center,
+        style: GoogleFonts.poppins(
+          color: AppColors.white.withValues(alpha: 0.84),
+          fontSize: 13,
+          height: 1.6,
+          fontWeight: FontWeight.w500,
         ),
       ),
     );
@@ -91,7 +177,7 @@ class PublicHomeScreen extends StatelessWidget {
         child: SafeArea(
           child: Column(
             children: [
-              /// 🔥 HEADER
+              /// HEADER SUPERIOR
               Padding(
                 padding: const EdgeInsets.fromLTRB(22, 16, 22, 0),
                 child: Row(
@@ -99,12 +185,25 @@ class PublicHomeScreen extends StatelessWidget {
                   children: [
                     GestureDetector(
                       onTap: () => _push(context, const LoginScreen()),
-                      child: Text(
-                        'Ya tengo cuenta',
-                        style: GoogleFonts.poppins(
-                          color: AppColors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 9,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.lumenCard.withValues(alpha: 0.52),
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(
+                            color: AppColors.white.withValues(alpha: 0.08),
+                          ),
+                        ),
+                        child: Text(
+                          'Ya tengo cuenta',
+                          style: GoogleFonts.poppins(
+                            color: AppColors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ),
@@ -112,124 +211,83 @@ class PublicHomeScreen extends StatelessWidget {
                 ),
               ),
 
-              /// 🔥 CONTENIDO
+              /// CONTENIDO
               Expanded(
                 child: SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
                   padding: const EdgeInsets.fromLTRB(22, 12, 22, 22),
                   child: Column(
                     children: [
-                      const SizedBox(height: 18),
+                      const SizedBox(height: 12),
 
-                      /// 🔥 HERO PREMIUM
-                      GlassSpiritualCard(
-                        padding: const EdgeInsets.all(24),
-                        child: Column(
-                          children: [
-                            Container(
-                              width: 70,
-                              height: 70,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color:
-                                    AppColors.lumenGold.withValues(alpha: 0.16),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppColors.lumenGold
-                                        .withValues(alpha: 0.18),
-                                    blurRadius: 18,
-                                  ),
-                                ],
-                              ),
-                              child: const Icon(
-                                Icons.explore_rounded,
-                                color: AppColors.lumenGold,
-                                size: 32,
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                            Text(
-                              'Explora Escoge RD',
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.lora(
-                                color: AppColors.white,
-                                fontSize: 28,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              'Descubre contenido espiritual, vive el Evangelio del día y encuentra retiros disponibles.',
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.poppins(
-                                color: AppColors.white.withValues(alpha: 0.74),
-                                fontSize: 14,
-                                height: 1.6,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      /// HERO
+                      _buildHeroCard(context),
 
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 26),
 
-                      /// 🔥 ACCESOS
+                      /// ACCESOS RÁPIDOS
                       _quickItem(
                         context,
                         Icons.menu_book_rounded,
                         'Evangelio del día',
-                        'Lee y reflexiona con la Palabra.',
-                        onTap: () => _push(context, const EvangelioScreen()),
+                        'Lee, medita y profundiza en la Palabra.',
+                        onTap: () => _push(
+                          context,
+                          const EvangelioScreen(),
+                        ),
                       ),
+
                       _quickItem(
                         context,
-                        Icons.article_rounded,
+                        Icons.auto_stories_rounded,
                         'Lecturas y liturgia',
-                        'Consulta el contenido completo.',
-                        onTap: () => _push(context, const LecturasScreen()),
+                        'Consulta lecturas, salmos y calendario.',
+                        onTap: () => _push(
+                          context,
+                          const LecturasScreen(),
+                        ),
                       ),
+
                       _quickItem(
                         context,
                         Icons.church_rounded,
                         'Retiros públicos',
-                        'Descubre próximos encuentros.',
-                        onTap: () => _push(context, const RetirosScreen()),
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      /// 🔥 MENSAJE
-                      GlassSpiritualCard(
-                        padding: const EdgeInsets.all(16),
-                        child: Text(
-                          'Crea una cuenta para vivir una experiencia espiritual completa dentro de Escoge RD.',
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.poppins(
-                            color: AppColors.white.withValues(alpha: 0.85),
-                            fontSize: 13,
-                            height: 1.55,
-                          ),
+                        'Encuentra encuentros y experiencias vivenciales.',
+                        onTap: () => _push(
+                          context,
+                          const RetirosScreen(),
                         ),
                       ),
+
+                      const SizedBox(height: 18),
+
+                      /// MENSAJE
+                      _buildMessageCard(),
                     ],
                   ),
                 ),
               ),
 
-              /// 🔥 CTA
+              /// CTA FINAL
               Padding(
                 padding: const EdgeInsets.fromLTRB(22, 0, 22, 18),
                 child: Column(
                   children: [
                     OnboardingActionButton(
                       text: 'Crear cuenta',
-                      onTap: () => _push(context, const RegisterScreen()),
+                      onTap: () => _push(
+                        context,
+                        const RegisterScreen(),
+                      ),
                     ),
                     const SizedBox(height: 10),
                     OnboardingActionButton(
                       text: 'Iniciar sesión',
                       isPrimary: false,
-                      onTap: () => _push(context, const LoginScreen()),
+                      onTap: () => _push(
+                        context,
+                        const LoginScreen(),
+                      ),
                     ),
                   ],
                 ),

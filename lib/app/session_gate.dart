@@ -2,8 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:escoge/app/navigation/main_shell.dart';
 import 'package:escoge/core/theme/app_colors.dart';
 import 'package:escoge/features/auth/data/services/auth_service.dart';
-import 'package:escoge/features/auth/presentation/complete_profile_screen.dart';
 import 'package:escoge/features/entry/presentation/entry_choice_screen.dart';
+import 'package:escoge/features/onboarding/presentation/onboarding_flow_screen.dart';
+import 'package:escoge/features/profile_setup/presentation/complete_profile_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -20,35 +21,36 @@ class _SessionGateState extends State<SessionGate> {
   final AuthService _authService = AuthService();
 
   bool _bootChecking = true;
-  bool _isFirstLaunch = false;
+  bool _hasSeenOnboarding = false;
+
+  static const String _onboardingKey = 'has_seen_onboarding_2026';
 
   @override
   void initState() {
     super.initState();
-    _checkFirstLaunch();
+    _checkInitialFlow();
   }
 
-  Future<void> _checkFirstLaunch() async {
+  Future<void> _checkInitialFlow() async {
     final prefs = await SharedPreferences.getInstance();
-    final seenEntry = prefs.getBool('seen_entry_choice') ?? false;
+    final hasSeenOnboarding = prefs.getBool(_onboardingKey) ?? false;
 
     if (!mounted) return;
 
     setState(() {
-      _isFirstLaunch = !seenEntry;
+      _hasSeenOnboarding = hasSeenOnboarding;
       _bootChecking = false;
     });
-  }
-
-  Future<void> _markEntrySeen() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('seen_entry_choice', true);
   }
 
   @override
   Widget build(BuildContext context) {
     if (_bootChecking) {
       return const _SessionLoadingScreen();
+    }
+
+    if (!_hasSeenOnboarding) {
+      return const OnboardingFlowScreen();
     }
 
     return StreamBuilder<User?>(
@@ -61,9 +63,6 @@ class _SessionGateState extends State<SessionGate> {
         final firebaseUser = authSnapshot.data;
 
         if (firebaseUser == null) {
-          if (_isFirstLaunch) {
-            _markEntrySeen();
-          }
           return const EntryChoiceScreen();
         }
 
@@ -120,76 +119,54 @@ class _SessionLoadingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.darkBackground,
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    AppColors.darkBackground,
-                    AppColors.darkBackgroundSoft,
-                    AppColors.navShell,
-                  ],
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: AppColors.screenGradient,
+        ),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 82,
+                height: 82,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.white.withValues(alpha: 0.06),
+                  border: Border.all(
+                    color: AppColors.white.withValues(alpha: 0.08),
+                  ),
+                ),
+                child: const Padding(
+                  padding: EdgeInsets.all(18),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 3,
+                    color: AppColors.lumenGold,
+                  ),
                 ),
               ),
-            ),
+              const SizedBox(height: 20),
+              Text(
+                'Escoge RD',
+                style: GoogleFonts.lora(
+                  color: AppColors.white,
+                  fontSize: 28,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Preparando tu experiencia espiritual',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.poppins(
+                  color: AppColors.white.withValues(alpha: 0.72),
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
           ),
-          Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 82,
-                  height: 82,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppColors.white.withValues(alpha: 0.06),
-                    border: Border.all(
-                      color: AppColors.white.withValues(alpha: 0.08),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.lumenGold.withValues(alpha: 0.14),
-                        blurRadius: 24,
-                        spreadRadius: -10,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: const Padding(
-                    padding: EdgeInsets.all(18),
-                    child: CircularProgressIndicator(
-                      strokeWidth: 3,
-                      color: AppColors.lumenGold,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  'Escoge RD',
-                  style: GoogleFonts.lora(
-                    color: AppColors.white,
-                    fontSize: 28,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Preparando tu experiencia espiritual',
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
-                    color: AppColors.white.withValues(alpha: 0.72),
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

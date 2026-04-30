@@ -75,7 +75,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
 
       _didInitialReconciliation = true;
     } catch (_) {
-      // No rompemos la UI si alguna reconciliación falla.
+      // Mantener experiencia estable.
     } finally {
       _isReconciling = false;
     }
@@ -288,12 +288,17 @@ class _PerfilScreenState extends State<PerfilScreen> {
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
+          backgroundColor: const Color(0xFF101828),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          title: const Text('Cerrar sesión'),
+          title: const Text(
+            'Cerrar sesión',
+            style: TextStyle(color: Colors.white),
+          ),
           content: const Text(
             '¿Deseas cerrar tu sesión en Escoge RD?',
+            style: TextStyle(color: Colors.white70),
           ),
           actions: [
             TextButton(
@@ -302,6 +307,10 @@ class _PerfilScreenState extends State<PerfilScreen> {
             ),
             ElevatedButton(
               onPressed: () => Navigator.of(dialogContext).pop(true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFD4AF37),
+                foregroundColor: Colors.black,
+              ),
               child: const Text('Cerrar sesión'),
             ),
           ],
@@ -412,9 +421,24 @@ class _PerfilScreenState extends State<PerfilScreen> {
         children: [
           Positioned.fill(
             child: Image.asset(
-              'assets/backgrounds/form.png',
+              'assets/backgrounds/bg_primary.png',
               fit: BoxFit.cover,
-              alignment: Alignment.topLeft,
+              alignment: Alignment.topCenter,
+            ),
+          ),
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withValues(alpha: 0.16),
+                    const Color(0xFF09111F).withValues(alpha: 0.58),
+                    const Color(0xFF060B16).withValues(alpha: 0.92),
+                  ],
+                ),
+              ),
             ),
           ),
           SafeArea(
@@ -424,7 +448,9 @@ class _PerfilScreenState extends State<PerfilScreen> {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
-                    child: CircularProgressIndicator(),
+                    child: CircularProgressIndicator(
+                      color: Color(0xFFD4AF37),
+                    ),
                   );
                 }
 

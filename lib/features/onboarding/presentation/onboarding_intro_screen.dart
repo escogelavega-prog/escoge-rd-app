@@ -1,7 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:escoge/core/constants/app_assets.dart';
+import 'package:escoge/core/theme/app_colors.dart';
 import 'package:escoge/features/onboarding/widgets/onboarding_background.dart';
 import 'package:escoge/features/onboarding/widgets/onboarding_card.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class OnboardingIntroScreen extends StatelessWidget {
   const OnboardingIntroScreen({super.key});
@@ -9,84 +11,65 @@ class OnboardingIntroScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.lumenBackground,
       body: OnboardingBackground(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 18, 24, 24),
-          child: Column(
-            children: [
-              /// Top action
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 10,
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
+            child: Column(
+              children: [
+                const Spacer(),
+                Container(
+                  width: 118,
+                  height: 118,
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.lumenCard.withValues(alpha: 0.78),
+                    border: Border.all(
+                      color: AppColors.lumenGold.withValues(alpha: 0.34),
+                      width: 1.2,
                     ),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.08),
-                      borderRadius: BorderRadius.circular(30),
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.lumenGold.withValues(alpha: 0.14),
+                        blurRadius: 28,
+                        spreadRadius: -8,
                       ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
-
-              const SizedBox(height: 26),
-
-              /// Logo principal
-              Center(
-                child: SizedBox(
-                  width: 120,
-                  height: 120,
                   child: ClipOval(
                     child: Image.asset(
-                      'assets/images/logo.png',
+                      AppAssets.logoMovimiento,
                       fit: BoxFit.cover,
                       errorBuilder: (_, __, ___) {
-                        return Container(
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.white,
-                          ),
-                          alignment: Alignment.center,
-                          child: const Icon(
-                            Icons.image_not_supported_outlined,
-                            color: Colors.black54,
-                            size: 90,
-                          ),
+                        return const Icon(
+                          Icons.auto_awesome_rounded,
+                          color: AppColors.lumenGold,
+                          size: 48,
                         );
                       },
                     ),
                   ),
                 ),
-              ),
-
-              const Spacer(),
-
-              OnboardingCard(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
+                const SizedBox(height: 34),
+                OnboardingCard(
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                        width: 86,
-                        height: 86,
+                        width: 78,
+                        height: 78,
                         decoration: BoxDecoration(
-                          color:
-                              const Color(0xFFD4AF37).withValues(alpha: 0.14),
                           shape: BoxShape.circle,
+                          color: AppColors.white.withValues(alpha: 0.06),
+                          border: Border.all(
+                            color: AppColors.white.withValues(alpha: 0.08),
+                          ),
                         ),
                         child: const Icon(
                           Icons.auto_awesome_rounded,
-                          color: Color(0xFFD4AF37),
-                          size: 40,
+                          color: AppColors.lumenGold,
+                          size: 38,
                         ),
                       ),
                       const SizedBox(height: 22),
@@ -94,9 +77,9 @@ class OnboardingIntroScreen extends StatelessWidget {
                         'Bienvenido a Escoge RD',
                         textAlign: TextAlign.center,
                         style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.w700,
+                          color: AppColors.white,
+                          fontSize: 28,
+                          fontWeight: FontWeight.w800,
                           height: 1.15,
                         ),
                       ),
@@ -105,19 +88,18 @@ class OnboardingIntroScreen extends StatelessWidget {
                         'Un espacio para vivir retiros, profundizar en la fe y acompañar tu camino espiritual.',
                         textAlign: TextAlign.center,
                         style: GoogleFonts.poppins(
-                          color: Colors.white70,
+                          color: AppColors.lumenTextSecondary,
                           fontSize: 15,
-                          height: 1.55,
-                          fontWeight: FontWeight.w400,
+                          height: 1.62,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
-
-              const SizedBox(height: 150),
-            ],
+                const SizedBox(height: 120),
+              ],
+            ),
           ),
         ),
       ),

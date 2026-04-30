@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:escoge/core/theme/app_colors.dart';
 import 'package:escoge/features/onboarding/widgets/onboarding_background.dart';
 import 'package:escoge/features/onboarding/widgets/onboarding_card.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class OnboardingPageScaffold extends StatelessWidget {
   final Widget child;
@@ -16,6 +17,7 @@ class OnboardingPageScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.lumenBackground,
       body: OnboardingBackground(
         child: SafeArea(
           child: Padding(
@@ -23,25 +25,25 @@ class OnboardingPageScaffold extends StatelessWidget {
             child: Column(
               children: [
                 Align(
-                  alignment: Alignment.topRight,
+                  alignment: Alignment.topLeft,
                   child: GestureDetector(
                     onTap: onLoginTap,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 9,
+                        horizontal: 15,
+                        vertical: 10,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.08),
-                        borderRadius: BorderRadius.circular(24),
+                        color: AppColors.lumenCard.withValues(alpha: 0.52),
+                        borderRadius: BorderRadius.circular(999),
                         border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.10),
+                          color: AppColors.white.withValues(alpha: 0.10),
                         ),
                       ),
                       child: Text(
                         'Ya tengo cuenta',
                         style: GoogleFonts.poppins(
-                          color: Colors.white,
+                          color: AppColors.white.withValues(alpha: 0.88),
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
                         ),
@@ -53,9 +55,7 @@ class OnboardingPageScaffold extends StatelessWidget {
                 Expanded(
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.only(
-                      bottom: 130,
-                    ),
+                    padding: const EdgeInsets.only(bottom: 20),
                     child: OnboardingCard(
                       child: child,
                     ),

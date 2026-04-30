@@ -3,8 +3,14 @@ import 'dart:ui';
 import 'package:escoge/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:escoge/core/constants/app_assets.dart';
 
 class CustomBottomNav extends StatelessWidget {
+  static const String homeIcon = 'assets/icons/home.png';
+  static const String oracionIcon = 'assets/icons/oracion.png';
+  static const String retirosIcon = 'assets/icons/retiros.png';
+  static const String contenidoIcon = 'assets/icons/contenido.png';
+  static const String perfilIcon = 'assets/icons/perfil.png';
   final int currentIndex;
   final ValueChanged<int> onTap;
 
@@ -16,23 +22,23 @@ class CustomBottomNav extends StatelessWidget {
 
   static const List<_NavItemData> _items = [
     _NavItemData(
-      asset: 'assets/icons/home.png',
+      asset: AppAssets.homeIcon,
       label: 'Inicio',
     ),
     _NavItemData(
-      asset: 'assets/icons/contenido.png',
+      asset: AppAssets.oracionIcon,
       label: 'Oración',
     ),
     _NavItemData(
-      asset: 'assets/icons/retiros.png',
+      asset: AppAssets.retirosIcon,
       label: 'Retiros',
     ),
     _NavItemData(
-      asset: 'assets/icons/inscripcion.png',
+      asset: AppAssets.contenidoIcon,
       label: 'Contenido',
     ),
     _NavItemData(
-      asset: 'assets/icons/perfil.png',
+      asset: AppAssets.perfilIcon,
       label: 'Perfil',
     ),
   ];
@@ -187,14 +193,11 @@ class _BottomNavItem extends StatelessWidget {
                   duration: const Duration(milliseconds: 220),
                   curve: Curves.easeOutCubic,
                   style: GoogleFonts.poppins(
-                    fontSize: 9.6,
-                    height: 1,
-                    fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                    letterSpacing: isActive ? 0.1 : 0,
-                    color: isActive
-                        ? AppColors.lumenGoldSoft
-                        : AppColors.lumenTextMuted,
-                  ),
+                      fontSize: 9.6,
+                      height: 1,
+                      fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+                      letterSpacing: isActive ? 0.1 : 0,
+                      color: null),
                   child: Text(
                     label,
                     maxLines: 1,

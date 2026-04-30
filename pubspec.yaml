@@ -40,7 +40,7 @@ flutter:
     - assets/rosario/Dolorosos/
     - assets/rosario/Gloriosos/
     - assets/rosario/Luminosos/
-    - assets/logos/logo.png
+    - assets/logos/logo_movimiento.png
     - assets/backgrounds/
     - assets/backgrounds/form.png
     - assets/seeds/liturgia_import.json
@@ -54,6 +54,7 @@ flutter:
     - assets/icons/icon_oracion.png
     - assets/icons/icon_perfil.png
     - assets/biblia/
+    - assets/lecturas/
 
   
     

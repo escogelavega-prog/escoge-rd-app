@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -25,10 +27,9 @@ class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
   bool _recordatorios = true;
   bool _modoOscuro = false;
 
-  static const Color primaryBlue = Color(0xFF0B1E66);
-  static const Color secondaryBlue = Color(0xFF1736A2);
-  static const Color accentBlue = Color(0xFF2A49B8);
-  static const Color softBackground = Color(0xFFF3F6FD);
+  static const Color lumenGold = Color(0xFFD4AF37);
+  static const Color darkBackground = Color(0xFF060B16);
+  static const Color darkCard = Color(0xFF111827);
 
   Future<Map<String, dynamic>> _loadUserData() async {
     final currentUser = FirebaseAuth.instance.currentUser;
@@ -62,12 +63,17 @@ class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
+          backgroundColor: darkCard,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(22),
           ),
-          title: const Text('Cerrar sesión'),
+          title: const Text(
+            'Cerrar sesión',
+            style: TextStyle(color: Colors.white),
+          ),
           content: const Text(
             '¿Deseas salir de tu cuenta en Escoge RD?',
+            style: TextStyle(color: Colors.white70),
           ),
           actions: [
             TextButton(
@@ -75,6 +81,10 @@ class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
               child: const Text('Cancelar'),
             ),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: lumenGold,
+                foregroundColor: Colors.black,
+              ),
               onPressed: () => Navigator.of(dialogContext).pop(true),
               child: const Text('Cerrar sesión'),
             ),
@@ -100,6 +110,7 @@ class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
   void _showComingSoon(String title) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
+        backgroundColor: darkCard,
         content: Text('$title estará disponible próximamente.'),
       ),
     );
@@ -108,10 +119,45 @@ class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: softBackground,
+      backgroundColor: darkBackground,
       body: Stack(
         children: [
-          _buildTopBackground(),
+          Positioned.fill(
+            child: Image.asset(
+              'assets/backgrounds/bg_primary.png',
+              fit: BoxFit.cover,
+              alignment: Alignment.topCenter,
+            ),
+          ),
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withValues(alpha: 0.14),
+                    const Color(0xFF09111F).withValues(alpha: 0.55),
+                    const Color(0xFF060B16).withValues(alpha: 0.94),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  center: const Alignment(0, -0.55),
+                  radius: 1.05,
+                  colors: [
+                    lumenGold.withValues(alpha: 0.08),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+          ),
           SafeArea(
             child: FutureBuilder<Map<String, dynamic>>(
               future: _loadUserData(),
@@ -127,78 +173,86 @@ class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
                   padding: const EdgeInsets.fromLTRB(20, 16, 20, 110),
                   children: [
                     _buildHeader(context),
-                    const SizedBox(height: 26),
-                    SettingsProfilePreviewCard(
-                      userName: userData['userName'] as String,
-                      userEmail: userData['userEmail'] as String,
-                    ),
                     const SizedBox(height: 28),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(30),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                        child: SettingsProfilePreviewCard(
+                          userName: userData['userName'] as String,
+                          userEmail: userData['userEmail'] as String,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 30),
                     const SettingsSectionTitle(
                       title: 'Preferencias',
-                      subtitle: 'Personaliza tu experiencia dentro de Escoge',
+                      subtitle:
+                          'Personaliza tu experiencia espiritual dentro de Escoge',
                     ),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 16),
                     SettingsTile(
                       icon: Icons.notifications_none_rounded,
                       title: 'Notificaciones',
-                      subtitle: 'Activa avisos sobre retiros y novedades',
+                      subtitle: 'Avisos sobre retiros y novedades',
                       trailing: Switch(
                         value: _notificaciones,
+                        activeThumbColor: lumenGold,
                         onChanged: (value) {
                           setState(() {
                             _notificaciones = value;
                           });
                         },
-                        activeThumbColor: primaryBlue,
                       ),
                     ),
                     const SizedBox(height: 14),
                     SettingsTile(
                       icon: Icons.alarm_outlined,
                       title: 'Recordatorios espirituales',
-                      subtitle: 'Recibe avisos para oración y reflexión diaria',
+                      subtitle: 'Oración, reflexión y acompañamiento diario',
                       trailing: Switch(
                         value: _recordatorios,
+                        activeThumbColor: lumenGold,
                         onChanged: (value) {
                           setState(() {
                             _recordatorios = value;
                           });
                         },
-                        activeThumbColor: primaryBlue,
                       ),
                     ),
                     const SizedBox(height: 14),
                     SettingsTile(
                       icon: Icons.dark_mode_outlined,
                       title: 'Modo oscuro',
-                      subtitle: 'Preparado para futura implementación visual',
+                      subtitle: 'Preparado para futuras mejoras visuales',
                       trailing: Switch(
                         value: _modoOscuro,
+                        activeThumbColor: lumenGold,
                         onChanged: (value) {
                           setState(() {
                             _modoOscuro = value;
                           });
                         },
-                        activeThumbColor: primaryBlue,
                       ),
                     ),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 30),
                     const SettingsSectionTitle(
                       title: 'Cuenta y acceso',
-                      subtitle: 'Gestiona tu perfil, seguridad y sesión',
+                      subtitle:
+                          'Gestiona tu perfil, seguridad y administración',
                     ),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 16),
                     SettingsTile(
                       icon: Icons.person_outline_rounded,
                       title: 'Editar perfil',
-                      subtitle: 'Actualiza nombre, correo y datos personales',
+                      subtitle: 'Actualiza tus datos personales',
                       onTap: () => _showComingSoon('Editar perfil'),
                     ),
                     const SizedBox(height: 14),
                     SettingsTile(
                       icon: Icons.lock_outline_rounded,
                       title: 'Seguridad',
-                      subtitle: 'Configura acceso, contraseña y autenticación',
+                      subtitle: 'Contraseña y autenticación',
                       onTap: () => _showComingSoon('Seguridad'),
                     ),
                     RoleGuard(
@@ -209,8 +263,7 @@ class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
                           SettingsTile(
                             icon: Icons.build_circle_outlined,
                             title: 'Herramientas internas',
-                            subtitle:
-                                'Opciones especiales para equipos de servicio',
+                            subtitle: 'Opciones para equipos de servicio',
                             onTap: () =>
                                 _showComingSoon('Herramientas internas'),
                           ),
@@ -239,7 +292,7 @@ class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
                           SettingsTile(
                             icon: Icons.public_outlined,
                             title: 'Panel nacional',
-                            subtitle: 'Vista global de diócesis y actividades',
+                            subtitle: 'Vista global de diócesis',
                             onTap: () => _showComingSoon('Panel nacional'),
                           ),
                         ],
@@ -263,7 +316,7 @@ class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
                     SettingsTile(
                       icon: Icons.info_outline_rounded,
                       title: 'Acerca de Escoge RD',
-                      subtitle: 'Información general de la aplicación',
+                      subtitle: 'Información general',
                       onTap: () => _showComingSoon('Acerca de Escoge RD'),
                     ),
                     const SizedBox(height: 14),
@@ -284,61 +337,53 @@ class _ConfiguracionScreenState extends State<ConfiguracionScreen> {
     );
   }
 
-  Widget _buildTopBackground() {
-    return Container(
-      height: 260,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [primaryBlue, secondaryBlue, accentBlue],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-    );
-  }
-
   Widget _buildHeader(BuildContext context) {
     return Row(
       children: [
         GestureDetector(
           onTap: () => Navigator.of(context).maybePop(),
-          child: Container(
-            width: 46,
-            height: 46,
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.12),
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.18),
-                width: 1,
+          child: ClipOval(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+              child: Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.18),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: lumenGold.withValues(alpha: 0.24),
+                  ),
+                ),
+                child: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: Colors.white,
+                  size: 20,
+                ),
               ),
-            ),
-            child: const Icon(
-              Icons.arrow_back_ios_new_rounded,
-              color: Colors.white,
-              size: 20,
             ),
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 14),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 'Configuración',
-                style: GoogleFonts.poppins(
+                style: GoogleFonts.lora(
                   color: Colors.white,
                   fontWeight: FontWeight.w700,
-                  fontSize: 22,
+                  fontSize: 28,
                 ),
               ),
-              const SizedBox(height: 2),
+              const SizedBox(height: 4),
               Text(
-                'Preferencias y ajustes personales',
+                'Preferencias, seguridad y ajustes personales',
                 style: GoogleFonts.poppins(
-                  color: Colors.white.withValues(alpha: 0.82),
-                  fontSize: 12.5,
+                  color: Colors.white.withValues(alpha: 0.78),
+                  fontSize: 12.8,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],

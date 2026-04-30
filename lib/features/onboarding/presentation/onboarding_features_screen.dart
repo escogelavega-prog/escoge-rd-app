@@ -1,51 +1,96 @@
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:escoge/core/theme/app_colors.dart';
 import 'package:escoge/features/auth/presentation/login_screen.dart';
 import 'package:escoge/features/onboarding/widgets/onboarding_page_scaffold.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class OnboardingFeaturesScreen extends StatelessWidget {
   const OnboardingFeaturesScreen({super.key});
 
-  Widget _featureTile(IconData icon, String title) {
+  Widget _featureTile({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+  }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      margin: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 15,
+      ),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+        color: AppColors.lumenCard.withValues(alpha: 0.52),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(
+          color: AppColors.white.withValues(alpha: 0.08),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.10),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 48,
-            height: 48,
+            width: 54,
+            height: 54,
             decoration: BoxDecoration(
-              color: const Color(0xFFD4AF37).withValues(alpha: 0.16),
-              borderRadius: BorderRadius.circular(14),
+              shape: BoxShape.circle,
+              color: AppColors.lumenGold.withValues(alpha: 0.12),
+              border: Border.all(
+                color: AppColors.lumenGold.withValues(alpha: 0.22),
+              ),
             ),
             child: Icon(
               icon,
-              color: const Color(0xFFD4AF37),
-              size: 24,
+              color: AppColors.lumenGold,
+              size: 26,
             ),
           ),
           const SizedBox(width: 14),
           Expanded(
-            child: Text(
-              title,
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                height: 1.3,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: GoogleFonts.poppins(
+                    color: AppColors.white,
+                    fontSize: 15.5,
+                    fontWeight: FontWeight.w700,
+                    height: 1.25,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: GoogleFonts.poppins(
+                    color: AppColors.lumenTextSecondary,
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w500,
+                    height: 1.45,
+                  ),
+                ),
+              ],
             ),
           ),
-          const Icon(
-            Icons.check_rounded,
-            color: Color(0xFFD4AF37),
-            size: 22,
+          const SizedBox(width: 10),
+          Container(
+            width: 28,
+            height: 28,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColors.lumenGold.withValues(alpha: 0.10),
+            ),
+            child: const Icon(
+              Icons.check_rounded,
+              color: AppColors.lumenGold,
+              size: 18,
+            ),
           ),
         ],
       ),
@@ -57,37 +102,61 @@ class OnboardingFeaturesScreen extends StatelessWidget {
     return OnboardingPageScaffold(
       onLoginTap: () {
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const LoginScreen()),
+          MaterialPageRoute(
+            builder: (_) => const LoginScreen(),
+          ),
         );
       },
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'Todo lo que necesitas',
+            'Todo lo necesario',
             textAlign: TextAlign.center,
             style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.w700,
-              height: 1.2,
+              color: AppColors.white,
+              fontSize: 26,
+              fontWeight: FontWeight.w800,
+              height: 1.15,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           Text(
-            'Para tu camino espiritual',
+            'Formación, liturgia y acompañamiento espiritual en una sola experiencia.',
             textAlign: TextAlign.center,
             style: GoogleFonts.poppins(
-              color: Colors.white70,
+              color: AppColors.lumenTextSecondary,
               fontSize: 14,
+              fontWeight: FontWeight.w500,
+              height: 1.55,
             ),
           ),
-          const SizedBox(height: 22),
-          _featureTile(Icons.menu_book_rounded, 'La Biblia'),
-          _featureTile(Icons.article_rounded, 'Lecturas del día'),
-          _featureTile(Icons.volunteer_activism_rounded, 'Oraciones guiadas'),
-          _featureTile(Icons.event_available_rounded, 'Calendario litúrgico'),
-          _featureTile(Icons.church_rounded, 'Retiros y actividades'),
+          const SizedBox(height: 28),
+          _featureTile(
+            icon: Icons.menu_book_rounded,
+            title: 'Biblia Católica',
+            subtitle: 'Antiguo y Nuevo Testamento con lectura estructurada.',
+          ),
+          _featureTile(
+            icon: Icons.auto_stories_rounded,
+            title: 'Liturgia diaria',
+            subtitle: 'Evangelio, lecturas, salmos y reflexión del día.',
+          ),
+          _featureTile(
+            icon: Icons.volunteer_activism_rounded,
+            title: 'Oración guiada',
+            subtitle: 'Rosario, peticiones y recursos espirituales.',
+          ),
+          _featureTile(
+            icon: Icons.calendar_month_rounded,
+            title: 'Calendario litúrgico',
+            subtitle: 'Celebraciones, santos y memoria eclesial.',
+          ),
+          _featureTile(
+            icon: Icons.church_rounded,
+            title: 'Retiros y comunidad',
+            subtitle: 'Encuentros, actividades y vida pastoral.',
+          ),
         ],
       ),
     );

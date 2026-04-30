@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:escoge/app/routes/app_page_route.dart';
-import 'package:escoge/core/theme/app_backgrounds.dart';
+import 'package:escoge/core/constants/app_assets.dart';
 import 'package:escoge/core/theme/app_colors.dart';
 import 'package:escoge/core/widgets/loading_view.dart';
 import 'package:escoge/features/contenido/presentation/catecismo_screen.dart';
@@ -29,13 +29,16 @@ class _HomeScreenState extends State<HomeScreen> {
   LiturgiaDayModel? _data;
   bool _loading = true;
   String? _errorMessage;
+
   DateTime _selectedDate = DateTime.now();
   _HomeDayTab _selectedTab = _HomeDayTab.hoy;
 
   @override
   void initState() {
     super.initState();
-    _loadForDate(DateTime.now());
+
+    final now = DateTime.now();
+    _loadForDate(DateTime(now.year, now.month, now.day));
   }
 
   Future<void> _loadForDate(DateTime date) async {
@@ -71,6 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (_selectedTab == tab) return;
 
     final now = DateTime.now();
+
     final date = tab == _HomeDayTab.hoy
         ? DateTime(now.year, now.month, now.day)
         : DateTime(now.year, now.month, now.day + 1);
@@ -169,6 +173,16 @@ class _HomeScreenState extends State<HomeScreen> {
     final santo = _data?.santoDelDia;
     final primeraLectura = _findLectura('primera_lectura');
 
+    final title = _data?.celebracion.trim().isNotEmpty == true
+        ? _data!.celebracion.trim()
+        : _data?.titulo.trim().isNotEmpty == true
+            ? _data!.titulo.trim()
+            : 'Liturgia del día';
+
+    final tiempo = _data?.tiempoLiturgico.trim().isNotEmpty == true
+        ? _data!.tiempoLiturgico.trim()
+        : 'Liturgia diaria';
+
     return Scaffold(
       backgroundColor: AppColors.lumenBackground,
       body: Container(
@@ -197,15 +211,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           selectedTab: _selectedTab,
                           onTabChanged: _changeTab,
                           dateText: _formatLongDate(_selectedDate),
-                          title: _data?.celebracion.isNotEmpty == true
-                              ? _data!.celebracion
-                              : 'Liturgia del día',
-                          tiempo: _data?.tiempoLiturgico.isNotEmpty == true
-                              ? _data!.tiempoLiturgico
-                              : 'Pascua',
+                          title: title,
+                          tiempo: tiempo,
                         ),
                         Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 18, 20, 130),
+                          padding: const EdgeInsets.fromLTRB(20, 18, 20, 220),
                           child: Column(
                             children: [
                               if (santo != null)
@@ -249,7 +259,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                   onTap: _openEvangelio,
                                   gold: true,
                                 ),
-                              const SizedBox(height: 26),
+                              const SizedBox(height: 28),
+                              const _SectionHeading(
+                                title: 'Acceso rápido',
+                                subtitle:
+                                    'Tu camino espiritual, formación y encuentro diario.',
+                              ),
+                              const SizedBox(height: 16),
                               GridView.count(
                                 crossAxisCount: 2,
                                 shrinkWrap: true,
@@ -318,16 +334,23 @@ class _LumenHeroHeader extends StatelessWidget {
     required this.tiempo,
   });
 
+  String get _heroAsset {
+    return selectedTab == _HomeDayTab.hoy
+        ? AppAssets.evangelioHoy
+        : AppAssets.evangelioManana;
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 430,
+      height: 500,
       child: Stack(
         fit: StackFit.expand,
         children: [
           Image.asset(
-            AppBackgrounds.liturgia,
+            _heroAsset,
             fit: BoxFit.cover,
+            alignment: Alignment.center,
             errorBuilder: (_, __, ___) {
               return Container(
                 decoration: const BoxDecoration(
@@ -342,10 +365,24 @@ class _LumenHeroHeader extends StatelessWidget {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.black.withValues(alpha: 0.08),
-                  Colors.black.withValues(alpha: 0.20),
-                  AppColors.lumenBackground.withValues(alpha: 0.96),
+                  Colors.black.withValues(alpha: 0.05),
+                  Colors.black.withValues(alpha: 0.18),
+                  AppColors.lumenBackground.withValues(alpha: 0.86),
                 ],
+              ),
+            ),
+          ),
+          Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  center: const Alignment(0, -0.45),
+                  radius: 0.85,
+                  colors: [
+                    AppColors.lumenGold.withValues(alpha: 0.14),
+                    Colors.transparent,
+                  ],
+                ),
               ),
             ),
           ),
@@ -362,7 +399,7 @@ class _LumenHeroHeader extends StatelessWidget {
                         selectedTab: selectedTab,
                         onTabChanged: onTabChanged,
                       ),
-                      const SizedBox(width: 16),
+                      const SizedBox(width: 14),
                       _HeroIconButton(
                         icon: PhosphorIcons.clipboardText(
                           PhosphorIconsStyle.light,
@@ -375,13 +412,13 @@ class _LumenHeroHeader extends StatelessWidget {
                     dateText,
                     textAlign: TextAlign.center,
                     style: GoogleFonts.poppins(
-                      color: AppColors.lumenTextPrimary.withValues(alpha: 0.88),
-                      fontSize: 13.5,
+                      color: AppColors.white.withValues(alpha: 0.88),
+                      fontSize: 12.5,
                       fontWeight: FontWeight.w500,
                       letterSpacing: 0.2,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
                   Text(
                     title,
                     textAlign: TextAlign.center,
@@ -389,18 +426,18 @@ class _LumenHeroHeader extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.poppins(
                       color: AppColors.white,
-                      fontSize: 24,
+                      fontSize: 21.5,
                       fontWeight: FontWeight.w800,
-                      height: 1.22,
+                      height: 1.18,
                     ),
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        width: 10,
-                        height: 10,
+                        width: 8,
+                        height: 8,
                         decoration: const BoxDecoration(
                           color: AppColors.white,
                           shape: BoxShape.circle,
@@ -411,13 +448,13 @@ class _LumenHeroHeader extends StatelessWidget {
                         tiempo,
                         style: GoogleFonts.poppins(
                           color: AppColors.lumenTextSecondary,
-                          fontSize: 13,
+                          fontSize: 12.5,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 34),
+                  const SizedBox(height: 42),
                 ],
               ),
             ),
@@ -444,15 +481,22 @@ class _DaySelector extends StatelessWidget {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
         child: Container(
-          height: 58,
-          width: 230,
+          height: 54,
+          width: 214,
           padding: const EdgeInsets.all(4),
           decoration: BoxDecoration(
-            color: Colors.black.withValues(alpha: 0.18),
+            color: Colors.black.withValues(alpha: 0.20),
             borderRadius: BorderRadius.circular(999),
             border: Border.all(
-              color: AppColors.lumenGold.withValues(alpha: 0.50),
+              color: AppColors.lumenGold.withValues(alpha: 0.56),
             ),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.lumenGold.withValues(alpha: 0.18),
+                blurRadius: 18,
+                spreadRadius: -8,
+              ),
+            ],
           ),
           child: Row(
             children: [
@@ -496,7 +540,7 @@ class _DayPill extends StatelessWidget {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: selected
-                ? AppColors.white.withValues(alpha: 0.20)
+                ? AppColors.lumenGold.withValues(alpha: 0.28)
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(999),
           ),
@@ -504,8 +548,8 @@ class _DayPill extends StatelessWidget {
             label,
             style: GoogleFonts.poppins(
               color: AppColors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
+              fontSize: 15,
+              fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
             ),
           ),
         ),
@@ -527,19 +571,19 @@ class _HeroIconButton extends StatelessWidget {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
         child: Container(
-          width: 58,
-          height: 58,
+          width: 54,
+          height: 54,
           decoration: BoxDecoration(
-            color: Colors.black.withValues(alpha: 0.20),
+            color: Colors.black.withValues(alpha: 0.22),
             shape: BoxShape.circle,
             border: Border.all(
-              color: AppColors.white.withValues(alpha: 0.10),
+              color: AppColors.lumenGold.withValues(alpha: 0.28),
             ),
           ),
           child: Icon(
             icon,
             color: AppColors.lumenGoldBright,
-            size: 26,
+            size: 25,
           ),
         ),
       ),
@@ -577,15 +621,15 @@ class _LumenFeatureCard extends StatelessWidget {
                 child: Text(
                   eyebrow,
                   style: GoogleFonts.poppins(
-                    color: AppColors.lumenTextMuted,
+                    color: AppColors.lumenGoldBright,
                     fontSize: 12.5,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
               Icon(
                 PhosphorIcons.caretRight(PhosphorIconsStyle.light),
-                color: AppColors.lumenTextMuted,
+                color: AppColors.lumenGoldBright.withValues(alpha: 0.78),
                 size: 18,
               ),
             ],
@@ -604,7 +648,7 @@ class _LumenFeatureCard extends StatelessWidget {
           Text(
             body,
             style: GoogleFonts.poppins(
-              color: AppColors.lumenTextMuted,
+              color: AppColors.lumenTextSecondary,
               fontSize: 13,
               height: 1.42,
             ),
@@ -613,9 +657,9 @@ class _LumenFeatureCard extends StatelessWidget {
           Text(
             'Toca para leer más...',
             style: GoogleFonts.poppins(
-              color: AppColors.lumenTextMuted.withValues(alpha: 0.82),
+              color: AppColors.lumenGoldSoft.withValues(alpha: 0.84),
               fontSize: 12.5,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
@@ -647,6 +691,7 @@ class _LumenReadingCard extends StatelessWidget {
 
     return _LumenGlassShell(
       onTap: onTap,
+      strongerGoldBorder: gold,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -654,11 +699,14 @@ class _LumenReadingCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 14,
-                backgroundColor: AppColors.white.withValues(alpha: 0.70),
+                backgroundColor: gold
+                    ? AppColors.lumenGold.withValues(alpha: 0.92)
+                    : AppColors.white.withValues(alpha: 0.70),
                 child: Text(
                   number,
                   style: GoogleFonts.poppins(
-                    color: AppColors.lumenBackground,
+                    color:
+                        gold ? AppColors.lumenBackground : AppColors.lumenCard,
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
                   ),
@@ -673,34 +721,6 @@ class _LumenReadingCard extends StatelessWidget {
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
                   ),
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.white.withValues(alpha: 0.06),
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      PhosphorIcons.lockSimple(PhosphorIconsStyle.fill),
-                      color: AppColors.lumenGold,
-                      size: 14,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      'Escuchar',
-                      style: GoogleFonts.poppins(
-                        color: AppColors.lumenGold,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
                 ),
               ),
             ],
@@ -728,9 +748,9 @@ class _LumenReadingCard extends StatelessWidget {
           Text(
             'Toca para leer más...',
             style: GoogleFonts.poppins(
-              color: AppColors.lumenTextMuted,
+              color: AppColors.lumenGoldSoft.withValues(alpha: 0.82),
               fontSize: 12.5,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
@@ -742,14 +762,20 @@ class _LumenReadingCard extends StatelessWidget {
 class _LumenGlassShell extends StatelessWidget {
   final Widget child;
   final VoidCallback onTap;
+  final bool strongerGoldBorder;
 
   const _LumenGlassShell({
     required this.child,
     required this.onTap,
+    this.strongerGoldBorder = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final borderColor = strongerGoldBorder
+        ? AppColors.lumenGold.withValues(alpha: 0.36)
+        : AppColors.lumenGold.withValues(alpha: 0.18);
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(30),
       child: BackdropFilter(
@@ -762,10 +788,11 @@ class _LumenGlassShell extends StatelessWidget {
             child: Ink(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppColors.lumenCard.withValues(alpha: 0.70),
+                color: AppColors.lumenCard.withValues(alpha: 0.72),
                 borderRadius: BorderRadius.circular(30),
                 border: Border.all(
-                  color: AppColors.glassStroke.withValues(alpha: 0.80),
+                  color: borderColor,
+                  width: strongerGoldBorder ? 1.35 : 1.05,
                 ),
               ),
               child: child,
@@ -794,6 +821,7 @@ class _QuickAccessCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return _LumenGlassShell(
       onTap: onTap,
+      strongerGoldBorder: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -818,6 +846,44 @@ class _QuickAccessCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _SectionHeading extends StatelessWidget {
+  final String title;
+  final String subtitle;
+
+  const _SectionHeading({
+    required this.title,
+    required this.subtitle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: GoogleFonts.lora(
+            color: AppColors.white,
+            fontSize: 28,
+            fontWeight: FontWeight.w700,
+            height: 1.1,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          subtitle,
+          style: GoogleFonts.poppins(
+            color: AppColors.lumenTextSecondary,
+            fontSize: 13.5,
+            height: 1.45,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
     );
   }
 }
